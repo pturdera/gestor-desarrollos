@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><title>Instalar Locales Black</title>
+<style>
+@page{size:A4;margin:16mm 16mm 18mm}
+body{font:10.5pt/1.5 -apple-system,"Helvetica Neue",Arial,sans-serif;color:#15171a;margin:0}
+.cab{display:flex;align-items:center;gap:14px;border-bottom:2px solid #15171a;padding-bottom:10px;margin-bottom:14px}
+.cab img{width:52px;height:52px}
+h1{font-size:19pt;margin:0;letter-spacing:.01em}
+.sub{color:#5d6470;font-size:9.5pt;text-transform:uppercase;letter-spacing:.07em}
+h2{font-size:12.5pt;margin:18px 0 6px;display:flex;gap:10px;align-items:baseline;break-after:avoid}
+h2 span{background:#15171a;color:#fff;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:10pt;flex:none}
+ol,ul{margin:4px 0 6px;padding-left:20px}
+li{margin:3px 0}
+b.ui{background:#eef0f3;border:1px solid #d6d9de;border-radius:4px;padding:0 5px;font-weight:600;white-space:nowrap}
+.nota{background:#fdf0d2;border-radius:6px;padding:8px 11px;margin:8px 0;font-size:10pt;break-inside:avoid}
+.ok{background:#e2f3e9;border-radius:6px;padding:8px 11px;margin:8px 0;font-size:10pt;break-inside:avoid}
+.bloque{break-inside:avoid}
+p{margin:4px 0}
+.pie{margin-top:18px;border-top:1px solid #ccc;padding-top:6px;font-size:9pt;color:#5d6470}
+</style></head><body>
+<div class="cab"><img src="__LOGO__" alt=""><div><h1>Locales Black · cómo instalarlo</h1><div class="sub">Coldwell Banker · Paseo de Compras Black, Escobar</div></div></div>
+
+<p>Este sistema lleva el control de los 117 locales del Paseo Black: cuáles están disponibles, reservados o vendidos, los presupuestos que se mandan y las reservas. Todo queda guardado en una planilla de <b>tu</b> Google Drive y se usa desde la página <b>marianaramoscb-prog.github.io/locales-black</b> con nombre y clave, en la computadora o en el celular.</p>
+<p>La instalación se hace <b>una sola vez</b> y lleva unos 10 minutos. Necesitás una computadora (no el celular) y el archivo <b>1 - Codigo.txt</b> que viene con esta guía. El archivo <b>Locales Black.html</b> es la misma página que está online: guardalo en tu Drive como copia, no hace falta abrirlo.</p>
+
+<div class="bloque"><h2><span>1</span>Crear la planilla</h2>
+<ol><li>Entrá a <b>drive.google.com</b> con tu cuenta de Gmail.</li>
+<li>Tocá <b class="ui">+ Nuevo</b> → <b class="ui">Hojas de cálculo de Google</b>.</li>
+<li>Arriba a la izquierda, donde dice “Hoja de cálculo sin título”, poné de nombre <b>Locales Black CB</b>.</li></ol></div>
+
+<div class="bloque"><h2><span>2</span>Abrir el editor de código</h2>
+<ol><li>En la planilla, menú <b class="ui">Extensiones</b> → <b class="ui">Apps Script</b>. Se abre una pestaña nueva.</li>
+<li>Arriba, donde dice “Proyecto sin título”, cambiale el nombre a <b>Locales Black</b>.</li></ol></div>
+
+<div class="bloque"><h2><span>3</span>Pegar el código</h2>
+<ol><li>Abrí <b>1 - Codigo.txt</b> en tu computadora (doble clic: se abre con TextEdit en Mac o Bloc de notas en Windows).</li>
+<li>Seleccioná todo (<b class="ui">Cmd + A</b> en Mac, <b class="ui">Ctrl + A</b> en Windows) y copialo (<b class="ui">Cmd/Ctrl + C</b>).</li>
+<li>En Apps Script, a la izquierda está el archivo <b>Código.gs</b> abierto. Borrá todo lo que tiene y pegá (<b class="ui">Cmd/Ctrl + V</b>).</li>
+<li>Guardá con el ícono del disquete o <b class="ui">Cmd/Ctrl + S</b>.</li></ol></div>
+
+<div class="bloque"><h2><span>4</span>Cargar los locales</h2>
+<ol><li>Hacé clic en <b>Código.gs</b> a la izquierda (la lista de funciones solo aparece con ese archivo abierto). En la barra de arriba, al lado de <b class="ui">▷ Ejecutar</b>, elegí <b class="ui">instalar</b> en la lista y tocá <b class="ui">▷ Ejecutar</b>.</li>
+<li>Google pide permiso: <b class="ui">Revisar permisos</b> → elegí tu cuenta.</li>
+<li>Va a aparecer “Google no verificó esta app”. Es normal: la app es tuya. Tocá <b class="ui">Configuración avanzada</b> → <b class="ui">Ir a Locales Black (no seguro)</b> → <b class="ui">Permitir</b>.</li>
+<li>Esperá a que abajo diga <b>“Ejecución completada”</b>.</li></ol>
+<div class="ok">Volvé a la pestaña de la planilla: ahora tiene las hojas <b>Locales</b> (117 filas, con colores), <b>Presupuestos</b>, <b>Reservas</b>, <b>Historial</b> y <b>Config</b>.</div></div>
+
+<div class="bloque"><h2><span>5</span>Elegir la clave</h2>
+<ol><li>Volvé a la pestaña de la planilla y <b>recargala</b> (F5 o el botón de recargar del navegador).</li>
+<li>Arriba aparece un menú nuevo: <b class="ui">Locales Black</b> → <b class="ui">Cambiar clave</b>. Si pide permisos, aceptalos igual que en el paso 4.</li>
+<li>Escribí la clave que van a usar para entrar (mínimo 6 caracteres) y tocá <b class="ui">Aceptar</b>.</li></ol>
+<div class="nota">La clave no queda escrita en ningún lado de la planilla. Si la olvidás, ponés una nueva desde ese mismo menú. Al cambiarla se cierran las sesiones abiertas en todos los celulares y computadoras.</div></div>
+
+<div class="bloque"><h2><span>6</span>Conectar la planilla con la página</h2>
+<ol><li>En Apps Script, arriba a la derecha: <b class="ui">Implementar</b> → <b class="ui">Nueva implementación</b>.</li>
+<li>Tocá el engranaje al lado de “Seleccionar tipo” → <b class="ui">Aplicación web</b>.</li>
+<li>Completá así:
+ <ul><li>Descripción: <b>Locales Black</b></li>
+ <li>Ejecutar como: <b>Yo</b> (tu email)</li>
+ <li>Quién tiene acceso: <b>Cualquier persona</b></li></ul></li>
+<li>Tocá <b class="ui">Implementar</b>. Si vuelve a pedir permisos, aceptalos igual que en el paso 5.</li>
+<li>Copiá la <b>URL de la aplicación web</b> (empieza con https://script.google.com/macros/s/ y termina en <b>/exec</b>). Es la dirección del sistema: la página la usa para leer y guardar en tu planilla.</li></ol>
+<div class="nota">Aunque diga “cualquier persona”, sin la clave no se ve ningún dato. Si abrís esa dirección /exec directamente, solo muestra un aviso: el sistema se usa desde la página.</div></div>
+
+<div class="bloque"><h2><span>7</span>Usarla en la computadora y en el celular</h2>
+<ul><li><b>Entrar:</b> abrí <b>https://marianaramoscb-prog.github.io/locales-black/</b>, escribí tu nombre, la clave y (solo la primera vez en cada dispositivo) la dirección del sistema del paso 6. Después escribís tu nombre y la clave. El nombre queda en el historial, así se sabe quién hizo cada cambio. Cada dispositivo queda con la sesión abierta 60 días; el botón <b class="ui">Salir</b> la cierra.</li>
+<li><b>En el celular como una app:</b> abrí el link y agregalo a la pantalla de inicio. En iPhone (Safari): botón compartir → <b class="ui">Agregar a inicio</b>. En Android (Chrome): menú ⋮ → <b class="ui">Agregar a pantalla principal</b>.</li><li><b>Locales:</b> tablero por planta y nave. Verde disponible, amarillo reservado, rojo vendido. Tocás un local para ver su ficha o cambiar precio, estado, cliente o rubro.</li>
+<li><b>Presupuestos:</b> <b class="ui">Nuevo presupuesto</b>, elegís cliente y locales, y al lado se arma la hoja con el logo. Al guardarlo podés <b class="ui">Guardar PDF en Drive</b> (queda en la carpeta “Presupuestos Coldwell Banker”), <b class="ui">Imprimir</b> o <b class="ui">Copiar texto para WhatsApp</b>.</li>
+<li><b>Reservas:</b> desde un presupuesto (<b class="ui">Reservar</b>) o con <b class="ui">Nueva reserva</b>. El local pasa a reservado. Después: <b class="ui">Firmó boleto</b> lo pasa a vendido, <b class="ui">Se cayó</b> lo libera.</li>
+<li><b>Historial:</b> cada cambio queda anotado con fecha, hora y quién lo hizo.</li>
+<li>Desde la planilla también podés abrir la app: menú <b class="ui">Locales Black</b> → <b class="ui">Abrir la app</b>.</li></ul></div>
+
+<div class="bloque"><h2><span>8</span>Si querés que otra persona la use</h2>
+<p>Pasale el link de la página, la dirección del sistema y la clave por un medio privado. No hace falta compartirle la planilla ni que tenga Gmail. Si después querés sacarle el acceso, cambiá la clave (paso 6).</p></div>
+
+<div class="bloque"><h2><span>!</span>Para tener en cuenta</h2>
+<ul><li>Conviene hacer los cambios desde la app y no desde la planilla: así queda todo en el historial y los precios se recalculan.</li>
+<li>No borres ni cambies el nombre de las columnas ni de las hojas. Las columnas <b>ID</b> y <b>Detalle</b> no se tocan.</li>
+<li>No vuelvas a ejecutar <b>instalar</b>. Si lo hacés no pasa nada (avisa que ya hay datos y no cambia nada).</li>
+<li>Si te mandan una versión nueva del código: pegala igual que en el paso 3, guardá y andá a <b class="ui">Implementar</b> → <b class="ui">Gestionar implementaciones</b> → lápiz → Versión: <b>Nueva versión</b> → <b class="ui">Implementar</b>. La dirección del sistema sigue siendo la misma.</li>
+<li>Si ya tenías instalada una versión anterior con el archivo <b>Index</b>: ya no se usa, podés borrarlo.</li></ul></div>
+
+<div class="pie">Datos iniciales: lista de precios interna de noviembre 2026. 117 locales (51 disponibles, 5 reservados, 61 vendidos) y 3 presupuestos anteriores.</div>
+</body></html>

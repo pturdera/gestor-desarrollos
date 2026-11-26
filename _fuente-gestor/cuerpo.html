@@ -1,0 +1,1428 @@
+<style>
+[hidden]{display:none!important}
+nav.tabs button{color:var(--on-brand);opacity:.7;background:transparent;border:0;padding:7px 12px;border-radius:6px;font-weight:500}
+nav.tabs button:hover{opacity:1}
+nav.tabs button[aria-current]{opacity:1;background:rgba(255,255,255,.14)}
+.cargando{opacity:.55;pointer-events:none}
+.sec-t{font:700 16px/1.2 var(--f-display);margin:18px 0 8px}
+.perm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 12px;margin-top:6px}
+.acc-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.acc-card.nuevo{border-style:dashed}
+.sub-t{font:600 13px/1.2 var(--f-display);color:var(--muted);margin:10px 0 4px}
+.proy-sel{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px 12px}
+.acc-cab{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.acc-cab input{max-width:320px}
+.acc-card .ac-desc,#ac-n-desc{margin-bottom:4px}
+.tit-caja{min-width:0}
+#volver{background:transparent;color:var(--on-brand);border-color:rgba(255,255,255,.3);padding:5px 10px;font-size:12.5px}
+.chk-in{display:inline-flex;gap:6px;align-items:center;margin:0;color:var(--muted);font-size:13px}
+.chk-in input{width:auto}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.pcard{text-align:left;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:var(--ink);cursor:pointer;min-width:0}
+.pcard:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.pcard h3{font:700 18px/1.2 var(--f-display);margin:2px 0 0}
+.pcard-cab{display:flex;gap:6px;flex-wrap:wrap}
+.pbar{height:8px;border-radius:999px;background:var(--disp-bg);display:flex;overflow:hidden;margin-top:6px}
+.pbar i{display:block;height:100%}.pbar i.v{background:var(--ven)}.pbar i.r{background:var(--res)}
+.pnums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;font-variant-numeric:tabular-nums}
+.pnums div{display:flex;flex-direction:column}.pnums b{font:700 19px/1.1 var(--f-display)}.pnums span{font-size:11px;color:var(--muted)}
+.c-disp{color:var(--disp)}.c-res{color:var(--res)}.c-ven{color:var(--ven)}
+.pfoot{font-size:12.5px}
+.proy-cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+.proy-form h4{margin:16px 0 4px}
+.imp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px 10px}
+.imp-grid label{margin:4px 0 0}
+a.btn{text-decoration:none;display:inline-block}
+@media (max-width:820px){ .proy-cols{grid-template-columns:1fr} .pnums b{font-size:17px} }
+.l-links{display:flex;justify-content:space-between;gap:10px;margin-top:14px;font-size:13px}
+.l-links a{color:var(--accent)}
+.login .ok-msg{color:var(--disp);font-size:13px;margin-top:10px}
+.arch-subir{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.arch-subir select{width:auto}
+.arch-subir .btn{display:inline-block;cursor:pointer;background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.arch{margin:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--soft);min-width:0}
+.arch img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--soft)}
+.arch-doc{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font:700 20px var(--f-display);color:var(--muted)}
+.arch figcaption{padding:6px 8px;font-size:12px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.arch-nom{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arch figcaption button,.coment-cab button{padding:2px 8px;font-size:11.5px;align-self:flex-start}
+.coment{border-top:1px solid var(--line);padding:8px 0}
+.coment-cab{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.coment-cab button{margin-left:auto}
+.coment-txt{white-space:pre-wrap;margin-top:3px}
+.eq{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.eq .acc button{padding:4px 9px;font-size:12.5px}
+#gen{position:fixed;inset:0;z-index:25;background:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.gbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--brand);color:var(--on-brand);padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.gbar h2{font:700 17px/1.2 var(--f-display);margin:0}
+.gbar>button{background:transparent;color:var(--on-brand);border-color:rgba(255,255,255,.3)}
+.gacc{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.gacc button:not(.prim){background:transparent;color:var(--on-brand);border-color:rgba(255,255,255,.3)}
+.gcuerpo{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr)}
+.gpanel{overflow:auto;background:var(--panel);border-right:1px solid var(--line);padding:14px 16px 40px}
+.gpanel fieldset{border:1px solid var(--line);border-radius:8px;padding:6px 12px 12px;margin:0 0 12px}
+.gpanel legend{font-weight:600;padding:0 4px}
+.gcomp{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.gcomp:first-child{border-top:0;margin-top:0;padding-top:4px}
+.gcomp-cab{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.gcomp-cab button{padding:3px 9px;font-size:12px}
+.gcomp .seg button{padding:4px 12px}
+.gpanel .lista-locs{max-height:210px}
+.gpanel details.fijos{border:1px dashed var(--line);border-radius:8px;padding:8px 12px;margin:0 0 12px}
+.gpanel details.fijos summary{cursor:pointer;font-weight:600}
+.gpanel .calc{font-size:12.5px;background:var(--soft);border-radius:6px;padding:8px 10px;margin-top:10px;font-variant-numeric:tabular-nums}
+.gvista{overflow:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 40px 18px;background:var(--soft)}
+@media (max-width:820px){ .gcuerpo{grid-template-columns:1fr;overflow:auto} .gpanel,.gvista{overflow:visible} .gpanel{border-right:0;border-bottom:1px solid var(--line)} .dpag{padding:18px 16px!important;font-size:10.5pt!important} }
+#salir,#yo{background:transparent;color:var(--on-brand);border-color:rgba(255,255,255,.3);padding:5px 10px;font-size:12.5px}
+#yo{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.login{position:fixed;inset:0;z-index:40;background:var(--brand);display:flex;align-items:center;justify-content:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.login form{background:var(--panel);color:var(--ink);border-radius:12px;padding:24px 22px;width:min(360px,100%);box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.login .marca{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.login img{width:52px;height:52px;border-radius:6px}
+.login h2{font:700 19px/1.15 var(--f-display);margin:0}
+.login input{font-size:16px;padding:10px 12px}
+.login button{width:100%;margin-top:16px;padding:11px;font-size:15px}
+.login .error{color:var(--ven);font-size:13px;margin-top:10px;min-height:1em}
+@media (max-width:640px){
+  header.top .wrap{gap:10px;padding-block:8px}
+  header.top img{width:36px;height:36px}
+  header.top h1{font-size:16px}
+  header.top .sub{display:none}
+  nav.tabs{order:3;width:100%;margin-left:0;flex-wrap:nowrap;overflow-x:auto;justify-content:space-between}
+  nav.tabs button{padding:7px 8px;font-size:13.5px;flex:1}
+  #yo{margin-left:auto;max-width:120px}
+  .kpi .n{font-size:22px}
+  .kpi .s{font-size:11.5px}
+  .barra h2{width:100%}
+  .locs{gap:5px}
+  .loc{padding:7px 4px}
+  .drawer{width:100%!important}
+  .hist time{min-width:74px}
+  input,select,textarea{font-size:16px}
+}
+</style>
+<style id="hoja-css">
+.h-cab{width:100%;border-collapse:collapse;border-bottom:2px solid #111;margin-bottom:16px}
+.h-cab td{vertical-align:middle;padding:0 0 12px}
+.h-cab img{width:64px;height:64px;display:block}
+.h-t{font:800 20px/1.1 "Archivo",Arial,sans-serif;letter-spacing:.02em;color:#111}
+.h-s{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em}
+.h-n{text-align:right;font-size:12px;color:#333}
+.h-n b{display:block;font:700 15px "Archivo",Arial,sans-serif;color:#111}
+.h-cli{width:100%;font-size:13px;margin-bottom:12px;color:#111;border-collapse:collapse}
+.h-cli td{padding:0 0 4px}
+.h-ase td{padding-top:2px;font-size:12px;color:#333}
+.h-tab{width:100%;border-collapse:collapse;font-size:12px;font-family:"Inter",Arial,sans-serif;font-variant-numeric:tabular-nums}
+.h-tab th{background:#111;color:#fff;text-align:left;padding:7px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.h-tab td{padding:7px 8px;border-bottom:1px solid #ddd;color:#111}
+.h-tab .r{text-align:right;white-space:nowrap}
+.h-tab tr.tot td{font-weight:700;border-top:2px solid #111;border-bottom:0}
+.h-cond{width:100%;margin-top:16px;font-size:12.5px;border-collapse:collapse;color:#111}
+.h-cond td{padding:5px 0;border-bottom:1px dotted #bbb}
+.h-cond td.v{text-align:right;font-weight:700}
+.h-cond td.sep{width:24px;border:0}
+.h-nota{margin-top:14px;font-size:12px;color:#333;white-space:pre-wrap}
+.h-pie{margin-top:22px;font-size:10.5px;color:#555;border-top:1px solid #ccc;padding-top:8px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <img src="__LOGO__" alt="Coldwell Banker">
+  <button id="volver" hidden title="Volver a los proyectos">← Proyectos</button>
+  <div class="tit-caja"><h1 id="tit">Gestor de desarrollos</h1><div class="sub" id="sub">Coldwell Banker</div></div>
+  <button id="yo" title="Mis datos de contacto">Mis datos</button>
+  <button id="salir" title="Cerrar sesión en este dispositivo">Salir</button>
+  <nav class="tabs" aria-label="Secciones">
+    <button data-v="locales">Unidades</button><button data-v="presupuestos">Presupuestos</button><button data-v="reservas">Reservas</button><button data-v="clientes">Clientes</button><button data-v="cobranzas">Cobranzas</button><button data-v="historial">Historial</button><button data-v="admin" hidden>Administración</button><button data-v="proyecto">Proyecto</button>
+  </nav>
+</div></header>
+
+<div class="wrap">
+  <div class="estado-conn" id="conn">Cargando…</div>
+  <div class="resumen" id="resumen"></div>
+
+  <section class="vista" id="v-proyectos">
+    <div class="barra"><h2>Proyectos</h2><label class="chk-in"><input type="checkbox" id="ver-archivados"> Ver archivados</label><button id="btn-admin" hidden>Administración</button><button class="prim" id="btn-nuevo-proy" hidden>Nuevo proyecto</button></div>
+    <div class="pgrid" id="proy-lista"><div class="vacio">Cargando proyectos…</div></div>
+  </section>
+
+  <section class="vista" id="v-locales" hidden>
+    <div class="barra">
+      <h2 id="t-unidades">Disponibilidad</h2>
+      <div class="seg" id="f-planta"></div>
+      <div class="seg" id="f-estado"></div>
+      <button id="btn-act">Actualizar</button>
+      <button class="prim" id="btn-nueva-unidad" hidden>Nueva unidad</button>
+    </div>
+    <div class="leyenda"><span class="pill p-disponible">Disponible</span><span class="pill p-reservado">Reservado</span><span class="pill p-vendido">Vendido</span><span class="pill p-no_disponible">No disponible</span><span>Tocá una unidad para ver su ficha, planos, fotos y comentarios.</span></div>
+    <div id="tablero"><div class="vacio">Cargando…</div></div>
+  </section>
+
+  <section class="vista" id="v-presupuestos" hidden>
+    <div class="barra"><h2>Presupuestos</h2><button class="prim" id="btn-nuevo-presu">Nuevo presupuesto</button></div>
+    <div id="presu-editor" hidden></div>
+    <div class="tabla" id="presu-lista"></div>
+  </section>
+
+  <section class="vista" id="v-reservas" hidden>
+    <div class="barra"><h2>Reservas</h2><button class="prim" id="btn-nueva-res">Crear reserva</button></div>
+    <div class="tabla" id="res-lista"></div>
+  </section>
+
+  <section class="vista" id="v-clientes" hidden>
+    <div class="barra"><h2>Clientes</h2><input id="cli-buscar" placeholder="Buscar por nombre, teléfono, interés…" style="max-width:260px"><label class="chk-in"><input type="checkbox" id="cli-mios"> Solo mis clientes</label><button class="prim" id="btn-nuevo-cli">Nuevo cliente</button></div>
+    <div class="seg" id="f-cli" style="margin-bottom:10px;flex-wrap:wrap"></div><div id="cli-aviso" style="margin-bottom:8px"></div>
+    <div class="tabla" id="cli-lista"></div>
+  </section>
+
+  <section class="vista" id="v-cobranzas" hidden>
+    <div class="barra"><h2>Cobranzas</h2><input id="cob-buscar" placeholder="Buscar cliente o unidad…" style="max-width:240px"></div>
+    <div class="resumen" id="cob-kpi"></div>
+    <div class="seg" id="f-cob" style="margin-bottom:10px;flex-wrap:wrap"></div>
+    <div class="tabla" id="cob-lista"></div>
+  </section>
+
+  <section class="vista" id="v-proyecto" hidden>
+    <div class="proy-cols"><div id="proy-form"></div>
+    <div><div class="form"><h3>Planos, brochure y fotos del proyecto</h3><div id="proy-arch"></div></div>
+    <div class="form" id="imp-caja" style="margin-top:14px"><h3>Importar unidades desde Excel</h3><p class="muted" style="font-size:13px">Subí la lista de precios (.xlsx, .xls o .csv). Vas a poder elegir qué columna es cada dato antes de importar. Si una unidad ya existe con el mismo código, se actualiza.</p>
+      <label class="btn" for="imp-file">Elegir archivo</label><input id="imp-file" type="file" accept=".xlsx,.xls,.csv" hidden><div id="imp-mapa" style="margin-top:12px"></div></div></div></div>
+  </section>
+
+  <section class="vista" id="v-admin" hidden>
+    <div class="barra"><h2>Administración</h2><span class="muted">Dá acceso a quienes se registraron y elegí qué pueden hacer y ver.</span></div>
+    <h3 class="sec-t">Equipo</h3><div id="adm-equipo"></div>
+    <h3 class="sec-t">Perfiles de acceso</h3><div class="muted" style="margin-bottom:8px">Cada perfil define qué puede hacer cada persona. Los proyectos a los que accede se eligen en la tabla de Equipo.</div><div id="adm-acc"></div>
+  </section>
+
+  <section class="vista" id="v-historial" hidden>
+    <div class="barra"><h2>Historial</h2><span class="muted">Últimos 300 movimientos</span></div>
+    <ul class="hist" id="hist"></ul>
+  </section>
+</div>
+
+<div class="login" id="login" hidden>
+  <form id="f-login" autocomplete="on" novalidate>
+    <div class="marca"><img src="__LOGO__" alt="Coldwell Banker"><div><h2>Gestor de desarrollos</h2><div class="muted">Coldwell Banker</div></div></div>
+    <div data-modo="crear"><label for="l-nombre">Nombre y apellido</label><input id="l-nombre" autocomplete="name"></div>
+    <div data-modo="crear"><label for="l-tel">Teléfono / WhatsApp</label><input id="l-tel" type="tel" autocomplete="tel"></div>
+    <div data-modo="entrar crear olvide"><label for="l-mail">Email</label><input id="l-mail" type="email" name="email" autocomplete="username" inputmode="email"></div>
+    <div data-modo="entrar crear nueva"><label for="l-pass">Contraseña</label><input id="l-pass" type="password" name="password" autocomplete="current-password" minlength="6"></div>
+    <button class="prim" id="l-ok" type="submit">Entrar</button>
+    <div class="error" id="l-err" role="alert"></div>
+    <div class="l-links" data-modo="entrar"><a href="#" data-ir="olvide">Olvidé mi contraseña</a><a href="#" data-ir="crear">Crear cuenta</a></div>
+    <div class="l-links" data-modo="crear olvide"><a href="#" data-ir="entrar">Ya tengo cuenta: entrar</a></div>
+  </form>
+</div>
+<div id="gen" hidden></div>
+<div class="velo" id="velo" hidden></div>
+<aside class="drawer" id="drawer" hidden></aside>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const LOGO = "__LOGO__";
+const ESTADOS = {disponible:"Disponible",reservado:"Reservado",vendido:"Vendido",no_disponible:"No disponible"};
+const EST_PRESU = {abierto:"Vigente",aceptado:"Aceptado",rechazado:"Rechazado",vencido:"Vencido"};
+const EST_RES = {activa:"Activa",firmada:"Boleto firmado",caida:"Caída"};
+const S = {locales:{}, presus:[], reservas:[], hist:[], cond:{anticipoPct:30,cuotas:36,honorariosPct:4,certificacionArs:160000,vigenciaDias:30}, fPlanta:"todas", fEstado:"todos", cargado:false, vista:"locales"};
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const usd = n => (n==null||n===""||isNaN(n)) ? "—" : "USD " + Math.round(n).toLocaleString("es-AR");
+const ars = n => "$ " + Math.round(n||0).toLocaleString("es-AR");
+const num = (n,d=1) => Number(n||0).toLocaleString("es-AR",{maximumFractionDigits:d});
+const ent = n => Math.round(n||0).toLocaleString("es-AR");
+const hoyISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const masDias = (iso,n) => { const d=new Date(iso+"T12:00:00"); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); };
+const fmtF = iso => iso ? String(iso).slice(8,10)+"/"+String(iso).slice(5,7)+"/"+String(iso).slice(0,4) : "—";
+const precioDe = l => (l && l.precio!=null) ? l.precio : (l && l.m2 && l.usdM2) ? l.m2*l.usdM2 : null;
+const ordenLoc = (a,b) => (a.orden??0)-(b.orden??0);
+function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>el.hidden=true,3200); }
+
+/* ---------- conexión con Supabase ---------- */
+const SB_URL = "__SB_URL__";
+const SB_KEY = "__SB_KEY__";
+const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+const nroTxt = n => "CB-" + String(n||0).padStart(4,"0");
+const errTxt = e => { const m = String((e && (e.message || e.error_description)) || e || "Error");
+  if (/Invalid login credentials/i.test(m)) return "Email o contraseña incorrectos.";
+  if (/Email not confirmed/i.test(m)) return "Tu cuenta está pendiente: un administrador tiene que habilitarla.";
+  if (/User already registered/i.test(m)) return "Ya existe una cuenta con ese email. Entrá con tu contraseña.";
+  if (/Password should be at least/i.test(m)) return "La contraseña tiene que tener al menos 6 caracteres.";
+  if (/rate limit/i.test(m)) return "Demasiados intentos seguidos. Esperá unos minutos y probá de nuevo.";
+  if (/duplicate key.*codigo|unidades_proyecto_codigo/i.test(m)) return "Ya hay una unidad con ese código en este proyecto.";
+  if (/Failed to fetch|NetworkError/i.test(m)) return "No hay conexión. Revisá internet.";
+  return m; };
+
+/* Pantalla de entrada */
+function modoLogin(m, msg){
+  S.modoLogin = m;
+  document.querySelectorAll("#f-login [data-modo]").forEach(el => el.hidden = !el.dataset.modo.split(" ").includes(m));
+  $("#l-pass").autocomplete = m==="entrar" ? "current-password" : "new-password";
+  $("#l-ok").textContent = {entrar:"Entrar", crear:"Crear mi cuenta", olvide:"Enviarme el link", nueva:"Guardar contraseña"}[m];
+  $("#l-err").textContent = msg || ""; $("#l-err").className = "error";
+}
+function mostrarLogin(msg, modo){ $("#login").hidden = false; modoLogin(modo || S.modoLogin || "entrar", msg); setTimeout(()=>($("#l-mail").value ? $("#l-pass") : $("#l-mail")).focus(), 50); }
+function avisoLogin(t){ $("#l-err").textContent = t; $("#l-err").className = "ok-msg"; }
+$("#f-login").addEventListener("click", e => { const b = e.target.closest("[data-ir]"); if (b){ e.preventDefault(); modoLogin(b.dataset.ir); } });
+$("#f-login").addEventListener("submit", async e => {
+  e.preventDefault(); const b = $("#l-ok"), m = S.modoLogin || "entrar";
+  const email = $("#l-mail").value.trim(), pass = $("#l-pass").value;
+  b.disabled = true; $("#l-err").textContent = "";
+  try {
+    if (m === "entrar") { const { error } = await sb.auth.signInWithPassword({ email, password: pass }); if (error) throw error; }
+    else if (m === "crear") {
+      if (!$("#l-nombre").value.trim()) throw new Error("Poné tu nombre y apellido.");
+      const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { nombre: $("#l-nombre").value.trim(), telefono: $("#l-tel").value.trim() }, emailRedirectTo: location.origin + location.pathname } });
+      if (error) throw error;
+      if (!(data && data.session)) { modoLogin("entrar"); avisoLogin("Listo. Tu cuenta quedó pendiente: avisale a un administrador para que la habilite y después entrá con tu email y contraseña."); }
+    } else if (m === "olvide") {
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }); if (error) throw error;
+      modoLogin("entrar"); avisoLogin("Si el email está registrado, te llega un link para elegir una contraseña nueva. Si no llega, pedile a un administrador una contraseña temporal.");
+    } else if (m === "nueva") { const { error } = await sb.auth.updateUser({ password: pass }); if (error) throw error; $("#login").hidden = true; toast("Contraseña cambiada"); iniciarSesion(); }
+  } catch (err) { $("#l-err").className = "error"; $("#l-err").textContent = errTxt(err); }
+  b.disabled = false;
+});
+$("#salir").onclick = async () => {
+  try { localStorage.removeItem("gd-datos"); } catch (e) {}
+  await sb.auth.signOut();
+  S.cargado = false; S.perfil = null; S.uid = null; S.proyectos = []; S.locales = {}; S.presus = []; S.reservas = []; S.hist = []; S.clientes = []; S.cuotas = [];
+  pintarYo(); renderTodo(); mostrarLogin("", "entrar");
+};
+
+/* Datos: se leen todos los proyectos activos de una vez (el sistema filtra por el proyecto elegido) */
+const mapUnidad = l => ({ id: l.id, pid: l.proyecto_id, codigo: l.codigo, planta: l.grupo, nave: l.subgrupo, tipo: l.tipo, m2: +l.m2 || 0, usdM2: l.usd_m2 == null ? null : +l.usd_m2, precioLista: l.precio_lista == null ? null : +l.precio_lista, precio: l.precio == null ? null : +l.precio,
+  estado: l.estado, cliente: l.cliente, rubro: l.rubro, notas: l.notas, orden: l.orden, ambientes: l.ambientes, dormitorios: l.dormitorios, banos: l.banos, m2Cub: l.m2_cubiertos, m2Semi: l.m2_semicubiertos, m2Ter: l.m2_terreno, frente: l.frente, fondo: l.fondo, orientacion: l.orientacion, cochera: l.cochera });
+async function leerTodo(){
+  const q = await Promise.all([
+    sb.from("proyectos").select("*").order("orden").order("creado"),
+    sb.from("unidades").select("*").order("orden"),
+    sb.from("presupuestos").select("*").order("nro", { ascending: false }),
+    sb.from("reservas").select("*").order("fecha", { ascending: false }),
+    sb.from("historial").select("ts,texto,unidad_id,proyecto_id,usuario").order("id", { ascending: false }).limit(600),
+    sb.from("perfiles").select("id,nombre,telefono,email,rol,activo,creado,acceso_id").order("creado"),
+    sb.from("clientes").select("*").order("actualizado", { ascending: false }),
+    sb.from("cuotas").select("*").order("vencimiento"),
+    sb.from("perfiles_acceso").select("*").order("orden")
+  ]);
+  const err = q.find(r => r.error); if (err) throw err.error;
+  const [pr, un, pre, re, hi, pe, cl, cu, ac] = q.map(r => r.data);
+  return {
+    proyectos: pr,
+    unidades: un.map(mapUnidad),
+    presus: pre.map(p => ({ id: p.id, pid: p.proyecto_id, clienteId: p.cliente_id, numero: nroTxt(p.nro), fecha: p.fecha || "", cliente: p.cliente, contacto: p.contacto, vigencia: p.vigencia || "", estado: p.estado, notas: p.notas, items: p.items || [], cond: { anticipoPct: 30, cuotas: 36, honorariosPct: 4, certificacionArs: 0, ...(p.cond || {}) }, asesor: p.asesor })),
+    reservas: re.map(r => ({ id: r.id, pid: r.proyecto_id, clienteId: r.cliente_id, fecha: r.fecha, localId: r.unidad_id, codigo: r.codigo, cliente: r.cliente, contacto: r.contacto, precio: +r.precio || 0, sena: +r.sena || 0, vence: r.vence || "", estado: r.estado, presupuesto: r.presupuesto_nro, notas: r.notas, cerrada: r.cerrada || "", asesor: r.asesor, documento: r.documento })),
+    hist: hi.map(h => ({ ts: new Date(h.ts).toLocaleString("sv-SE").replace(" ", "T"), texto: h.texto, localId: h.unidad_id, pid: h.proyecto_id, por: h.usuario })),
+    equipo: pe.map(p => ({ ...p, permisos: ((ac || []).find(a => a.id === p.acceso_id) || {}).permisos || [] })), accesos: ac || [], clientes: cl, cuotas: cu.map(c => ({ ...c, monto: +c.monto, pagado: +c.pagado }))
+  };
+}
+function aplicar(d, deCopia){
+  if (!deCopia) { try { localStorage.setItem("gd-datos", JSON.stringify(d)); } catch (e) {} }
+  S.todo = d; S.proyectos = d.proyectos; S.equipo = d.equipo || []; S.accesos = d.accesos || [];
+  S.asesores = S.equipo.filter(p => p.activo).map(p => ({ id: p.id, nombre: p.nombre || p.email, telefono: p.telefono, email: p.email }));
+  const mio = S.equipo.find(p => p.id === S.uid); if (mio) S.perfil = mio;
+  S.cargado = true;
+  if (S.pid && !S.proyectos.find(p => p.id === S.pid)) S.pid = null;
+  filtrarProyecto(); pintarYo();
+  $("#conn").textContent = deCopia ? "Mostrando los últimos datos de este dispositivo · actualizando…" : "Datos al día · " + new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) + (S.perfil ? " · " + (S.perfil.nombre || S.perfil.email) : "");
+  renderTodo();
+}
+/* Deja en S.locales, S.presus, etc. solo lo del proyecto abierto */
+function filtrarProyecto(){
+  const d = S.todo || { unidades: [], presus: [], reservas: [], hist: [], clientes: [], cuotas: [] }, pid = S.pid;
+  S.locales = {}; d.unidades.filter(u => u.pid === pid).forEach(u => S.locales[u.id] = u);
+  S.presus = d.presus.filter(x => x.pid === pid); S.reservas = d.reservas.filter(x => x.pid === pid);
+  S.hist = d.hist.filter(x => x.pid === pid); S.clientes = (d.clientes || []).filter(x => x.proyecto_id === pid);
+  S.cuotas = (d.cuotas || []).filter(x => x.proyecto_id === pid);
+  const p = P(); S.cond = { anticipoPct: 30, cuotas: 36, honorariosPct: 4, certificacionArs: 0, vigenciaDias: 30, ...((p && p.cond) || {}) };
+  calcularPlantas();
+}
+async function cargar(){
+  if (!S.uid) return;
+  try { aplicar(await leerTodo()); }
+  catch (e) { $("#conn").textContent = "No se pudieron leer los datos: " + errTxt(e); }
+}
+let recargaPend = null;
+function recargarPronto(){ if (S.vista === "admin") { S.pendRef = true; return; } clearTimeout(recargaPend); recargaPend = setTimeout(() => { if ($("#presu-editor").hidden && $("#gen").hidden && S.vista !== "admin") cargar(); else recargarPronto(); }, 700); }
+function suscribir(){
+  if (S.canal) return;
+  S.canal = sb.channel("cambios");
+  ["proyectos", "unidades", "presupuestos", "reservas", "historial", "perfiles", "clientes", "cuotas"].forEach(t => S.canal.on("postgres_changes", { event: "*", schema: "public", table: t }, recargarPronto));
+  ["comentarios", "archivos"].forEach(t => S.canal.on("postgres_changes", { event: "*", schema: "public", table: t }, p => { const id = (p.new && p.new.unidad_id) || (p.old && p.old.unidad_id); if (S.fichaAbierta && S.fichaAbierta === id) cargarExtrasLocal(id); }));
+  S.canal.on("postgres_changes", { event: "*", schema: "public", table: "seguimientos" }, p => { const id = (p.new && p.new.cliente_id) || (p.old && p.old.cliente_id); if (S.clienteAbierto && S.clienteAbierto === id) cargarSeguimientos(id); });
+  S.canal.subscribe();
+}
+
+/* Operaciones */
+const aNull = v => v === "" || v == null || Number.isNaN(v) ? "" : v;
+const OPS = {
+  async guardarLocal(id, c){ const { error } = await sb.rpc("guardar_unidad", { p_id: id, c }); if (error) throw error; return {}; },
+  async crearPresupuesto(p){ const { data, error } = await sb.rpc("crear_presupuesto", { p: { ...p, proyecto_id: S.pid, cliente_id: p.clienteId || null } }); if (error) throw error; return { id: data.id, numero: nroTxt(data.nro) }; },
+  async estadoPresupuesto(id, estado){ const { error } = await sb.rpc("estado_presupuesto", { p_id: id, p_estado: estado }); if (error) throw error; return {}; },
+  async reservar(ids, d, presuId){ const { error } = await sb.rpc("reservar", { p_ids: ids, d, p_presu: presuId || null }); if (error) throw error; return {}; },
+  async cerrarReserva(id, tipo){ const { error } = await sb.rpc("cerrar_reserva", { p_id: id, p_tipo: tipo }); if (error) throw error; return {}; },
+  async guardarPerfil(d){ const { data, error } = await sb.from("perfiles").update({ nombre: d.nombre, telefono: d.telefono }).eq("id", S.uid).select().single(); if (error) throw error; return { perfil: data }; },
+  async cambiarPerfil(id, campos){ const { error } = await sb.from("perfiles").update(campos).eq("id", id); if (error) throw error; return {}; },
+  async guardarAcceso(id, campos){ const q = id ? sb.from("perfiles_acceso").update(campos).eq("id", id) : sb.from("perfiles_acceso").insert(campos); const { error } = await q; if (error) throw error; return {}; },
+  async borrarAcceso(id){ const { error } = await sb.from("perfiles_acceso").delete().eq("id", id); if (error) throw error; return {}; },
+  async guardarProyecto(id, campos){ const q = id ? sb.from("proyectos").update(campos).eq("id", id).select().single() : sb.from("proyectos").insert(campos).select().single(); const { data, error } = await q; if (error) throw error; await sb.rpc("registrar", { p_texto: (id ? "Proyecto actualizado: " : "Proyecto nuevo: ") + data.nombre, p_unidad: null, p_proyecto: data.id }); return { id: data.id }; },
+  async nuevaUnidad(campos){ const { data, error } = await sb.from("unidades").insert({ ...campos, proyecto_id: S.pid }).select().single(); if (error) throw error; await sb.rpc("registrar", { p_texto: "Unidad nueva: " + data.codigo, p_unidad: data.id, p_proyecto: S.pid }); return { id: data.id }; },
+  async borrarUnidad(id){ const u = S.locales[id]; const { error } = await sb.from("unidades").delete().eq("id", id); if (error) throw error; await sb.rpc("registrar", { p_texto: "Unidad borrada: " + (u ? u.codigo : id), p_unidad: null, p_proyecto: S.pid }); return {}; },
+  async importarUnidades(filas){ for (let i = 0; i < filas.length; i += 200) { const { error } = await sb.from("unidades").upsert(filas.slice(i, i + 200).map(f => ({ ...f, proyecto_id: S.pid })), { onConflict: "proyecto_id,codigo" }); if (error) throw error; } await sb.rpc("registrar", { p_texto: `Importación de ${filas.length} unidades desde planilla`, p_unidad: null, p_proyecto: S.pid }); return {}; },
+  async guardarCliente(id, campos){ const q = id ? sb.from("clientes").update({ ...campos, actualizado: new Date().toISOString() }).eq("id", id).select().single() : sb.from("clientes").insert({ ...campos, proyecto_id: S.pid }).select().single(); const { data, error } = await q; if (error) throw error; return { id: data.id }; },
+  async borrarCliente(id){ const { error } = await sb.from("clientes").delete().eq("id", id); if (error) throw error; return {}; },
+  async generarPlan(resId, ant, vAnt, n, monto, primer){ const { error } = await sb.rpc("generar_plan", { p_reserva: resId, p_anticipo: ant || 0, p_venc_anticipo: vAnt || null, p_cuotas: n || 0, p_monto_cuota: monto || 0, p_primer: primer }); if (error) throw error; return {}; },
+  async registrarPago(cuotaId, monto, fecha, nota){ const { error } = await sb.rpc("registrar_pago", { p_cuota: cuotaId, p_monto: monto, p_fecha: fecha, p_nota: nota || "" }); if (error) throw error; return {}; }
+};
+async function guardar(fn, args, msg, boton){
+  if (boton) boton.disabled = true; document.body.classList.add("cargando"); toast("Guardando…");
+  try { const r = await OPS[fn](...args); await cargar(); if (msg) toast(msg); return r || {}; }
+  catch (e) { toast(errTxt(e)); if (boton) boton.disabled = false; return null; }
+  finally { document.body.classList.remove("cargando"); }
+}
+$("#btn-act").onclick = () => { $("#conn").textContent = "Actualizando…"; cargar(); };
+setInterval(() => { if (S.uid && !document.hidden && $("#drawer").hidden && $("#presu-editor").hidden && $("#gen").hidden && S.vista !== "admin") cargar(); }, 120000);
+
+/* Sesión */
+async function iniciarSesion(){
+  const { data } = await sb.auth.getSession(); const s = data && data.session;
+  if (!s) { S.uid = null; mostrarLogin(); $("#conn").textContent = "Entrá con tu email y contraseña."; return; }
+  S.uid = s.user.id;
+  const { data: yo } = await sb.from("perfiles").select("*").eq("id", S.uid).maybeSingle();
+  S.perfil = yo || { nombre: "", email: s.user.email, telefono: "", activo: false, rol: "agente" };
+  if (yo && s.user.email && yo.email !== s.user.email) { S.perfil.email = s.user.email; sb.from("perfiles").update({ email: s.user.email }).eq("id", S.uid).then(() => {}); }
+  pintarYo();
+  if (!S.perfil.activo || !S.perfil.acceso_id) {
+    $("#login").hidden = true; ir("proyectos");
+    $("#proy-lista").innerHTML = `<div class="vacio"><b>${S.perfil.activo ? "Tu cuenta todavía no tiene un perfil de acceso." : "Tu cuenta está pendiente de habilitación."}</b><br>Avisale a un administrador del equipo para que le asigne acceso desde la pestaña Administración. Después recargá esta página.</div>`;
+    $("#conn").textContent = "Cuenta pendiente de habilitación · " + (S.perfil.email || ""); return;
+  }
+  $("#login").hidden = true;
+  try { const c = localStorage.getItem("gd-datos"); if (c && !S.cargado) aplicar(JSON.parse(c), true); } catch (e) {}
+  await cargar(); suscribir();
+  irDesdeHash();
+  if (!S.perfil.telefono) setTimeout(() => misDatos("Completá tu nombre y teléfono: van a salir en los presupuestos y reservas que hagas."), 800);
+}
+sb.auth.onAuthStateChange((ev, session) => {
+  if (ev === "PASSWORD_RECOVERY") { mostrarLogin("Elegí tu contraseña nueva.", "nueva"); return; }
+  if (ev === "SIGNED_IN" && session && session.user.id !== S.uid) iniciarSesion();
+});
+
+const clavePersona = n => String(n||"").trim().toLowerCase().replace(/\s+/g," ");
+function asesorDe(nombre){ const k=clavePersona(nombre); return (S.asesores||[]).find(a=>clavePersona(a.nombre)===k)||null; }
+function contactoTxt(a){ return a?[a.telefono,a.email].filter(Boolean).join(" · "):""; }
+/* ---------- ficha del local: planos, fotos y comentarios internos ---------- */
+const TIPOS_ARCH = { foto: "Foto", plano: "Plano", documento: "Documento" };
+const esAdmin = () => !!(S.perfil && S.perfil.rol === "admin" && S.perfil.activo);
+const fechaHora = ts => { const d = new Date(ts); return d.toLocaleDateString("es-AR") + " " + d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }); };
+const pesoTxt = b => b > 1048576 ? (b / 1048576).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
+
+async function cargarExtrasLocal(id){
+  const caja = $("#d-extras"); if (!caja || S.fichaAbierta !== id) return;
+  const [co, ar] = await Promise.all([
+    sb.from("comentarios").select("*").eq("unidad_id", id).order("creado", { ascending: false }),
+    sb.from("archivos").select("*").eq("unidad_id", id).order("creado", { ascending: false })
+  ]);
+  if (S.fichaAbierta !== id || !$("#d-extras")) return;
+  if (co.error || ar.error) { caja.innerHTML = `<p class="aviso">No se pudieron leer los comentarios o archivos: ${esc(errTxt(co.error || ar.error))}</p>`; return; }
+  const arch = ar.data || [];
+  let urls = {};
+  if (arch.length) {
+    const { data } = await sb.storage.from("archivos").createSignedUrls(arch.map(a => a.ruta), 3600);
+    (data || []).forEach(u => { if (u.signedUrl) urls[u.path] = u.signedUrl; });
+  }
+  const puedoBorrar = x => esAdmin() || x === S.uid;
+  caja.innerHTML = `
+    <h4 style="margin:22px 0 6px">Planos y fotos <span class="muted" style="font-weight:400">(${arch.length})</span></h4>
+    <div class="arch-subir" ${can("archivos_subir")?"":"hidden"}>
+      <select id="x-tipo" aria-label="Tipo de archivo">${Object.entries(TIPOS_ARCH).map(([k, n]) => `<option value="${k}">${n}</option>`).join("")}</select>
+      <label class="btn" for="x-file">Subir archivos</label><input id="x-file" type="file" multiple accept="image/*,application/pdf" hidden>
+      <span class="muted" id="x-prog" style="font-size:12px"></span>
+    </div>
+    ${arch.length ? `<div class="arch-grid">${arch.map(a => {
+      const u = urls[a.ruta]; const img = /\.(jpe?g|png|webp)$/i.test(a.ruta) || a.tipo === "foto";
+      return `<figure class="arch">
+        <a href="${u ? esc(u) : "#"}" target="_blank" rel="noopener">${img && u ? `<img src="${esc(u)}" alt="${esc(a.nombre)}" loading="lazy">` : `<div class="arch-doc">${a.ruta.toLowerCase().endsWith(".pdf") ? "PDF" : "Archivo"}</div>`}</a>
+        <figcaption><span class="pill p-${a.tipo === "plano" ? "reservado" : a.tipo === "foto" ? "disponible" : "no_disponible"}">${TIPOS_ARCH[a.tipo] || a.tipo}</span> <span class="arch-nom" title="${esc(a.nombre)}">${esc(a.nombre)}</span>
+        <span class="muted">${esc(a.autor || "")} · ${pesoTxt(a.bytes)}</span>${puedoBorrar(a.subido_por) ? `<button class="x-borrar-arch" data-id="${esc(a.id)}" data-ruta="${esc(a.ruta)}">Borrar</button>` : ""}</figcaption></figure>`; }).join("")}</div>`
+      : `<div class="muted">Todavía no hay planos ni fotos de esta unidad.</div>`}
+    <div ${can("comentarios_ver")?"":"hidden"}><h4 style="margin:22px 0 6px">Comentarios internos <span class="muted" style="font-weight:400">· solo los ve el equipo</span></h4>
+    <textarea id="x-com" rows="2" placeholder="Ej: El cliente pidió el plano con medidas; vuelve el jueves."></textarea>
+    <div class="pie" style="margin-top:6px"><button id="x-com-ok">Agregar comentario</button></div>
+    ${(co.data || []).map(c => `<div class="coment"><div class="coment-cab"><b>${esc(c.autor || "—")}</b> <span class="muted">${fechaHora(c.creado)}</span>${puedoBorrar(c.autor_id) ? `<button class="x-borrar-com" data-id="${esc(c.id)}">Borrar</button>` : ""}</div><div class="coment-txt">${esc(c.texto)}</div></div>`).join("") || `<div class="muted" style="margin-top:6px">Sin comentarios todavía.</div>`}</div>`;
+
+  $("#x-com-ok").onclick = async e => {
+    const t = $("#x-com").value.trim(); if (!t) { toast("Escribí el comentario"); return; }
+    e.target.disabled = true;
+    const { error } = await sb.from("comentarios").insert({ unidad_id: id, texto: t });
+    if (error) { toast(errTxt(error)); e.target.disabled = false; return; }
+    toast("Comentario agregado"); cargarExtrasLocal(id);
+  };
+  caja.querySelectorAll(".x-borrar-com").forEach(b => b.onclick = async () => {
+    if (b.dataset.conf !== "1") { b.dataset.conf = "1"; b.textContent = "¿Borrar? Tocá de nuevo"; return; }
+    const { error } = await sb.from("comentarios").delete().eq("id", b.dataset.id);
+    if (error) toast(errTxt(error)); else { toast("Comentario borrado"); cargarExtrasLocal(id); }
+  });
+  caja.querySelectorAll(".x-borrar-arch").forEach(b => b.onclick = async () => {
+    if (b.dataset.conf !== "1") { b.dataset.conf = "1"; b.textContent = "¿Borrar? Tocá de nuevo"; return; }
+    const r1 = await sb.storage.from("archivos").remove([b.dataset.ruta]);
+    const r2 = await sb.from("archivos").delete().eq("id", b.dataset.id);
+    if (r1.error || r2.error) toast(errTxt(r1.error || r2.error)); else { toast("Archivo borrado"); cargarExtrasLocal(id); }
+  });
+  $("#x-file").onchange = async e => {
+    const files = [...e.target.files]; e.target.value = ""; if (!files.length) return;
+    const tipo = $("#x-tipo").value; let hechos = 0;
+    for (const f of files) {
+      $("#x-prog").textContent = `Subiendo ${hechos + 1} de ${files.length}…`;
+      try {
+        const { blob, ext, mime } = await prepararArchivo(f);
+        if (blob.size > 15 * 1048576) throw new Error(`${f.name} pesa más de 15 MB`);
+        const ruta = `${id}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${f.name.replace(/\.[^.]+$/, "").normalize("NFD").replace(/[^\w-]+/g, "_").slice(0, 60)}.${ext}`;
+        const up = await sb.storage.from("archivos").upload(ruta, blob, { contentType: mime, upsert: false });
+        if (up.error) throw up.error;
+        const ins = await sb.from("archivos").insert({ unidad_id: id, proyecto_id: S.pid, tipo, nombre: f.name, ruta, bytes: blob.size });
+        if (ins.error) { await sb.storage.from("archivos").remove([ruta]); throw ins.error; }
+        hechos++;
+      } catch (err) { toast(`No se pudo subir ${f.name}: ${errTxt(err)}`); }
+    }
+    $("#x-prog").textContent = ""; if (hechos) { toast(hechos > 1 ? `${hechos} archivos subidos` : "Archivo subido"); await sb.rpc("registrar", { p_proyecto: S.pid, p_texto: `${S.locales[id]?.codigo || id}: se ${hechos > 1 ? "subieron " + hechos + " archivos" : "subió 1 archivo"} (${TIPOS_ARCH[tipo]})`, p_unidad: id }); cargarExtrasLocal(id); }
+  };
+}
+/* Las fotos se achican a 2000 px antes de subirlas (ahorra espacio y se ven igual de bien) */
+async function prepararArchivo(f){
+  if (f.type === "application/pdf" || /\.pdf$/i.test(f.name)) return { blob: f, ext: "pdf", mime: "application/pdf" };
+  if (!/^image\/(jpeg|png|webp)$/.test(f.type)) return { blob: f, ext: (f.name.split(".").pop() || "jpg").toLowerCase(), mime: f.type || "image/jpeg" };
+  try {
+    const bmp = await createImageBitmap(f);
+    const k = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+    if (k === 1 && f.size < 900000) return { blob: f, ext: f.type === "image/png" ? "png" : f.type === "image/webp" ? "webp" : "jpg", mime: f.type };
+    const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.85));
+    return blob ? { blob, ext: "jpg", mime: "image/jpeg" } : { blob: f, ext: "jpg", mime: f.type };
+  } catch (e) { return { blob: f, ext: (f.name.split(".").pop() || "jpg").toLowerCase(), mime: f.type || "image/jpeg" }; }
+}
+
+/* ---------- mis datos y equipo ---------- */
+function misDatos(msg){
+  const p = S.perfil || { nombre: "", telefono: "", email: "" };
+  const adm = esAdmin();
+  const eq = S.equipo || [];
+  const pend = eq.filter(x => !x.activo);
+  abrirDrawer(`<div class="cab"><div><h3>Mis datos</h3><div class="muted">Salen en los presupuestos y reservas que hagas</div></div><button id="d-x">Cerrar</button></div>
+   ${msg ? `<p class="aviso" style="color:var(--res)">${esc(msg)}</p>` : ""}
+   <label for="m-nom">Nombre y apellido</label><input id="m-nom" value="${esc(p.nombre)}" autocomplete="name">
+   <label for="m-tel">Teléfono / WhatsApp</label><input id="m-tel" type="tel" inputmode="tel" autocomplete="tel" value="${esc(p.telefono)}" placeholder="Ej: 11 5555-5555">
+   <label for="m-mail">Email (con el que entrás)</label><input id="m-mail" type="email" autocomplete="email" inputmode="email" value="${esc(p.email)}"><div class="muted" style="font-size:12px;margin-top:4px">Si lo cambiás, te llega un correo a la dirección nueva para confirmarlo.</div>
+   <div class="pie"><button class="prim" id="m-ok">Guardar mis datos</button></div>
+   <details style="margin-top:14px"><summary style="cursor:pointer">Cambiar mi contraseña</summary>
+     <label for="m-pass">Contraseña nueva (mínimo 6)</label><div class="dos"><input id="m-pass" type="password" autocomplete="new-password"><button id="m-pass-ok">Cambiar</button></div></details>
+   <h4 style="margin:22px 0 6px">Equipo ${adm && pend.length ? `<span class="pill p-reservado">${pend.length} pendiente${pend.length > 1 ? "s" : ""}</span>` : ""}</h4>
+   ${adm ? `<div class="muted" style="font-size:12px;margin-bottom:6px">Cada persona crea su cuenta desde la pantalla de entrada (“Crear cuenta”). Acá la habilitás.</div>` : ""}
+   ${eq.filter(x => adm || x.activo).map(x => `<div class="eq">
+      <div><b>${esc(x.nombre || x.email)}</b>${x.rol === "admin" ? ` <span class="pill p-aceptado">Admin</span>` : ""}${x.activo ? "" : ` <span class="pill p-reservado">Pendiente</span>`}
+      <div class="muted">${esc([x.telefono, x.email].filter(Boolean).join(" · "))}</div></div>
+      ${adm && x.id !== S.uid ? `<div class="acc">${x.activo ? `<button data-eq="desactivar" data-id="${esc(x.id)}">Deshabilitar</button>` : `<button class="prim" data-eq="activar" data-id="${esc(x.id)}">Habilitar</button>`}${x.activo ? (x.rol === "admin" ? `<button data-eq="agente" data-id="${esc(x.id)}">Quitar admin</button>` : `<button data-eq="admin" data-id="${esc(x.id)}">Hacer admin</button>`) : ""}<button data-clave="${esc(x.id)}">Contraseña temporal</button></div>` : ""}
+    </div>`).join("")}`);
+  $("#d-x").onclick = cerrarDrawer;
+  $("#m-pass-ok").onclick = async e => { const c = $("#m-pass").value; if (c.length < 6) { toast("Mínimo 6 caracteres"); return; }
+    e.target.disabled = true; const { error } = await sb.auth.updateUser({ password: c }); e.target.disabled = false;
+    if (error) toast(errTxt(error)); else { $("#m-pass").value = ""; toast("Contraseña cambiada"); } };
+  $("#m-ok").onclick = async e => {
+    const nombre = $("#m-nom").value.trim(); if (!nombre) { toast("Poné tu nombre"); return; }
+    const mailNuevo = $("#m-mail").value.trim().toLowerCase(); const cambiaMail = !!mailNuevo && mailNuevo !== String(p.email || "").toLowerCase();
+    if (cambiaMail) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailNuevo)) { toast("Ese email no es válido"); return; }
+      e.target.disabled = true; const { error } = await sb.auth.updateUser({ email: mailNuevo }); e.target.disabled = false;
+      if (error) { toast(errTxt(error)); return; }
+    }
+    const r = await guardar("guardarPerfil", [{ nombre, telefono: $("#m-tel").value.trim() }], cambiaMail ? "Datos guardados. Confirmá el cambio de email desde el correo que te llega a la dirección nueva" : "Tus datos quedaron guardados", e.target);
+    if (r && r.perfil) { S.perfil = r.perfil; pintarYo(); cerrarDrawer(); }
+  };
+  $("#drawer").querySelectorAll("[data-clave]").forEach(b => b.onclick = () => {
+    const fila = b.closest(".eq"); if (fila.querySelector(".eq-clave")) return;
+    const d = document.createElement("div"); d.className = "eq-clave"; d.style.width = "100%";
+    d.innerHTML = `<label>Contraseña temporal (mínimo 6)</label><div class="dos"><input type="text" class="eq-pass" autocomplete="off"><button class="prim eq-ok">Guardar</button></div><div class="muted" style="font-size:12px;margin-top:4px">Pasásela a la persona por un medio privado y pedile que la cambie después.</div>`;
+    fila.appendChild(d);
+    d.querySelector(".eq-ok").onclick = async ev => { const c = d.querySelector(".eq-pass").value.trim(); if (c.length < 6) { toast("Mínimo 6 caracteres"); return; }
+      ev.target.disabled = true; const { error } = await sb.rpc("admin_poner_clave", { p_id: b.dataset.clave, p_clave: c });
+      if (error) { toast(errTxt(error)); ev.target.disabled = false; } else { toast("Contraseña temporal guardada"); d.remove(); } };
+  });
+  $("#drawer").querySelectorAll("[data-eq]").forEach(b => b.onclick = async () => {
+    const campos = { activar: { activo: true }, desactivar: { activo: false }, admin: { rol: "admin" }, agente: { rol: "agente" } }[b.dataset.eq];
+    if (await guardar("cambiarPerfil", [b.dataset.id, campos], "Equipo actualizado", b)) misDatos();
+  });
+}
+function pintarYo(){ const n = (S.perfil && (S.perfil.nombre || S.perfil.email)) || ""; const pend = esAdmin() ? (S.equipo || []).filter(x => !x.activo).length : 0; $("#yo").textContent = (n ? n.split(" ")[0] + " · " : "") + "Mis datos" + (pend ? ` (${pend})` : ""); }
+$("#yo").onclick = () => misDatos();
+
+/* ---------- permisos del usuario ---------- */
+const can = p => !!(S.perfil && S.perfil.activo && (S.perfil.permisos || []).includes(p));
+function aplicarPermisos(){
+  const v=(sel,ok)=>{ const el=document.querySelector(sel); if(el) el.hidden=!ok; };
+  v('nav.tabs button[data-v="admin"]', esAdmin());
+  v('nav.tabs button[data-v="cobranzas"]', can("cobranzas_ver"));
+  v('#btn-nuevo-presu', can("presupuestos_crear"));
+  v('#btn-nueva-res', can("reservar"));
+  v('#btn-nuevo-cli', can("clientes_cargar"));
+  v('#btn-admin', esAdmin());
+}
+
+/* ---------- proyectos y tipos ---------- */
+const TIPOS_PROY = { edificio: "Edificio de departamentos", barrio: "Barrio cerrado", condominio: "Condominio", comercial: "Centro comercial / locales", otro: "Otro" };
+const NIVELES_DEF = { edificio: { grupo: "Torre", subgrupo: "Piso", unidad: "Departamento" }, barrio: { grupo: "Etapa", subgrupo: "Manzana", unidad: "Lote" },
+  condominio: { grupo: "Sector", subgrupo: "Bloque", unidad: "Casa" }, comercial: { grupo: "Planta", subgrupo: "Nave", unidad: "Local" }, otro: { grupo: "Sector", subgrupo: "Grupo", unidad: "Unidad" } };
+const CAMPOS_TIPO = { edificio: ["ambientes", "dormitorios", "banos", "m2Cub", "m2Semi", "orientacion", "cochera"], barrio: ["frente", "fondo", "orientacion"],
+  condominio: ["m2Ter", "m2Cub", "dormitorios", "banos", "cochera"], comercial: ["rubro"], otro: ["ambientes", "m2Cub", "m2Ter", "rubro"] };
+const CAMPO = { ambientes: ["Ambientes", "ambientes", "int"], dormitorios: ["Dormitorios", "dormitorios", "int"], banos: ["Baños", "banos", "int"], m2Cub: ["m² cubiertos", "m2_cubiertos", "num"],
+  m2Semi: ["m² semicubiertos", "m2_semicubiertos", "num"], m2Ter: ["m² de terreno", "m2_terreno", "num"], frente: ["Frente (m)", "frente", "num"], fondo: ["Fondo (m)", "fondo", "num"],
+  orientacion: ["Orientación", "orientacion", "txt"], cochera: ["Cochera", "cochera", "txt"], rubro: ["Rubro / destino", "rubro", "txt"] };
+const P = () => (S.proyectos || []).find(p => p.id === S.pid) || null;
+const NIV = () => ({ ...(NIVELES_DEF[(P() || {}).tipo] || NIVELES_DEF.otro), ...((P() || {}).niveles || {}) });
+const unidadLbl = () => NIV().unidad || "Unidad";
+const nombreGrupo = g => (NIV().nombres || {})[g] || (g === "" ? "Sin " + NIV().grupo.toLowerCase() : `${NIV().grupo} ${g}`);
+const ubicTxt = l => [l.planta !== "" ? nombreGrupo(l.planta) : "", l.nave !== "" && l.nave != null ? `${NIV().subgrupo} ${l.nave}` : ""].filter(Boolean).join(" · ");
+const ubicCorta = l => [l.planta, l.nave !== "" && l.nave != null ? NIV().subgrupo[0] + l.nave : ""].filter(Boolean).join(" ");
+const cmpNat = (a, b) => String(a).localeCompare(String(b), "es", { numeric: true });
+let PLANTAS = [];
+function calcularPlantas(){
+  const ls = Object.values(S.locales).sort(ordenLoc); const vistos = [];
+  ls.forEach(l => { if (!vistos.includes(l.planta)) vistos.push(l.planta); });
+  PLANTAS = vistos.map(k => ({ k, n: nombreGrupo(k) }));
+  if (S.fPlanta !== "todas" && !vistos.includes(S.fPlanta)) S.fPlanta = "todas";
+}
+
+/* ---------- vistas ---------- */
+const VISTAS = ["proyectos", "locales", "presupuestos", "reservas", "clientes", "cobranzas", "historial", "proyecto", "admin"];
+function ir(v, pid){
+  if (pid !== undefined && pid !== S.pid) { S.pid = pid; S.fPlanta = "todas"; S.fEstado = "todos"; filtrarProyecto(); renderTodo(); }
+  if (v !== "proyectos" && v !== "admin" && !S.pid) v = "proyectos";
+  const salia = S.vista === "admin" && v !== "admin"; S.vista = v; if (salia && S.pendRef) { S.pendRef = false; cargar(); }
+  VISTAS.forEach(x => { $("#v-" + x).hidden = x !== v; const b = document.querySelector(`nav.tabs button[data-v="${x}"]`); if (b) { if (x === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); } });
+  aplicarPermisos();
+  const enProy = !!S.pid && v !== "proyectos";
+  $("nav.tabs").hidden = !enProy; $("#volver").hidden = v === "proyectos"; $("#resumen").hidden = !enProy || !["locales", "presupuestos", "reservas"].includes(v);
+  const p = P();
+  $("#tit").textContent = enProy && p ? p.nombre : (v === "admin" ? "Administración" : "Gestor de desarrollos");
+  $("#sub").textContent = enProy && p ? [TIPOS_PROY[p.tipo], p.localidad].filter(Boolean).join(" · ") : (v === "admin" ? "Cuentas, perfiles y accesos" : "Coldwell Banker");
+  document.querySelector('nav.tabs button[data-v="locales"]').textContent = plural(unidadLbl());
+  if (v === "proyecto") renderProyectoTab();
+  if (v === "proyectos") renderProyectos();
+  try { history.replaceState(null, "", enProy ? `#${S.pid}/${v}` : "#"); } catch (e) {}
+  window.scrollTo(0, 0);
+}
+const plural = w => /[aeiouáéó]$/i.test(w) ? w + "s" : w + "es";
+function irDesdeHash(){ const m = location.hash.match(/^#([0-9a-f-]{36})\/(\w+)$/); if (m && (S.proyectos || []).some(p => p.id === m[1])) ir(m[2], m[1]); else ir(S.pid ? S.vista || "locales" : "proyectos"); }
+document.querySelector("nav.tabs").addEventListener("click", e => { const b = e.target.closest("button[data-v]"); if (b) ir(b.dataset.v); });
+$("#volver").onclick = () => { S.pid = null; filtrarProyecto(); ir("proyectos"); renderProyectos(); };
+
+/* ---------- pantalla de proyectos ---------- */
+function statsProyecto(pid){
+  const d = S.todo || { unidades: [], reservas: [], cuotas: [] };
+  const us = d.unidades.filter(u => u.pid === pid); const g = { disponible: [], reservado: [], vendido: [], no_disponible: [] };
+  us.forEach(u => (g[u.estado] || g.no_disponible).push(u));
+  const tot = a => a.reduce((s, u) => s + (u.precio || 0), 0);
+  const hoy = hoyISO(); const venc = (d.cuotas || []).filter(c => c.proyecto_id === pid && c.vencimiento < hoy && c.pagado < c.monto);
+  const cli = (d.clientes || []).filter(c => c.proyecto_id === pid && !["compro", "perdido"].includes(c.estado)).length;
+  return { n: us.length, g, tot, venc, cli, resAct: d.reservas.filter(r => r.pid === pid && r.estado === "activa").length };
+}
+function renderProyectos(){
+  const caja = $("#proy-lista"); if (!caja) return;
+  if (!S.uid || !(S.perfil && S.perfil.activo)) return;
+  $("#btn-nuevo-proy").hidden = !can("proyectos_admin");
+  const lista = (S.proyectos || []).filter(p => S.verArchivados || p.estado !== "archivado");
+  if (!S.cargado) { caja.innerHTML = `<div class="vacio">Cargando proyectos…</div>`; return; }
+  if (!lista.length) { caja.innerHTML = `<div class="vacio">Todavía no hay proyectos.${esAdmin() ? " Tocá “Nuevo proyecto” para cargar el primero." : ""}</div>`; return; }
+  caja.innerHTML = lista.map(p => { const s = statsProyecto(p.id); const pct = s.n ? Math.round((s.g.vendido.length + s.g.reservado.length) / s.n * 100) : 0;
+    return `<button class="pcard" data-pid="${esc(p.id)}">
+      <div class="pcard-cab"><span class="pill p-no_disponible">${esc(TIPOS_PROY[p.tipo] || p.tipo)}</span>${p.estado === "archivado" ? `<span class="pill p-vencido">Archivado</span>` : ""}</div>
+      <h3>${esc(p.nombre)}</h3><div class="muted">${esc([p.localidad, p.desarrolladora].filter(Boolean).join(" · ") || "—")}</div>
+      <div class="pbar" title="${pct}% vendido o reservado"><i class="v" style="width:${s.n ? s.g.vendido.length / s.n * 100 : 0}%"></i><i class="r" style="width:${s.n ? s.g.reservado.length / s.n * 100 : 0}%"></i></div>
+      <div class="pnums"><div><b class="c-disp">${s.g.disponible.length}</b><span>disponibles</span></div><div><b class="c-res">${s.g.reservado.length}</b><span>reservadas</span></div><div><b class="c-ven">${s.g.vendido.length}</b><span>vendidas</span></div><div><b>${s.n}</b><span>${esc(plural((p.niveles && p.niveles.unidad) || (NIVELES_DEF[p.tipo] || NIVELES_DEF.otro).unidad).toLowerCase())}</span></div></div>
+      <div class="muted pfoot">${usd(s.tot(s.g.disponible))} disponible${s.cli ? ` · ${s.cli} cliente${s.cli > 1 ? "s" : ""} en curso` : ""}${s.venc.length ? ` · <span class="aviso">${s.venc.length} cuotas vencidas</span>` : ""}</div>
+    </button>`; }).join("");
+}
+$("#proy-lista").addEventListener("click", e => { const b = e.target.closest(".pcard"); if (b) ir("locales", b.dataset.pid); });
+$("#btn-nuevo-proy").onclick = () => editorProyecto(null);
+$("#btn-admin").onclick = () => ir("admin");
+$("#ver-archivados").onchange = e => { S.verArchivados = e.target.checked; renderProyectos(); };
+
+/* ---------- resumen del proyecto ---------- */
+function renderResumen(){
+  const ls = Object.values(S.locales); const g = { disponible: [], reservado: [], vendido: [], no_disponible: [] };
+  ls.forEach(l => (g[l.estado] || g.no_disponible).push(l));
+  const tot = a => a.reduce((s, l) => s + (precioDe(l) || 0), 0), m2 = a => a.reduce((s, l) => s + (l.m2 || 0), 0);
+  const presVig = S.presus.filter(p => estadoPresu(p) === "abierto").length; const U = plural(unidadLbl());
+  $("#resumen").innerHTML = ls.length ? `
+   <div class="kpi disp"><div class="l">Disponibles</div><div class="n">${g.disponible.length}</div><div class="s">${usd(tot(g.disponible))} · ${num(m2(g.disponible))} m²</div></div>
+   <div class="kpi res"><div class="l">Reservad${/a$/i.test(unidadLbl()) ? "a" : "o"}s</div><div class="n">${g.reservado.length}</div><div class="s">${usd(tot(g.reservado))}</div></div>
+   <div class="kpi ven"><div class="l">Vendid${/a$/i.test(unidadLbl()) ? "a" : "o"}s</div><div class="n">${g.vendido.length}</div><div class="s">${usd(tot(g.vendido))} · ${ls.length ? Math.round(g.vendido.length / ls.length * 100) : 0}% de ${esc(U.toLowerCase())}</div></div>
+   <div class="kpi"><div class="l">Presupuestos vigentes</div><div class="n">${presVig}</div><div class="s">${S.reservas.filter(r => r.estado === "activa").length} reservas activas</div></div>` : "";
+}
+
+/* ---------- tablero ---------- */
+function renderFiltros(){
+  $("#f-planta").innerHTML = PLANTAS.length > 1 ? [["todas", "Todas"], ...PLANTAS.map(p => [p.k, p.n])].map(([k, n]) => `<button data-k="${esc(k)}" aria-pressed="${S.fPlanta === k}">${esc(n)}</button>`).join("") : "";
+  $("#f-estado").innerHTML = [["todos", "Todos"], ["disponible", "Disponibles"], ["reservado", "Reservados"], ["vendido", "Vendidos"]].map(([k, n]) => `<button data-k="${k}" aria-pressed="${S.fEstado === k}">${n}</button>`).join("");
+  $("#btn-nueva-unidad").hidden = !can("unidades_crear"); $("#btn-nueva-unidad").textContent = "Nuevo " + unidadLbl().toLowerCase();
+  $("#t-unidades").textContent = "Disponibilidad";
+}
+$("#f-planta").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; S.fPlanta = b.dataset.k; renderFiltros(); renderTablero(); });
+$("#f-estado").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; S.fEstado = b.dataset.k; renderFiltros(); renderTablero(); });
+function datoTile(l){
+  const t = (P() || {}).tipo;
+  if (t === "edificio") return [l.ambientes ? l.ambientes + " amb" : "", num(l.m2) + " m²"].filter(Boolean).join(" · ");
+  if (t === "barrio") return num(l.m2Ter || l.m2) + " m²";
+  if (t === "condominio") return [l.dormitorios ? l.dormitorios + " dorm" : "", num(l.m2Cub || l.m2) + " m²"].filter(Boolean).join(" · ");
+  return num(l.m2) + " m²";
+}
+function renderTablero(){
+  renderFiltros();
+  const ls = Object.values(S.locales);
+  if (!ls.length) { $("#tablero").innerHTML = `<div class="vacio">${S.cargado ? `Este proyecto todavía no tiene ${esc(plural(unidadLbl()).toLowerCase())}.${esAdmin() ? ` Cargalas una por una con “Nuevo ${esc(unidadLbl().toLowerCase())}” o importalas desde un Excel en la pestaña <b>Proyecto</b>.` : ""}` : "Cargando…"}</div>`; return; }
+  let h = "";
+  for (const p of PLANTAS) {
+    if (S.fPlanta !== "todas" && S.fPlanta !== p.k) continue;
+    const dePlanta = ls.filter(l => l.planta === p.k).sort(ordenLoc); if (!dePlanta.length) continue;
+    const naves = [...new Set(dePlanta.map(l => l.nave))].sort(cmpNat);
+    h += `<div class="planta">${PLANTAS.length > 1 || p.k !== "" ? `<h3>${esc(p.n)}</h3>` : ""}<div class="naves">`;
+    for (const n of naves) {
+      const enNave = dePlanta.filter(l => l.nave === n); const vis = enNave.filter(l => S.fEstado === "todos" || l.estado === S.fEstado);
+      if (!vis.length) continue;
+      const disp = enNave.filter(l => l.estado === "disponible").length;
+      h += `<div class="nave"><div class="t"><span>${n !== "" && n != null ? esc(NIV().subgrupo + " " + n) : "&nbsp;"}</span><span>${disp}/${enNave.length} libres</span></div><div class="locs">` +
+        vis.map(l => `<button class="loc ${esc(l.estado)}" data-id="${esc(l.id)}" title="${esc(l.codigo + " · " + (ESTADOS[l.estado] || l.estado) + (l.cliente ? " · " + l.cliente : ""))}"><b>${esc(l.codigo)}</b><span>${esc(datoTile(l))}</span><span>${precioDe(l) ? "$" + Math.round(precioDe(l) / 1000) + "k" : "s/precio"}</span></button>`).join("") + `</div></div>`;
+    }
+    h += `</div></div>`;
+  }
+  $("#tablero").innerHTML = h || `<div class="vacio">No hay ${esc(plural(unidadLbl()).toLowerCase())} con ese filtro.</div>`;
+}
+$("#tablero").addEventListener("click", e => { const b = e.target.closest(".loc"); if (b) abrirLocal(b.dataset.id); });
+$("#btn-nueva-unidad").onclick = () => abrirLocal(null);
+
+/* ---------- ficha de la unidad ---------- */
+function abrirDrawer(html, ancho){ const d = $("#drawer"); d.style.width = ancho || ""; d.innerHTML = html; d.hidden = false; $("#velo").hidden = false; }
+function cerrarDrawer(){ $("#drawer").hidden = true; $("#velo").hidden = true; S.fichaAbierta = null; S.clienteAbierto = null; }
+$("#velo").addEventListener("click", cerrarDrawer);
+addEventListener("keydown", e => { if (e.key === "Escape") cerrarDrawer(); });
+/* grupos (plantas/torres/etapas) válidos: los del tipo de proyecto + los que ya tienen unidades */
+function gruposUnidad(){
+  const keys = Object.keys(NIV().nombres || {});
+  Object.values(S.locales).forEach(l => { if (!keys.includes(l.planta)) keys.push(l.planta); });
+  return keys.sort((a, b) => a === "PB" ? -1 : b === "PB" ? 1 : cmpNat(a, b));
+}
+function opcionesGrupo(actual){
+  const keys = gruposUnidad(), fuera = !keys.includes(actual);
+  return keys.map(k => `<option value="${esc(k)}" ${k === actual ? "selected" : ""}>${esc(nombreGrupo(k))}</option>`).join("")
+    + `<option value="__nuevo" ${fuera ? "selected" : ""}>+ Otro grupo…</option>`;
+}
+function grupoElegido(){
+  if ($("#d-grupo").value !== "__nuevo") return $("#d-grupo").value;
+  const t = $("#d-grupo-nuevo").value.trim().replace(/\s+/g, " ");
+  const e = Object.entries(NIV().nombres || {}).find(([k, n]) => n.toLowerCase() === t.toLowerCase());
+  return e ? e[0] : t;
+}
+function abrirLocal(id){
+  const nueva = !id; const l = nueva ? { codigo: "", planta: gruposUnidad()[0] ?? "", nave: "", m2: "", usdM2: null, precioLista: null, estado: "disponible", cliente: "", rubro: "", notas: "" } : S.locales[id];
+  if (!l) return;
+  const tipo = (P() || {}).tipo || "otro"; const N = NIV(); const U = unidadLbl();
+  const presus = nueva ? [] : S.presus.filter(p => (p.items || []).some(i => i.id === id));
+  const res = nueva ? [] : S.reservas.filter(r => String(r.localId) === String(id));
+  const hist = nueva ? [] : S.hist.filter(h => h.localId === l.id).slice(0, 8);
+  const campo = k => { const [lab, , t] = CAMPO[k]; const v = l[k] ?? ""; return `<div><label for="d-${k}">${lab}</label><input id="d-${k}" ${t === "txt" ? "" : `type="number" step="${t === "int" ? 1 : 0.01}"`} value="${esc(v)}"></div>`; };
+  abrirDrawer(`<div class="cab"><div><h3>${nueva ? "Nuevo " + esc(U.toLowerCase()) : esc(U) + " " + esc(l.codigo)}</h3><div class="muted">${nueva ? esc(P().nombre) : esc(ubicTxt(l))}</div></div><button id="d-x">Cerrar</button></div>
+   <div class="tres"><div><label for="d-codigo">Código</label><input id="d-codigo" value="${esc(l.codigo)}"></div><div><label for="d-grupo">${esc(N.grupo)}</label><select id="d-grupo">${opcionesGrupo(l.planta)}</select><input id="d-grupo-nuevo" placeholder="Código del nuevo ${esc(N.grupo.toLowerCase())}" value="${esc(gruposUnidad().includes(l.planta) ? "" : l.planta)}" style="margin-top:6px" ${gruposUnidad().includes(l.planta) ? "hidden" : ""}></div><div><label for="d-sub">${esc(N.subgrupo)}</label><input id="d-sub" value="${esc(l.nave ?? "")}"></div></div>
+   <div class="tres"><div><label for="d-m2">${tipo === "barrio" ? "Superficie m²" : "Sup. total m²"}</label><input id="d-m2" type="number" step="0.01" value="${esc(l.m2)}"></div><div><label for="d-usd">USD por m²</label><input id="d-usd" type="number" step="50" value="${esc(l.usdM2 ?? "")}"></div><div><label for="d-pl">Precio fijo USD</label><input id="d-pl" type="number" step="1000" value="${esc(l.precioLista ?? "")}" placeholder="opcional"></div></div>
+   <div class="muted" style="font-size:12px;margin-top:4px">Precio: <b id="d-precio">${usd(precioDe(l))}</b> · si cargás precio fijo, se usa ese en lugar de m² × USD/m².</div>
+   <div class="tres">${(CAMPOS_TIPO[tipo] || []).map(campo).join("")}</div>
+   <div class="dos"><div><label for="d-estado">Estado</label><select id="d-estado">${Object.entries(ESTADOS).map(([k, n]) => `<option value="${k}" ${l.estado === k ? "selected" : ""}>${n}</option>`).join("")}</select></div><div><label for="d-cliente">Cliente</label><input id="d-cliente" value="${esc(l.cliente)}"></div></div>
+   <label for="d-notas">Notas</label><textarea id="d-notas" rows="2">${esc(l.notas)}</textarea>
+   <div class="pie"><button class="prim" id="d-guardar">${nueva ? "Crear " + esc(U.toLowerCase()) : "Guardar cambios"}</button>${!nueva && l.estado === "disponible" && can("reservar") ? `<button id="d-reservar">Reservar</button>` : ""}${!nueva && can("unidades_crear") ? `<button class="peligro" id="d-borrar">Borrar</button>` : ""}</div>
+   ${nueva ? "" : `<h4 style="margin:22px 0 6px">Presupuestos donde aparece</h4>${presus.length ? presus.map(p => `<div>${esc(p.numero)} · ${esc(p.cliente || "sin cliente")} <span class="pill p-${estadoPresu(p)}">${EST_PRESU[estadoPresu(p)]}</span></div>`).join("") : `<div class="muted">Ninguno</div>`}
+   <h4 style="margin:16px 0 6px">Reservas</h4>${res.length ? res.map(r => `<div>${fmtF(r.fecha)} · ${esc(r.cliente)}${r.asesor ? ` · <span class="muted">${esc(r.asesor)}</span>` : ""} <span class="pill p-${esc(r.estado)}">${EST_RES[r.estado] || esc(r.estado)}</span></div>`).join("") : `<div class="muted">Ninguna</div>`}
+   <div id="d-extras"><div class="muted" style="margin-top:18px">Cargando planos, fotos y comentarios…</div></div>
+   <h4 style="margin:22px 0 6px">Movimientos</h4>${hist.length ? hist.map(h => `<div class="muted">${fmtF((h.ts || "").slice(0, 10))} · ${esc(h.texto)}${h.por ? ` · ${esc(h.por)}` : ""}</div>`).join("") : `<div class="muted">Sin movimientos</div>`}`}`);
+  if (!nueva) { S.fichaAbierta = l.id; cargarExtrasLocal(l.id); }
+  const upd = () => { const pl = +$("#d-pl").value; const v = pl || (+$("#d-m2").value) * (+$("#d-usd").value); $("#d-precio").textContent = v ? usd(v) : "—"; };
+  ["#d-m2", "#d-usd", "#d-pl"].forEach(s => $(s).oninput = upd);
+  $("#d-x").onclick = cerrarDrawer;
+  $("#d-grupo").onchange = () => { $("#d-grupo-nuevo").hidden = $("#d-grupo").value !== "__nuevo"; };
+  $("#d-guardar").onclick = async e => {
+    const val = s => $(s).value.trim();
+    const c = { codigo: val("#d-codigo"), grupo: grupoElegido(), subgrupo: val("#d-sub"), m2: val("#d-m2"), usd_m2: val("#d-usd"), precio_lista: val("#d-pl"), estado: $("#d-estado").value, cliente: val("#d-cliente"), notas: val("#d-notas") };
+    (CAMPOS_TIPO[tipo] || []).forEach(k => c[CAMPO[k][1]] = val("#d-" + k));
+    if (!c.codigo) { toast("Poné el código"); return; }
+    if (nueva) {
+      const fila = { codigo: c.codigo, grupo: c.grupo, subgrupo: c.subgrupo, m2: +c.m2 || 0, usd_m2: c.usd_m2 === "" ? null : +c.usd_m2, precio_lista: c.precio_lista === "" ? null : +c.precio_lista, estado: c.estado, cliente: c.cliente, notas: c.notas, rubro: c.rubro || "", orden: Object.keys(S.locales).length + 1 };
+      (CAMPOS_TIPO[tipo] || []).forEach(k => { const [, col, t] = CAMPO[k]; const v = c[col]; fila[col] = t === "txt" ? (v || "") : (v === "" ? null : +v); });
+      if (await guardar("nuevaUnidad", [fila], U + " creado", e.target)) cerrarDrawer();
+    } else if (await guardar("guardarLocal", [l.id, c], U + " actualizado", e.target)) cerrarDrawer();
+  };
+  const r = $("#d-reservar"); if (r) r.onclick = () => { cerrarDrawer(); generadorReserva({ ids: [l.id] }); };
+  const b = $("#d-borrar"); if (b) b.onclick = async () => { if (b.dataset.conf !== "1") { b.dataset.conf = "1"; b.textContent = "¿Borrar? Tocá de nuevo"; return; } if (await guardar("borrarUnidad", [l.id], U + " borrado", b)) cerrarDrawer(); };
+}
+
+/* ---------- pestaña Proyecto: datos, condiciones, datos legales, archivos e importación ---------- */
+function editorProyecto(id){
+  const p = id ? S.proyectos.find(x => x.id === id) : { nombre: "", tipo: "edificio", direccion: "", localidad: "", desarrolladora: "", descripcion: "", niveles: {}, cond: { anticipoPct: 30, cuotas: 36, honorariosPct: 4, certificacionArs: 0, vigenciaDias: 30 }, doc: {}, estado: "activo" };
+  const nv = { ...(NIVELES_DEF[p.tipo] || NIVELES_DEF.otro), ...(p.niveles || {}) }; const c = { anticipoPct: 30, cuotas: 36, honorariosPct: 4, certificacionArs: 0, vigenciaDias: 30, ...(p.cond || {}) }; const d = p.doc || {};
+  const cont = id ? $("#proy-form") : null;
+  const html = `<div class="form proy-form">
+    <h3>${id ? "Datos del proyecto" : "Nuevo proyecto"}</h3>
+    <div class="dos"><div><label for="pf-nom">Nombre</label><input id="pf-nom" value="${esc(p.nombre)}" placeholder="Ej: Torres del Lago"></div><div><label for="pf-tipo">Tipo</label><select id="pf-tipo">${Object.entries(TIPOS_PROY).map(([k, n]) => `<option value="${k}" ${p.tipo === k ? "selected" : ""}>${n}</option>`).join("")}</select></div></div>
+    <div class="dos"><div><label for="pf-dir">Dirección</label><input id="pf-dir" value="${esc(p.direccion)}"></div><div><label for="pf-loc">Localidad / zona</label><input id="pf-loc" value="${esc(p.localidad)}"></div></div>
+    <div class="dos"><div><label for="pf-des">Desarrolladora</label><input id="pf-des" value="${esc(p.desarrolladora)}"></div><div><label for="pf-est">Estado</label><select id="pf-est"><option value="activo">Activo</option><option value="archivado" ${p.estado === "archivado" ? "selected" : ""}>Archivado</option></select></div></div>
+    <label for="pf-desc">Descripción</label><textarea id="pf-desc" rows="2">${esc(p.descripcion)}</textarea>
+    <h4>Cómo se organizan las unidades</h4>
+    <div class="tres"><div><label for="pf-g">Agrupación mayor</label><input id="pf-g" value="${esc(nv.grupo)}"></div><div><label for="pf-s">Agrupación menor</label><input id="pf-s" value="${esc(nv.subgrupo)}"></div><div><label for="pf-u">Cada unidad es un</label><input id="pf-u" value="${esc(nv.unidad)}"></div></div>
+    <div class="muted" style="font-size:12px;margin-top:4px">Ej.: Torre / Piso / Departamento · Etapa / Manzana / Lote · Planta / Nave / Local.</div>
+    <h4>Condiciones de pago por defecto</h4>
+    <div class="tres"><div><label for="pf-ant">Anticipo %</label><input id="pf-ant" type="number" value="${esc(c.anticipoPct)}"></div><div><label for="pf-cuo">Cuotas</label><input id="pf-cuo" type="number" value="${esc(c.cuotas)}"></div><div><label for="pf-hon">Honorarios % (presupuesto)</label><input id="pf-hon" type="number" step="0.5" value="${esc(c.honorariosPct)}"></div></div>
+    <div class="dos"><div><label for="pf-cert">Certificación $ por unidad</label><input id="pf-cert" type="number" step="1000" value="${esc(c.certificacionArs)}"></div><div><label for="pf-vig">Vigencia del presupuesto (días)</label><input id="pf-vig" type="number" value="${esc(c.vigenciaDias)}"></div></div>
+    <details class="fijos" ${id ? "" : "open"}><summary>Datos legales para el documento de reserva</summary>
+      <div class="dos"><div><label for="pf-fid">Fideicomiso / vendedora</label><input id="pf-fid" value="${esc(d.fideicomiso || "")}" placeholder="FIDEICOMISO INMOBILIARIO …"></div><div><label for="pf-cuit">CUIT</label><input id="pf-cuit" value="${esc(d.cuit || "")}"></div></div>
+      <div class="dos"><div><label for="pf-const">Constituido el</label><input id="pf-const" value="${esc(d.constituido || "")}" placeholder="5 de marzo de 2024"></div><div><label for="pf-emp">Nombre del emprendimiento</label><input id="pf-emp" value="${esc(d.emprendimiento || "")}"></div></div>
+      <label for="pf-ubi">Ubicación y datos catastrales</label><textarea id="pf-ubi" rows="3" placeholder="ubicado en la calle … designado según su título como Lote … Nomenclatura catastral: …">${esc(d.ubicacion || "")}</textarea>
+      <label for="pf-esc">Escribano (nombre, registro, domicilio, contacto)</label><textarea id="pf-esc" rows="2" placeholder="el escribano …">${esc(d.escribano || "")}</textarea>
+      <label for="pf-ban">Lugar de firma del boleto</label><input id="pf-ban" value="${esc(d.banco || "")}" placeholder="la Sucursal del Banco …">
+      <label for="pf-domv">Domicilio de la vendedora</label><input id="pf-domv" value="${esc(d.domicilioVendedora || "")}" placeholder="la calle …">
+      <div class="tres"><div><label for="pf-mres">Reserva USD</label><input id="pf-mres" type="number" value="${esc(d.montoReserva ?? 10000)}"></div><div><label for="pf-dias">Días para el boleto</label><input id="pf-dias" type="number" value="${esc(d.diasBoleto ?? 10)}"></div><div><label for="pf-hres">Honorarios % reserva</label><input id="pf-hres" type="number" step="0.5" value="${esc(d.honorarios ?? 3)}"></div></div>
+    </details>
+    <div class="pie"><button class="prim" id="pf-ok">${id ? "Guardar proyecto" : "Crear proyecto"}</button>${id ? "" : `<button id="pf-x">Cancelar</button>`}</div></div>`;
+  if (cont) cont.innerHTML = html; else abrirDrawer(html, "min(720px,100%)");
+  const sel = $("#pf-tipo"); sel.onchange = () => { const n = NIVELES_DEF[sel.value]; $("#pf-g").value = n.grupo; $("#pf-s").value = n.subgrupo; $("#pf-u").value = n.unidad; };
+  const x = $("#pf-x"); if (x) x.onclick = cerrarDrawer;
+  $("#pf-ok").onclick = async e => {
+    const v = s => $(s).value.trim(); if (!v("#pf-nom")) { toast("Poné el nombre del proyecto"); return; }
+    const campos = { nombre: v("#pf-nom"), tipo: v("#pf-tipo"), direccion: v("#pf-dir"), localidad: v("#pf-loc"), desarrolladora: v("#pf-des"), descripcion: v("#pf-desc"), estado: v("#pf-est"),
+      niveles: { ...(p.niveles || {}), grupo: v("#pf-g") || "Sector", subgrupo: v("#pf-s") || "Grupo", unidad: v("#pf-u") || "Unidad" },
+      cond: { anticipoPct: +v("#pf-ant") || 0, cuotas: +v("#pf-cuo") || 0, honorariosPct: +v("#pf-hon") || 0, certificacionArs: +v("#pf-cert") || 0, vigenciaDias: +v("#pf-vig") || 30 },
+      doc: { ...(p.doc || {}), fideicomiso: v("#pf-fid"), cuit: v("#pf-cuit"), constituido: v("#pf-const"), emprendimiento: v("#pf-emp"), emprendimientoCorto: (p.doc || {}).emprendimientoCorto && v("#pf-emp") === (p.doc || {}).emprendimiento ? p.doc.emprendimientoCorto : v("#pf-emp"),
+        ubicacion: v("#pf-ubi"), escribano: v("#pf-esc"), banco: v("#pf-ban"), domicilioVendedora: v("#pf-domv"), montoReserva: +v("#pf-mres") || 0, diasBoleto: +v("#pf-dias") || 10, honorarios: +v("#pf-hres") || 0 } };
+    const r = await guardar("guardarProyecto", [id, campos], id ? "Proyecto guardado" : "Proyecto creado", e.target);
+    if (r && !id) { cerrarDrawer(); ir("proyecto", r.id); }
+  };
+}
+function renderProyectoTab(){
+  if (!P()) return;
+  if (can("proyectos_admin")) editorProyecto(P().id);
+  else $("#proy-form").innerHTML = `<div class="form"><h3>${esc(P().nombre)}</h3><p>${esc(TIPOS_PROY[P().tipo] || "")} · ${esc([P().direccion, P().localidad].filter(Boolean).join(", "))}</p><p class="muted">${esc(P().descripcion || "")}</p><p class="muted">Solo un administrador puede cambiar los datos del proyecto.</p></div>`;
+  $("#imp-caja").hidden = !can("unidades_crear");
+  cargarArchivosProyecto();
+}
+async function cargarArchivosProyecto(){
+  const caja = $("#proy-arch"); if (!caja || !S.pid) return; const pid = S.pid;
+  const { data, error } = await sb.from("archivos").select("*").eq("proyecto_id", pid).is("unidad_id", null).order("creado", { ascending: false });
+  if (S.pid !== pid) return;
+  if (error) { caja.innerHTML = `<p class="aviso">${esc(errTxt(error))}</p>`; return; }
+  let urls = {}; if (data.length) { const r = await sb.storage.from("archivos").createSignedUrls(data.map(a => a.ruta), 3600); (r.data || []).forEach(u => { if (u.signedUrl) urls[u.path] = u.signedUrl; }); }
+  caja.innerHTML = `<div class="arch-subir" ${can("archivos_subir")?"":"hidden"}><select id="pa-tipo">${Object.entries(TIPOS_ARCH).map(([k, n]) => `<option value="${k}">${n}</option>`).join("")}</select><label class="btn" for="pa-file">Subir planos, brochure o fotos</label><input id="pa-file" type="file" multiple accept="image/*,application/pdf" hidden><span class="muted" id="pa-prog"></span></div>
+    ${data.length ? `<div class="arch-grid">${data.map(a => { const u = urls[a.ruta]; const img = /\.(jpe?g|png|webp)$/i.test(a.ruta);
+      return `<figure class="arch"><a href="${u ? esc(u) : "#"}" target="_blank" rel="noopener">${img && u ? `<img src="${esc(u)}" alt="${esc(a.nombre)}" loading="lazy">` : `<div class="arch-doc">PDF</div>`}</a><figcaption><span class="arch-nom">${esc(a.nombre)}</span><span class="muted">${esc(TIPOS_ARCH[a.tipo] || "")} · ${pesoTxt(a.bytes)}</span>${esAdmin() || a.subido_por === S.uid ? `<button class="pa-borrar" data-id="${esc(a.id)}" data-ruta="${esc(a.ruta)}">Borrar</button>` : ""}</figcaption></figure>`; }).join("")}</div>` : `<div class="muted">Todavía no hay archivos generales del proyecto.</div>`}`;
+  $("#pa-file").onchange = async e => { const files = [...e.target.files]; e.target.value = ""; let ok = 0;
+    for (const f of files) { $("#pa-prog").textContent = `Subiendo ${ok + 1} de ${files.length}…`;
+      try { const { blob, ext, mime } = await prepararArchivo(f); const ruta = `proyectos/${pid}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+        const up = await sb.storage.from("archivos").upload(ruta, blob, { contentType: mime }); if (up.error) throw up.error;
+        const ins = await sb.from("archivos").insert({ proyecto_id: pid, unidad_id: null, tipo: $("#pa-tipo").value, nombre: f.name, ruta, bytes: blob.size }); if (ins.error) { await sb.storage.from("archivos").remove([ruta]); throw ins.error; } ok++;
+      } catch (err) { toast(`No se pudo subir ${f.name}: ${errTxt(err)}`); } }
+    $("#pa-prog").textContent = ""; if (ok) { toast("Archivos subidos"); cargarArchivosProyecto(); } };
+  caja.querySelectorAll(".pa-borrar").forEach(b => b.onclick = async () => { if (b.dataset.conf !== "1") { b.dataset.conf = "1"; b.textContent = "¿Borrar?"; return; }
+    await sb.storage.from("archivos").remove([b.dataset.ruta]); const { error } = await sb.from("archivos").delete().eq("id", b.dataset.id); if (error) toast(errTxt(error)); else cargarArchivosProyecto(); });
+}
+
+/* Importar unidades desde Excel o CSV */
+const IMP_CAMPOS = [["codigo", "Código", /c[oó]d|unidad|local|lote|depto|dpto|^uf$|n[uú]mero/i], ["grupo", NIV_LBL("grupo"), /torre|planta|etapa|sector|edificio|nivel/i], ["subgrupo", NIV_LBL("subgrupo"), /piso|nave|manzana|bloque|mza/i],
+  ["m2", "m² (superficie)", /m2|m²|sup|superficie|metros/i], ["usd_m2", "USD por m²", /x\s*m2|por\s*m|usd\s*\/?\s*m|valor\s*m/i], ["precio_lista", "Precio USD", /precio|valor|costo|total|usd/i],
+  ["estado", "Estado", /estado|disponib/i], ["ambientes", "Ambientes", /amb/i], ["dormitorios", "Dormitorios", /dorm/i], ["banos", "Baños", /ba[ñn]o/i], ["m2_cubiertos", "m² cubiertos", /cub/i],
+  ["m2_semicubiertos", "m² semicubiertos", /semi/i], ["m2_terreno", "m² terreno", /terreno|lote\s*m/i], ["frente", "Frente", /frente/i], ["fondo", "Fondo", /fondo/i], ["orientacion", "Orientación", /orient/i], ["cochera", "Cochera", /coch/i], ["rubro", "Rubro / destino", /rubro|destino|uso/i], ["notas", "Notas", /nota|obs/i]];
+function NIV_LBL(k){ return k === "grupo" ? "Agrupación mayor (torre, planta…)" : "Agrupación menor (piso, nave…)"; }
+const numAR = v => { if (v == null || v === "") return null; if (typeof v === "number") return v; let s = String(v).replace(/[^\d.,-]/g, ""); if (!s) return null; if (/,\d{1,2}$/.test(s)) s = s.replace(/\./g, "").replace(",", "."); else s = s.replace(/[.,](?=\d{3}(\D|$))/g, ""); const n = parseFloat(s); return isNaN(n) ? null : n; };
+const estadoDe = v => { const s = String(v || "").toLowerCase(); return /vend/.test(s) ? "vendido" : /reserv/.test(s) ? "reservado" : /no\s*disp|bloq/.test(s) ? "no_disponible" : "disponible"; };
+async function cargarXLSX(){ if (window.XLSX) return; await new Promise((ok, mal) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"; s.onload = ok; s.onerror = () => mal(new Error("No se pudo cargar el lector de Excel")); document.head.appendChild(s); }); }
+$("#imp-file").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    await cargarXLSX(); const wb = XLSX.read(await f.arrayBuffer(), { type: "array", raw: /\.csv$/i.test(f.name) });
+    S.imp = { wb, hoja: wb.SheetNames[0], nombre: f.name }; pintarImport();
+  } catch (err) { toast(errTxt(err)); }
+};
+function pintarImport(){
+  const { wb } = S.imp; const filas = XLSX.utils.sheet_to_json(wb.Sheets[S.imp.hoja], { header: 1, defval: "", raw: true }).filter(r => r.some(c => String(c).trim() !== ""));
+  let hi = filas.findIndex(r => r.some(c => IMP_CAMPOS[0][2].test(String(c)))); if (hi < 0) hi = 0; if (S.imp.hi != null) hi = S.imp.hi;
+  const cab = (filas[hi] || []).map((c, i) => String(c).trim() || `Columna ${i + 1}`);
+  const mapa = S.imp.mapa || {}; if (!S.imp.mapa) { const usadas = new Set(); IMP_CAMPOS.forEach(([k, , re]) => { const i = cab.findIndex((c, j) => !usadas.has(j) && re.test(c)); if (i >= 0) { mapa[k] = i; usadas.add(i); } }); S.imp.mapa = mapa; }
+  const datos = filas.slice(hi + 1); S.imp.filas = datos; S.imp.hi = hi;
+  const conv = r => { const o = { orden: 0 }; IMP_CAMPOS.forEach(([k]) => { if (mapa[k] == null) return; const v = r[mapa[k]];
+    if (k === "estado") o.estado = estadoDe(v); else if (["codigo", "grupo", "subgrupo", "orientacion", "cochera", "rubro", "notas"].includes(k)) o[k] = String(v ?? "").trim(); else { const n = numAR(v); o[k] = ["ambientes", "dormitorios", "banos"].includes(k) ? (n == null ? null : Math.round(n)) : n; } });
+    if (o.m2 == null) o.m2 = 0; return o; };
+  const validas = datos.map(conv).filter(o => o.codigo); validas.forEach((o, i) => o.orden = i + 1); S.imp.validas = validas;
+  const existen = validas.filter(o => Object.values(S.locales).some(l => l.codigo === o.codigo)).length;
+  $("#imp-mapa").innerHTML = `<div class="dos"><div><label for="imp-hoja">Hoja</label><select id="imp-hoja">${wb.SheetNames.map(n => `<option ${n === S.imp.hoja ? "selected" : ""}>${esc(n)}</option>`).join("")}</select></div><div><label for="imp-hi">Fila de títulos</label><input id="imp-hi" type="number" min="1" value="${hi + 1}"></div></div>
+    <p class="muted" style="font-size:12px">Indicá qué columna del archivo corresponde a cada dato. Solo el código es obligatorio.</p>
+    <div class="imp-grid">${IMP_CAMPOS.map(([k, lab]) => `<label>${esc(k === "grupo" ? NIV().grupo : k === "subgrupo" ? NIV().subgrupo : lab)}<select data-k="${k}"><option value="">—</option>${cab.map((c, i) => `<option value="${i}" ${mapa[k] === i ? "selected" : ""}>${esc(c)}</option>`).join("")}</select></label>`).join("")}</div>
+    <div class="tabla" style="margin-top:12px"><table><thead><tr><th>Código</th><th>${esc(NIV().grupo)}</th><th>${esc(NIV().subgrupo)}</th><th class="num">m²</th><th class="num">USD/m²</th><th class="num">Precio</th><th>Estado</th></tr></thead><tbody>${validas.slice(0, 8).map(o => `<tr><td>${esc(o.codigo)}</td><td>${esc(o.grupo || "")}</td><td>${esc(o.subgrupo || "")}</td><td class="num">${num(o.m2, 2)}</td><td class="num">${o.usd_m2 ?? "—"}</td><td class="num">${usd(o.precio_lista ?? (o.usd_m2 ? o.m2 * o.usd_m2 : null))}</td><td>${ESTADOS[o.estado || "disponible"]}</td></tr>`).join("")}</tbody></table></div>
+    <div class="pie"><button class="prim" id="imp-ok" ${validas.length ? "" : "disabled"}>Importar ${validas.length} unidades</button><span class="muted">${existen ? `${existen} ya existen con ese código y se van a actualizar.` : ""}</span></div>`;
+  $("#imp-hoja").onchange = e => { S.imp.hoja = e.target.value; S.imp.hi = null; S.imp.mapa = null; pintarImport(); };
+  $("#imp-hi").onchange = e => { S.imp.hi = Math.max(0, (+e.target.value || 1) - 1); S.imp.mapa = null; pintarImport(); };
+  $("#imp-mapa").querySelectorAll("select[data-k]").forEach(s => s.onchange = () => { S.imp.mapa[s.dataset.k] = s.value === "" ? null : +s.value; pintarImport(); });
+  $("#imp-ok").onclick = async e => { const filas = S.imp.validas.map(o => { const f = { ...o }; Object.keys(f).forEach(k => { if (f[k] === undefined) delete f[k]; }); if (f.estado == null) f.estado = "disponible"; return f; });
+    const dup = filas.map(f => f.codigo).filter((c, i, a) => a.indexOf(c) !== i); if (dup.length) { toast("Hay códigos repetidos en el archivo: " + [...new Set(dup)].slice(0, 5).join(", ")); return; }
+    if (await guardar("importarUnidades", [filas], `${filas.length} unidades importadas`, e.target)) { S.imp = null; $("#imp-mapa").innerHTML = ""; ir("locales"); } };
+}
+
+/* ---------- administración: cuentas, perfiles de acceso y proyectos por perfil ---------- */
+const PERMISOS = [["unidades_editar","Editar unidades: estado, cliente, notas"],["unidades_crear","Crear, importar y borrar unidades"],["precios_editar","Cambiar precios y superficies"],["presupuestos_crear","Armar presupuestos"],["reservar","Registrar reservas"],["firmar_reservas","Marcar boletos firmados o caídos"],["clientes_cargar","Cargar y editar clientes"],["clientes_ver_todos","Ver los clientes de todo el equipo (si no, solo los propios)"],["cobranzas_ver","Ver cobranzas"],["pagos_registrar","Registrar pagos"],["plan_pagos","Armar planes de pago"],["comentarios_ver","Ver y escribir comentarios internos"],["archivos_subir","Subir planos y fotos"],["proyectos_admin","Crear y editar proyectos"]];
+function wireProy(root,clase){ const todos=root.querySelector("."+clase+"-todos"); if(!todos) return; const pros=[...root.querySelectorAll("."+clase+"-pro")];
+  todos.onchange=()=>{ if(todos.checked) pros.forEach(c=>c.checked=false); else if(!pros.some(c=>c.checked)) todos.checked=true; };
+  pros.forEach(c=>c.onchange=()=>{ if(c.checked) todos.checked=false; else if(!pros.some(p=>p.checked)) todos.checked=true; }); }
+function leerProy(root,clase){ return root.querySelector("."+clase+"-todos").checked ? [] : [...root.querySelectorAll("."+clase+"-pro:checked")].map(c=>c.value); }
+function proyChk(clase,lista,dis){ const pr=(S.todo&&S.todo.proyectos)||[]; const todos=!(lista||[]).length;
+  return `<div class="proy-sel"><label class="chk-in"><input type="checkbox" class="${clase}-todos" ${todos?"checked":""} ${dis?"disabled":""}> Todos los proyectos</label>${pr.map(p=>`<label class="chk-in"><input type="checkbox" class="${clase}-pro" value="${esc(p.id)}" ${(lista||[]).includes(p.id)?"checked":""} ${dis?"disabled":""}> ${esc(p.nombre)}</label>`).join("")}</div>`; }
+function renderAdmin(){
+  const eq=$("#adm-equipo"); if(!eq || !esAdmin()) return;
+  const acc=S.accesos||[];
+  const lista=[...(S.equipo||[])].sort((a,b)=>Number(b.activo)-Number(a.activo)||String(a.nombre||a.email).localeCompare(String(b.nombre||b.email)));
+  eq.innerHTML = lista.length ? `<div class="tabla"><table><thead><tr><th>Persona</th><th>Estado</th><th>Perfil de acceso</th><th>Admin</th><th></th></tr></thead><tbody>${lista.map(x=>`<tr data-id="${esc(x.id)}">
+    <td><b>${esc(x.nombre||"(sin nombre)")}</b><div class="muted">${esc(x.email)}</div>${x.telefono?`<div class="muted">${esc(x.telefono)}</div>`:""}</td>
+    <td>${x.activo?`<span class="pill p-aceptado">Activo</span>`:`<span class="pill p-reservado">Pendiente</span>`}</td>
+    <td><select class="a-acc"><option value="">— sin perfil —</option>${acc.map(a=>`<option value="${esc(a.id)}" ${x.acceso_id===a.id?"selected":""}>${esc(a.nombre)}</option>`).join("")}</select></td>
+    <td><label class="chk-in"><input type="checkbox" class="a-rol" ${x.rol==="admin"?"checked":""} ${x.id===S.uid?"disabled":""}> Admin</label></td>
+    <td><div class="acc"><button class="prim a-ok">${x.activo?"Guardar":"Dar acceso"}</button>${x.id!==S.uid?`<button class="a-clave">Contraseña temporal</button>`:""}${x.id!==S.uid?`<button class="a-mail">Cambiar email</button>`:""}${x.activo&&x.id!==S.uid?`<button class="peligro a-off">Deshabilitar</button>`:""}</div></td></tr>`).join("")}</tbody></table></div>`
+    : `<div class="vacio">Todavía no hay cuentas creadas.</div>`;
+  eq.querySelectorAll("tr[data-id]").forEach(tr=>{
+    const id=tr.dataset.id;
+    tr.querySelector(".a-ok").onclick=async e=>{
+      const perfil=tr.querySelector(".a-acc").value; if(!perfil){ toast("Elegí un perfil de acceso"); return; }
+      await guardar("cambiarPerfil",[id,{activo:true,acceso_id:perfil,rol:tr.querySelector(".a-rol").checked?"admin":"agente"}],"Acceso guardado",e.target); };
+    const off=tr.querySelector(".a-off");
+    if(off) off.onclick=async e=>{ if(off.dataset.conf!=="1"){ off.dataset.conf="1"; off.textContent="¿Confirmar?"; return; }
+      await guardar("cambiarPerfil",[id,{activo:false}],"Cuenta deshabilitada",e.target); };
+    const clave=tr.querySelector(".a-clave");
+    const mail=tr.querySelector(".a-mail");
+    if(mail) mail.onclick=()=>{
+      if(tr.nextElementSibling && tr.nextElementSibling.classList.contains("a-mail-fila")) return;
+      const f=document.createElement("tr"); f.className="a-mail-fila";
+      f.innerHTML=`<td colspan="5"><div class="dos"><input type="email" class="a-mail-in" autocomplete="off" placeholder="Email nuevo" inputmode="email"><button class="prim a-mail-ok">Guardar</button></div><div class="muted" style="font-size:12px;margin-top:4px">Lo cambia directo, sin confirmación por correo. La persona entra con el email nuevo.</div></td>`;
+      tr.after(f);
+      f.querySelector(".a-mail-ok").onclick=async ev=>{
+        const c=f.querySelector(".a-mail-in").value.trim().toLowerCase();
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c)){ toast("Ese email no es válido"); return; }
+        ev.target.disabled=true;
+        const {data,error}=await sb.functions.invoke("cambiar-email",{body:{id,email:c}});
+        if(error){ let msg=error.message; try{ msg=(await error.context.json()).error||msg; }catch(_){} toast(msg); ev.target.disabled=false; return; }
+        const u=(S.equipo||[]).find(x=>x.id===id); if(u) u.email=c;
+        toast("Email cambiado"); renderAdmin(); };
+    };
+    if(clave) clave.onclick=()=>{
+      if(tr.nextElementSibling && tr.nextElementSibling.classList.contains("a-clave-fila")) return;
+      const f=document.createElement("tr"); f.className="a-clave-fila";
+      f.innerHTML=`<td colspan="5"><div class="dos"><input type="text" class="a-pass" autocomplete="off" placeholder="Contraseña temporal (mínimo 6)"><button class="prim a-pass-ok">Guardar</button></div><div class="muted" style="font-size:12px;margin-top:4px">Pasásela a la persona por un medio privado y pedile que la cambie después.</div></td>`;
+      tr.after(f);
+      f.querySelector(".a-pass-ok").onclick=async ev=>{
+        const c=f.querySelector(".a-pass").value.trim(); if(c.length<6){ toast("Mínimo 6 caracteres"); return; }
+        ev.target.disabled=true; const {error}=await sb.rpc("admin_poner_clave",{p_id:id,p_clave:c});
+        if(error){ toast(errTxt(error)); ev.target.disabled=false; } else { toast("Contraseña temporal guardada"); f.remove(); } };
+    };
+  });
+  const ac=$("#adm-acc"); if(!ac) return;
+  const chk=(clase,lista,dis)=>PERMISOS.map(([k,l])=>`<label class="chk-in"><input type="checkbox" class="${clase}" value="${k}" ${lista.includes(k)?"checked":""} ${dis?"disabled":""}> ${esc(l)}</label>`).join("");
+  ac.innerHTML = acc.map(a=>{ const adm=a.nombre==="Administrador"; return `<div class="acc-card" data-id="${esc(a.id)}">
+      <div class="acc-cab"><input class="ac-nom" value="${esc(a.nombre)}" ${adm?"disabled":""}><button class="prim ac-ok">Guardar</button>${adm?"":`<button class="peligro ac-del">Eliminar</button>`}</div>
+      <input class="ac-desc" value="${esc(a.descripcion)}" placeholder="Descripción" ${adm?"disabled":""}>
+      <h4 class="sub-t">Proyectos a los que accede</h4>${proyChk("ac",a.proyectos||[],adm)}
+      <h4 class="sub-t">Permisos</h4><div class="perm-grid">${chk("ac-p",a.permisos||[],adm)}</div></div>`; }).join("")
+    + `<div class="acc-card nuevo"><div class="acc-cab"><input id="ac-n-nom" placeholder="Nombre del perfil (ej: Asesor senior)"><button class="prim" id="ac-n-ok">Crear perfil</button></div><input id="ac-n-desc" placeholder="Descripción">
+      <h4 class="sub-t">Proyectos a los que accede</h4>${proyChk("acn",[],false)}
+      <h4 class="sub-t">Permisos</h4><div class="perm-grid">${chk("ac-n-p",[],false)}</div></div>`;
+  ac.querySelectorAll(".acc-card[data-id]").forEach(card=>{ const id=card.dataset.id; wireProy(card,"ac");
+    card.querySelector(".ac-ok").onclick=async e=>{
+      const proy=leerProy(card,"ac"); if(!card.querySelector(".ac-todos").checked && !proy.length){ toast("Elegí al menos un proyecto o “Todos los proyectos”"); return; }
+      const campos={descripcion:card.querySelector(".ac-desc").value.trim(), permisos:[...card.querySelectorAll(".ac-p:checked")].map(c=>c.value), proyectos:proy};
+      const nom=card.querySelector(".ac-nom"); if(!nom.disabled){ if(!nom.value.trim()){ toast("Poné un nombre"); return; } campos.nombre=nom.value.trim(); }
+      await guardar("guardarAcceso",[id,campos],"Perfil guardado",e.target); };
+    const del=card.querySelector(".ac-del");
+    if(del) del.onclick=async e=>{ if(del.dataset.conf!=="1"){ del.dataset.conf="1"; del.textContent="¿Eliminar? Quienes lo tengan quedan sin acceso"; return; }
+      await guardar("borrarAcceso",[id],"Perfil eliminado",e.target); };
+  });
+  const nuevo=ac.querySelector(".acc-card.nuevo"); wireProy(nuevo,"acn");
+  $("#ac-n-ok").onclick=async e=>{ const nombre=$("#ac-n-nom").value.trim(); if(!nombre){ toast("Poné un nombre para el perfil"); return; }
+    const proy=leerProy(nuevo,"acn"); if(!nuevo.querySelector(".acn-todos").checked && !proy.length){ toast("Elegí al menos un proyecto o “Todos los proyectos”"); return; }
+    await guardar("guardarAcceso",[null,{nombre,descripcion:$("#ac-n-desc").value.trim(),permisos:[...ac.querySelectorAll(".ac-n-p:checked")].map(c=>c.value),proyectos:proy,orden:50}],"Perfil creado",e.target); };
+}
+
+/* ---------- clientes interesados ---------- */
+const EST_CLI = { nuevo: "Nuevo", contactado: "Contactado", visita: "Visitó", negociacion: "Negociando", reservo: "Reservó", compro: "Compró", perdido: "Perdido" };
+const PILL_CLI = { nuevo: "no_disponible", contactado: "abierto", visita: "abierto", negociacion: "reservado", reservo: "aceptado", compro: "vendido", perdido: "vencido" };
+const TIPOS_SEG = { nota: "Nota", llamada: "Llamada", whatsapp: "WhatsApp", email: "Email", visita: "Visita", reunion: "Reunión" };
+function renderClientes(){
+  const caja = $("#cli-lista"); if (!caja) return;
+  const q = ($("#cli-buscar").value || "").toLowerCase().trim(), f = S.fCli || "activos", mios = !can("clientes_ver_todos") || $("#cli-mios").checked, hoy = hoyISO(); $("#cli-mios").closest("label").hidden = !can("clientes_ver_todos");
+  $("#f-cli").innerHTML = [["activos", "En curso"], ["todos", "Todos"], ...Object.entries(EST_CLI)].map(([k, n]) => `<button data-k="${k}" aria-pressed="${f === k}">${n}</button>`).join("");
+  let cs = S.clientes.filter(c => (f === "todos" || (f === "activos" ? !["compro", "perdido"].includes(c.estado) : c.estado === f)) && (!mios || c.asesor_id === S.uid)
+    && (!q || [c.nombre, c.telefono, c.email, c.interes, c.notas].join(" ").toLowerCase().includes(q)));
+  cs.sort((a, b) => (a.proximo || "9999") < (b.proximo || "9999") ? -1 : (a.proximo || "9999") > (b.proximo || "9999") ? 1 : String(b.actualizado).localeCompare(String(a.actualizado)));
+  const vencidos = S.clientes.filter(c => c.proximo && c.proximo <= hoy && !["compro", "perdido"].includes(c.estado)).length;
+  $("#cli-aviso").innerHTML = vencidos ? `<span class="aviso">${vencidos} cliente${vencidos > 1 ? "s" : ""} con contacto pendiente para hoy o antes</span>` : "";
+  caja.innerHTML = cs.length ? `<table><thead><tr><th>Cliente</th><th>Estado</th><th>Interés</th><th>Próximo contacto</th><th>Asesor</th><th></th></tr></thead><tbody>${cs.map(c => `<tr>
+    <td><b>${esc(c.nombre)}</b><div class="muted">${esc([c.telefono, c.email].filter(Boolean).join(" · "))}</div></td>
+    <td><span class="pill p-${PILL_CLI[c.estado]}">${EST_CLI[c.estado]}</span></td><td>${esc(c.interes || "—")}${c.presupuesto_max ? `<div class="muted">hasta ${usd(c.presupuesto_max)}</div>` : ""}</td>
+    <td>${c.proximo ? `${fmtF(c.proximo)}${c.proximo <= hoy && !["compro", "perdido"].includes(c.estado) ? `<div class="aviso">Pendiente</div>` : ""}` : "—"}</td><td>${esc(c.asesor || "—")}</td>
+    <td><button data-cli="${esc(c.id)}">Abrir</button></td></tr>`).join("")}</tbody></table>` : `<div class="vacio">No hay clientes con ese filtro. Cargá el primero con “Nuevo cliente”.</div>`;
+}
+$("#f-cli").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { S.fCli = b.dataset.k; renderClientes(); } });
+$("#cli-buscar").addEventListener("input", renderClientes); $("#cli-mios").onchange = renderClientes;
+$("#cli-lista").addEventListener("click", e => { const b = e.target.closest("[data-cli]"); if (b) abrirCliente(b.dataset.cli); });
+$("#btn-nuevo-cli").onclick = () => abrirCliente(null);
+function abrirCliente(id){
+  const c = id ? S.clientes.find(x => x.id === id) : { nombre: "", telefono: "", email: "", documento: "", origen: "", estado: "nuevo", interes: "", presupuesto_max: null, proximo: "", notas: "" };
+  if (!c) return;
+  const pres = id ? S.presus.filter(p => p.clienteId === id) : [], res = id ? S.reservas.filter(r => r.clienteId === id) : [];
+  abrirDrawer(`<div class="cab"><div><h3>${id ? esc(c.nombre) : "Nuevo cliente"}</h3><div class="muted">${esc(P().nombre)}${c.asesor ? " · asesor: " + esc(c.asesor) : ""}</div></div><button id="d-x">Cerrar</button></div>
+    <label for="c-nom">Nombre y apellido</label><input id="c-nom" value="${esc(c.nombre)}">
+    <div class="dos"><div><label for="c-tel">Teléfono / WhatsApp</label><input id="c-tel" type="tel" value="${esc(c.telefono)}"></div><div><label for="c-mail">Email</label><input id="c-mail" type="email" value="${esc(c.email)}"></div></div>
+    <div class="dos"><div><label for="c-doc">DNI / CUIT</label><input id="c-doc" value="${esc(c.documento)}"></div><div><label for="c-ori">Cómo llegó</label><input id="c-ori" list="c-oris" value="${esc(c.origen)}" placeholder="Instagram, cartel, referido…"><datalist id="c-oris"><option>Instagram</option><option>Facebook</option><option>Zonaprop</option><option>Argenprop</option><option>Cartel en obra</option><option>Referido</option><option>Web</option><option>Llamada</option></datalist></div></div>
+    <div class="dos"><div><label for="c-est">Estado</label><select id="c-est">${Object.entries(EST_CLI).map(([k, n]) => `<option value="${k}" ${c.estado === k ? "selected" : ""}>${n}</option>`).join("")}</select></div><div><label for="c-prox">Próximo contacto</label><input id="c-prox" type="date" value="${esc(c.proximo || "")}"></div></div>
+    <div class="dos"><div><label for="c-int">Qué busca</label><input id="c-int" value="${esc(c.interes)}" placeholder="2 amb con balcón, lote esquina…"></div><div><label for="c-max">Presupuesto hasta USD</label><input id="c-max" type="number" step="1000" value="${esc(c.presupuesto_max ?? "")}"></div></div>
+    <label for="c-not">Notas</label><textarea id="c-not" rows="2">${esc(c.notas)}</textarea>
+    <div class="pie"><button class="prim" id="c-ok">${id ? "Guardar" : "Crear cliente"}</button>${id ? `<button id="c-presu">Armar presupuesto</button><button id="c-res">Reservar</button>${c.telefono ? `<a class="btn" href="https://wa.me/${esc(String(c.telefono).replace(/\D/g, "").replace(/^0/, "549").replace(/^(?!54)/, "549"))}" target="_blank" rel="noopener">WhatsApp</a>` : ""}${esAdmin() || c.asesor_id === S.uid ? `<button class="peligro" id="c-borrar">Borrar</button>` : ""}` : ""}</div>
+    ${id ? `${pres.length || res.length ? `<h4 style="margin:18px 0 6px">Operaciones</h4>${pres.map(p => `<div>${esc(p.numero)} · ${(p.items || []).map(i => esc(i.codigo)).join(", ")} <span class="pill p-${estadoPresu(p)}">${EST_PRESU[estadoPresu(p)]}</span></div>`).join("")}${res.map(r => `<div>Reserva ${esc(r.codigo)} · ${fmtF(r.fecha)} <span class="pill p-${esc(r.estado)}">${EST_RES[r.estado]}</span></div>`).join("")}` : ""}
+    <h4 style="margin:22px 0 6px">Seguimiento</h4>
+    <div class="dos"><select id="s-tipo">${Object.entries(TIPOS_SEG).map(([k, n]) => `<option value="${k}">${n}</option>`).join("")}</select><button id="s-ok">Agregar</button></div>
+    <textarea id="s-txt" rows="2" placeholder="Qué se habló, qué quedó pendiente…" style="margin-top:6px"></textarea>
+    <div id="s-lista"><div class="muted">Cargando…</div></div>` : ""}`, "min(560px,100%)");
+  $("#d-x").onclick = cerrarDrawer;
+  $("#c-ok").onclick = async e => { const v = s => $(s).value.trim(); if (!v("#c-nom")) { toast("Poné el nombre"); return; }
+    const campos = { nombre: v("#c-nom"), telefono: v("#c-tel"), email: v("#c-mail"), documento: v("#c-doc"), origen: v("#c-ori"), estado: v("#c-est"), proximo: v("#c-prox") || null, interes: v("#c-int"), presupuesto_max: v("#c-max") === "" ? null : +v("#c-max"), notas: v("#c-not") };
+    const r = await guardar("guardarCliente", [id, campos], id ? "Cliente guardado" : "Cliente creado", e.target); if (r) abrirCliente(r.id); };
+  if (!id) return;
+  S.clienteAbierto = id; cargarSeguimientos(id);
+  $("#c-presu").onclick = () => { cerrarDrawer(); ir("presupuestos"); editorPresu({ cliente: c.nombre, contacto: [c.telefono, c.email].filter(Boolean).join(" · "), clienteId: c.id }); };
+  $("#c-res").onclick = () => { cerrarDrawer(); generadorReserva({ cliente: c.nombre, contacto: c.email || c.telefono, clienteId: c.id }); };
+  const b = $("#c-borrar"); if (b) b.onclick = async () => { if (b.dataset.conf !== "1") { b.dataset.conf = "1"; b.textContent = "¿Borrar? Tocá de nuevo"; return; } if (await guardar("borrarCliente", [id], "Cliente borrado", b)) cerrarDrawer(); };
+  $("#s-ok").onclick = async e => { const t = $("#s-txt").value.trim(); if (!t) { toast("Escribí el seguimiento"); return; } e.target.disabled = true;
+    const { error } = await sb.from("seguimientos").insert({ cliente_id: id, tipo: $("#s-tipo").value, texto: t });
+    if (!error && c.estado === "nuevo") await sb.from("clientes").update({ estado: "contactado", actualizado: new Date().toISOString() }).eq("id", id);
+    else if (!error) await sb.from("clientes").update({ actualizado: new Date().toISOString() }).eq("id", id);
+    e.target.disabled = false; if (error) toast(errTxt(error)); else { $("#s-txt").value = ""; toast("Seguimiento agregado"); cargarSeguimientos(id); } };
+}
+async function cargarSeguimientos(id){
+  const { data, error } = await sb.from("seguimientos").select("*").eq("cliente_id", id).order("creado", { ascending: false });
+  const caja = $("#s-lista"); if (!caja || S.clienteAbierto !== id) return;
+  if (error) { caja.innerHTML = `<p class="aviso">${esc(errTxt(error))}</p>`; return; }
+  caja.innerHTML = data.length ? data.map(s => `<div class="coment"><div class="coment-cab"><span class="pill p-no_disponible">${TIPOS_SEG[s.tipo] || s.tipo}</span><b>${esc(s.autor)}</b><span class="muted">${fechaHora(s.creado)}</span>${s.autor_id === S.uid || esAdmin() ? `<button data-seg="${esc(s.id)}">Borrar</button>` : ""}</div><div class="coment-txt">${esc(s.texto)}</div></div>`).join("") : `<div class="muted" style="margin-top:8px">Sin seguimientos todavía.</div>`;
+  caja.querySelectorAll("[data-seg]").forEach(b => b.onclick = async () => { const { error } = await sb.from("seguimientos").delete().eq("id", b.dataset.seg); if (error) toast(errTxt(error)); else cargarSeguimientos(id); });
+}
+
+/* ---------- plan de pagos y cobranzas ---------- */
+const estadoCuota = (c, hoy) => c.pagado >= c.monto - 0.005 ? "pagada" : c.vencimiento < hoy ? "vencida" : c.pagado > 0 ? "parcial" : "pendiente";
+const EST_CUO = { pagada: ["Pagada", "aceptado"], parcial: ["Pago parcial", "reservado"], vencida: ["Vencida", "vendido"], pendiente: ["Pendiente", "no_disponible"] };
+function planPagos(r){
+  const plan = S.cuotas.filter(c => c.reserva_id === r.id).sort((a, b) => a.numero - b.numero);
+  const doc = r.documento || {}; const precio = doc.precio || r.precio || 0; const ant = doc.anticipo ?? Math.round(precio * (S.cond.anticipoPct || 30) / 100); const n = doc.cuotas ?? S.cond.cuotas ?? 36;
+  const hayPagos = plan.some(c => c.pagado > 0);
+  abrirDrawer(`<div class="cab"><div><h3>Plan de pagos · ${esc(r.codigo)}</h3><div class="muted">${esc(r.cliente)} · precio ${usd(precio)}</div></div><button id="d-x">Cerrar</button></div>
+    ${plan.length ? `<div class="calc">${plan.length} pagos · total ${usd(plan.reduce((s, c) => s + c.monto, 0))} · cobrado ${usd(plan.reduce((s, c) => s + c.pagado, 0))}</div>
+      <div class="tabla" style="margin-top:10px"><table><thead><tr><th>Concepto</th><th>Vence</th><th class="num">Monto</th><th class="num">Pagado</th><th>Estado</th></tr></thead><tbody>${plan.map(c => { const e = estadoCuota(c, hoyISO()); return `<tr><td>${esc(c.concepto)}</td><td>${fmtF(c.vencimiento)}</td><td class="num">${usd(c.monto)}</td><td class="num">${c.pagado ? usd(c.pagado) : "—"}</td><td><span class="pill p-${EST_CUO[e][1]}">${EST_CUO[e][0]}</span></td></tr>`; }).join("")}</tbody></table></div>` : ""}
+    ${hayPagos ? `<p class="muted">El plan ya tiene pagos registrados, por eso no se puede rehacer. Los pagos se cargan en la pestaña Cobranzas.</p>` : `
+    <h4>${plan.length ? "Rehacer el plan" : "Armar el plan"}</h4>
+    <div class="dos"><div><label for="pp-ant">Anticipo USD</label><input id="pp-ant" type="number" step="100" value="${esc(ant)}"></div><div><label for="pp-vant">Vence el anticipo</label><input id="pp-vant" type="date" value="${esc(r.cerrada || hoyISO())}"></div></div>
+    <div class="tres"><div><label for="pp-n">Cuotas</label><input id="pp-n" type="number" value="${esc(n)}"></div><div><label for="pp-m">Monto de cada cuota USD</label><input id="pp-m" type="number" step="1" value="${esc(n ? Math.round((precio - ant) / n * 100) / 100 : 0)}"></div><div><label for="pp-1">Primera cuota vence</label><input id="pp-1" type="date" value="${esc(masDias(r.cerrada || hoyISO(), 30))}"></div></div>
+    <div class="calc" id="pp-tot"></div>
+    <div class="pie"><button class="prim" id="pp-ok">${plan.length ? "Rehacer plan" : "Crear plan"}</button></div>`}`, "min(640px,100%)");
+  $("#d-x").onclick = cerrarDrawer;
+  const ok = $("#pp-ok"); if (!ok) return;
+  const tot = () => { const a = +$("#pp-ant").value || 0, k = +$("#pp-n").value || 0, m = +$("#pp-m").value || 0; const t = a + k * m; $("#pp-tot").innerHTML = `Total del plan ${usd(t)}${Math.abs(t - precio) > 1 ? ` · <span class="aviso">difiere del precio en ${usd(t - precio)}</span>` : ""}`; };
+  ["#pp-ant", "#pp-n", "#pp-m"].forEach(s => $(s).oninput = tot); $("#pp-n").addEventListener("input", () => { const k = +$("#pp-n").value || 0; if (k) $("#pp-m").value = Math.round((precio - (+$("#pp-ant").value || 0)) / k * 100) / 100; tot(); }); tot();
+  ok.onclick = async e => { if (!$("#pp-1").value && (+$("#pp-n").value || 0) > 0) { toast("Poné la fecha de la primera cuota"); return; }
+    if (await guardar("generarPlan", [r.id, +$("#pp-ant").value || 0, $("#pp-vant").value, +$("#pp-n").value || 0, +$("#pp-m").value || 0, $("#pp-1").value || hoyISO()], "Plan de pagos creado", e.target)) planPagos(S.reservas.find(x => x.id === r.id) || r); };
+}
+function renderCobranzas(){
+  const caja = $("#cob-lista"); if (!caja) return; const hoy = hoyISO(), en30 = masDias(hoy, 30), f = S.fCob || "proximas", q = ($("#cob-buscar").value || "").toLowerCase().trim();
+  const cs = S.cuotas.map(c => ({ ...c, est: estadoCuota(c, hoy), codigo: (S.locales[c.unidad_id] || {}).codigo || "" }));
+  const sum = a => a.reduce((s, c) => s + c.monto, 0), pag = a => a.reduce((s, c) => s + c.pagado, 0);
+  const venc = cs.filter(c => c.est === "vencida"), prox = cs.filter(c => c.est !== "pagada" && c.vencimiento >= hoy && c.vencimiento <= en30);
+  $("#cob-kpi").innerHTML = cs.length ? `<div class="kpi"><div class="l">Total en planes</div><div class="n">${usd(sum(cs)).replace("USD ", "")}</div><div class="s">USD · ${(k => k + (k > 1 ? " ventas" : " venta"))(new Set(cs.map(c => c.reserva_id)).size)}</div></div>
+    <div class="kpi disp"><div class="l">Cobrado</div><div class="n">${usd(pag(cs)).replace("USD ", "")}</div><div class="s">${sum(cs) ? Math.round(pag(cs) / sum(cs) * 100) : 0}% del total</div></div>
+    <div class="kpi ven"><div class="l">Vencido sin cobrar</div><div class="n">${usd(sum(venc) - pag(venc)).replace("USD ", "")}</div><div class="s">${venc.length} cuotas</div></div>
+    <div class="kpi res"><div class="l">Vence en 30 días</div><div class="n">${usd(sum(prox) - pag(prox)).replace("USD ", "")}</div><div class="s">${prox.length} cuotas</div></div>` : "";
+  $("#f-cob").innerHTML = [["proximas", "Vencidas y próximas"], ["vencidas", "Vencidas"], ["pendientes", "Pendientes"], ["pagadas", "Pagadas"], ["todas", "Todas"]].map(([k, n]) => `<button data-k="${k}" aria-pressed="${f === k}">${n}</button>`).join("");
+  let lista = cs.filter(c => f === "todas" || (f === "vencidas" ? c.est === "vencida" : f === "pagadas" ? c.est === "pagada" : f === "pendientes" ? c.est !== "pagada" : c.est === "vencida" || (c.est !== "pagada" && c.vencimiento <= en30)));
+  if (q) lista = lista.filter(c => (c.cliente + " " + c.codigo + " " + c.concepto).toLowerCase().includes(q));
+  caja.innerHTML = !cs.length ? `<div class="vacio">Todavía no hay planes de pago. Se arman desde <b>Reservas</b>, con el botón “Plan de pagos” de cada boleto firmado.</div>`
+    : lista.length ? `<table><thead><tr><th>Vence</th><th>${esc(unidadLbl())}</th><th>Cliente</th><th>Concepto</th><th class="num">Monto</th><th class="num">Pagado</th><th>Estado</th><th></th></tr></thead><tbody>${lista.map(c => `<tr>
+      <td>${fmtF(c.vencimiento)}</td><td><b>${esc(c.codigo)}</b></td><td>${esc(c.cliente)}</td><td>${esc(c.concepto)}${c.notas ? `<div class="muted">${esc(c.notas)}</div>` : ""}</td><td class="num">${usd(c.monto)}</td><td class="num">${c.pagado ? usd(c.pagado) : "—"}${c.fecha_pago ? `<div class="muted">${fmtF(c.fecha_pago)}</div>` : ""}</td>
+      <td><span class="pill p-${EST_CUO[c.est][1]}">${EST_CUO[c.est][0]}</span></td><td>${c.est !== "pagada" && can("pagos_registrar") ? `<button data-pagar="${esc(c.id)}">Registrar pago</button>` : ""}</td></tr>`).join("")}</tbody></table>` : `<div class="vacio">No hay cuotas con ese filtro.</div>`;
+}
+$("#f-cob").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { S.fCob = b.dataset.k; renderCobranzas(); } });
+$("#cob-buscar").addEventListener("input", renderCobranzas);
+$("#cob-lista").addEventListener("click", e => { const b = e.target.closest("[data-pagar]"); if (!b) return; const c = S.cuotas.find(x => x.id === b.dataset.pagar); if (!c) return;
+  abrirDrawer(`<div class="cab"><div><h3>Registrar pago</h3><div class="muted">${esc(c.concepto)} · ${esc(c.cliente)} · vence ${fmtF(c.vencimiento)}</div></div><button id="d-x">Cerrar</button></div>
+    <div class="dos"><div><label for="pg-m">Monto pagado USD</label><input id="pg-m" type="number" step="0.01" value="${esc(Math.round((c.monto - c.pagado) * 100) / 100)}"></div><div><label for="pg-f">Fecha de pago</label><input id="pg-f" type="date" value="${hoyISO()}"></div></div>
+    <label for="pg-n">Nota (forma de pago, recibo…)</label><input id="pg-n" placeholder="Transferencia, recibo N°…">
+    <div class="pie"><button class="prim" id="pg-ok">Registrar pago</button></div>`);
+  $("#d-x").onclick = cerrarDrawer;
+  $("#pg-ok").onclick = async e => { const m = +$("#pg-m").value; if (!m) { toast("Poné el monto"); return; } if (await guardar("registrarPago", [c.id, m, $("#pg-f").value, $("#pg-n").value.trim()], "Pago registrado", e.target)) cerrarDrawer(); };
+});
+
+/* ---------- presupuestos ---------- */
+function estadoPresu(p){ if(p.estado==="abierto" && p.vigencia && p.vigencia < hoyISO()) return "vencido"; return p.estado||"abierto"; }
+function calcItems(items,c){ return items.map(i=>{ const anticipo=i.precio*c.anticipoPct/100; const cuota=c.cuotas?(i.precio-anticipo)/c.cuotas:0; return {...i,anticipo,cuota}; }); }
+function hojaHTML(p){
+  const c=p.cond, it=calcItems(p.items,c); const sum=k=>it.reduce((s,i)=>s+(i[k]||0),0);
+  return `<table class="h-cab"><tr><td style="width:78px"><img src="${LOGO}" alt="Coldwell Banker"></td><td><div class="h-t">Presupuesto</div><div class="h-s">${esc([(P()||{}).nombre,(P()||{}).localidad].filter(Boolean).join(" · "))}</div></td><td class="h-n"><b>${esc(p.numero||"Borrador")}</b>${fmtF(p.fecha)}</td></tr></table>
+  <table class="h-cli"><tr><td><b>Cliente:</b> ${esc(p.cliente||"—")}${p.contacto?` · ${esc(p.contacto)}`:""}</td><td style="text-align:right"><b>Vigente hasta:</b> ${fmtF(p.vigencia)}</td></tr>
+  ${p.asesor&&p.asesor.nombre?`<tr class="h-ase"><td colspan="2"><b>Asesor:</b> ${esc(p.asesor.nombre)}${contactoTxt(p.asesor)?` · ${esc(contactoTxt(p.asesor))}`:""}</td></tr>`:""}</table>
+  <table class="h-tab"><thead><tr><th>${esc(unidadLbl())}</th><th>Ubicación</th><th class="r">Sup. m²</th><th class="r">USD/m²</th><th class="r">Precio USD</th><th class="r">Anticipo ${c.anticipoPct}%</th><th class="r">${c.cuotas} cuotas de</th><th>${it.some(i=>i.rubro)?"Destino":""}</th></tr></thead><tbody>
+  ${it.map(i=>`<tr><td><b>${esc(i.codigo)}</b></td><td>${esc(i.ubic)}</td><td class="r">${num(i.m2,2)}</td><td class="r">${ent(i.usdM2)}</td><td class="r">${ent(i.precio)}</td><td class="r">${ent(i.anticipo)}</td><td class="r">${ent(i.cuota)}</td><td>${esc(i.rubro||"")}</td></tr>`).join("")}
+  ${it.length>1?`<tr class="tot"><td colspan="2">Total ${it.length} ${esc(plural(unidadLbl()).toLowerCase())}</td><td class="r">${num(sum("m2"),2)}</td><td></td><td class="r">${ent(sum("precio"))}</td><td class="r">${ent(sum("anticipo"))}</td><td class="r">${ent(sum("cuota"))}</td><td></td></tr>`:""}</tbody></table>
+  <table class="h-cond"><tr><td>Forma de pago</td><td class="v">${c.anticipoPct}% anticipo + ${c.cuotas} cuotas</td><td class="sep"></td><td>Moneda</td><td class="v">Dólares estadounidenses</td></tr>
+  <tr><td>A la firma: honorarios inmobiliarios</td><td class="v">${num(c.honorariosPct)}%</td><td class="sep"></td><td>Certificación de firmas (aprox.)</td><td class="v">${ars(c.certificacionArs)} por local</td></tr></table>
+  ${p.notas?`<div class="h-nota">${esc(p.notas)}</div>`:""}
+  <div class="h-pie">Coldwell Banker · Precios sujetos a disponibilidad al momento de la reserva. Presupuesto vigente hasta ${fmtF(p.vigencia)}.</div>`;
+}
+function documentoPresu(p){
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Presupuesto ${esc(p.numero)} ${esc(p.cliente||"")}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600&display=swap"><style>body{margin:0;background:#fff;font:13px/1.45 Inter,Arial,sans-serif;color:#111}.hoja{max-width:820px;margin:24px auto;padding:0 28px}@media print{.hoja{margin:0;padding:0}}${$("#hoja-css").textContent}</style></head><body><div class="hoja">${hojaHTML(p)}</div></body></html>`;
+}
+function renderPresus(){
+  const ps=[...S.presus].sort((a,b)=>String(b.numero||"").localeCompare(String(a.numero||"")));
+  if(!ps.length){ $("#presu-lista").innerHTML=`<div class="vacio">Todavía no hay presupuestos. Tocá “Nuevo presupuesto” para armar el primero.</div>`; return; }
+  $("#presu-lista").innerHTML=`<table><thead><tr><th>N°</th><th>Fecha</th><th>Cliente</th><th>Locales</th><th class="num">Total USD</th><th>Condiciones</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody>${ps.map(p=>{
+    const est=estadoPresu(p); const ocupados=(p.items||[]).filter(i=>S.locales[i.id]&&S.locales[i.id].estado!=="disponible"&&S.locales[i.id].cliente!==p.cliente);
+    return `<tr><td><b>${esc(p.numero)}</b></td><td>${fmtF(p.fecha)}</td><td>${esc(p.cliente||"—")}${p.asesor&&p.asesor.nombre?`<div class="muted">Asesor: ${esc(p.asesor.nombre)}</div>`:""}</td><td>${(p.items||[]).map(i=>esc(i.codigo)).join(", ")}${ocupados.length&&est==="abierto"?`<div class="aviso">Ya no disponibles: ${ocupados.map(i=>esc(i.codigo)).join(", ")}</div>`:""}</td>
+    <td class="num">${usd((p.items||[]).reduce((s,i)=>s+i.precio,0))}</td><td>${p.cond.anticipoPct}% + ${p.cond.cuotas} cuotas</td><td>${fmtF(p.vigencia)}</td><td><span class="pill p-${est}">${EST_PRESU[est]||esc(est)}</span></td>
+    <td><div class="acc"><button data-a="ver" data-id="${esc(p.id)}">Ver</button><button data-a="copiar" data-id="${esc(p.id)}">Duplicar</button>${est==="abierto"?`<button data-a="aceptar" data-id="${esc(p.id)}">Reservar</button><button data-a="rechazar" data-id="${esc(p.id)}">Rechazado</button>`:""}</div></td></tr>`;}).join("")}</tbody></table>`;
+}
+$("#presu-lista").addEventListener("click",async e=>{ const b=e.target.closest("button[data-a]"); if(!b) return; const p=S.presus.find(x=>x.id===b.dataset.id); if(!p) return;
+  if(b.dataset.a==="ver") verPresu(p);
+  if(b.dataset.a==="copiar") editorPresu({cliente:p.cliente,contacto:p.contacto,notas:p.notas,cond:{...p.cond},ids:p.items.map(i=>i.id)});
+  if(b.dataset.a==="rechazar") guardar("estadoPresupuesto",[p.id,"rechazado"],"Presupuesto marcado como rechazado",b);
+  if(b.dataset.a==="aceptar") reservarDesdePresu(p);
+});
+function verPresu(p){
+  abrirDrawer(`<div class="cab"><h3>${esc(p.numero)}</h3><button id="d-x">Cerrar</button></div>
+   <div class="pie" style="margin:0 0 12px"><button class="prim" id="d-imp">Imprimir / PDF</button><button id="d-copiar">Copiar texto para WhatsApp</button></div>
+   <div id="d-link"></div>
+   <div class="hoja-wrap"><div class="hoja" style="min-width:0;padding:20px;font-size:12px">${hojaHTML(p)}</div></div>`,"min(860px,100%)");
+  $("#d-x").onclick=cerrarDrawer;
+  $("#d-imp").onclick=()=>{ const w=window.open("","_blank"); if(!w){toast("El navegador bloqueó la ventana. Permití ventanas emergentes.");return;} w.document.write(documentoPresu(p)); w.document.close(); setTimeout(()=>{ try{w.print();}catch(e){} },700); };
+  $("#d-copiar").onclick=()=>copiarTexto(textoWhatsApp(p));
+}
+function textoWhatsApp(p){ const it=calcItems(p.items,p.cond);
+  return `*Coldwell Banker · ${(P()||{}).nombre||""}*\nPresupuesto ${p.numero}${p.cliente?" · "+p.cliente:""}\n\n`+it.map(i=>`• ${unidadLbl()} ${i.codigo} (${i.ubic}) ${num(i.m2,2)} m² — USD ${ent(i.precio)}\n   Anticipo ${p.cond.anticipoPct}%: USD ${ent(i.anticipo)} + ${p.cond.cuotas} cuotas de USD ${ent(i.cuota)}`).join("\n")+
+  `\n\nA la firma: ${num(p.cond.honorariosPct)}% honorarios inmobiliarios + certificación de firmas ${ars(p.cond.certificacionArs)} por ${unidadLbl().toLowerCase()} (aprox.)\nVigente hasta ${fmtF(p.vigencia)}`+
+  (p.asesor&&p.asesor.nombre?`\n\nTe atiende: ${p.asesor.nombre}${contactoTxt(p.asesor)?" · "+contactoTxt(p.asesor):""}`:""); }
+async function copiarTexto(t){ try{ await navigator.clipboard.writeText(t); toast("Copiado"); }catch(e){ abrirDrawer(`<div class="cab"><h3>Copiá el texto</h3><button id="d-x">Cerrar</button></div><textarea id="d-txt" rows="16">${esc(t)}</textarea>`); $("#d-x").onclick=cerrarDrawer; $("#d-txt").select(); } }
+function editorPresu(base){
+  const c={...S.cond,...(base&&base.cond||{})}; const sel=new Set(base&&base.ids||[]);
+  const disp=Object.values(S.locales).filter(l=>l.estado==="disponible"&&precioDe(l)).sort((a,b)=>PLANTAS.findIndex(p=>p.k===a.planta)-PLANTAS.findIndex(p=>p.k===b.planta)||ordenLoc(a,b));
+  const ed=$("#presu-editor"); ed.hidden=false; ir("presupuestos");
+  ed.innerHTML=`<div class="editor" style="margin-bottom:22px"><div class="form"><h3>Armar presupuesto</h3>
+    <div class="dos"><div><label for="p-cli">Cliente</label><input id="p-cli" value="${esc(base&&base.cliente)}"></div><div><label for="p-con">Teléfono / email</label><input id="p-con" value="${esc(base&&base.contacto)}"></div></div>
+    <label for="p-buscar">${esc(plural(unidadLbl()))} disponibles (${disp.length})</label><input id="p-buscar" placeholder="Filtrar por código, ${esc(NIV().subgrupo.toLowerCase())}…">
+    <div class="lista-locs" id="p-locs">${disp.map(l=>`<label data-q="${esc((l.codigo+" "+ubicTxt(l)+" "+(l.rubro||"")).toLowerCase())}"><input type="checkbox" value="${esc(l.id)}" ${sel.has(l.id)?"checked":""}> <b>${esc(l.codigo)}</b> <span class="muted">${esc(ubicCorta(l))} · ${esc(datoTile(l))}</span><span class="pr">${usd(precioDe(l))}</span></label>`).join("")}</div>
+    <div class="tres"><div><label for="p-ant">Anticipo %</label><input id="p-ant" type="number" value="${c.anticipoPct}"></div><div><label for="p-cuo">Cuotas</label><input id="p-cuo" type="number" value="${c.cuotas}"></div><div><label for="p-hon">Honorarios %</label><input id="p-hon" type="number" step="0.5" value="${c.honorariosPct}"></div></div>
+    <div class="dos"><div><label for="p-cert">Certificación $ x local</label><input id="p-cert" type="number" step="1000" value="${c.certificacionArs}"></div><div><label for="p-vig">Vigente hasta</label><input id="p-vig" type="date" value="${masDias(hoyISO(),c.vigenciaDias||30)}"></div></div>
+    <label for="p-not">Notas para el cliente</label><textarea id="p-not" rows="2">${esc(base&&base.notas)}</textarea>
+    <div class="pie"><button class="prim" id="p-guardar">Guardar presupuesto</button><button id="p-cancel">Cancelar</button></div></div>
+    <div class="hoja-wrap"><div class="hoja" id="p-hoja"></div></div></div>`;
+  const leer=()=>{ const ids=[...ed.querySelectorAll("#p-locs input:checked")].map(i=>i.value);
+    return {asesor:S.perfil||null,clienteId:(base&&base.clienteId)||null,cliente:$("#p-cli").value.trim(),contacto:$("#p-con").value.trim(),notas:$("#p-not").value.trim(),fecha:hoyISO(),vigencia:$("#p-vig").value,
+      cond:{anticipoPct:+$("#p-ant").value||0,cuotas:+$("#p-cuo").value||0,honorariosPct:+$("#p-hon").value||0,certificacionArs:+$("#p-cert").value||0},
+      items:ids.map(id=>{const l=S.locales[id]; return {id,codigo:l.codigo,ubic:ubicTxt(l),m2:l.m2,usdM2:l.usdM2,precio:precioDe(l),rubro:l.rubro||""};})}; };
+  const pint=()=>{ const p=leer(); $("#p-hoja").innerHTML=p.items.length?hojaHTML(p):`<div class="vacio" style="color:#666">Marcá una o más unidades a la izquierda para ver el presupuesto.</div>`; };
+  ed.oninput=pint; pint();
+  $("#p-buscar").addEventListener("input",e=>{ const q=e.target.value.toLowerCase().trim(); ed.querySelectorAll("#p-locs label").forEach(l=>l.hidden=q&&!l.dataset.q.includes(q)); });
+  $("#p-cancel").onclick=()=>{ ed.hidden=true; ed.innerHTML=""; };
+  $("#p-guardar").onclick=async e=>{ const p=leer(); if(!p.items.length){toast("Elegí al menos una unidad");return;}
+    const info=await guardar("crearPresupuesto",[p],null,e.target); if(!info) return;
+    ed.hidden=true; ed.innerHTML=""; toast("Presupuesto "+info.numero+" guardado");
+    const nuevo=S.presus.find(x=>x.id===info.id); if(nuevo) verPresu(nuevo); };
+  ed.scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("#btn-nuevo-presu").onclick=()=>editorPresu(null);
+
+/* ---------- reservas ---------- */
+function reservarDesdePresu(p){
+  const libres=p.items.filter(i=>S.locales[i.id]?.estado==="disponible");
+  if(!libres.length){ toast("Ninguno de esos locales sigue disponible"); return; }
+  generadorReserva({ids:libres.map(i=>i.id), presu:p, cliente:p.cliente, contacto:p.contacto});
+}
+function formReserva(ids,presu){
+  ids=[].concat(ids||[]);
+  const disp=Object.values(S.locales).filter(l=>l.estado==="disponible").sort(ordenLoc);
+  abrirDrawer(`<div class="cab"><h3>Nueva reserva</h3><button id="d-x">Cerrar</button></div>
+   ${presu?`<div class="muted">Desde presupuesto ${esc(presu.numero)}</div>`:""}
+   <label>Locales a reservar</label><div class="lista-locs">${disp.map(l=>`<label><input type="checkbox" value="${esc(l.id)}" ${ids.includes(l.id)?"checked":""}> <b>${esc(l.codigo)}</b><span class="pr">${usd(precioDe(l))}</span></label>`).join("")}</div>
+   <div class="dos"><div><label for="r-cli">Cliente</label><input id="r-cli" value="${esc(presu&&presu.cliente)}"></div><div><label for="r-con">Teléfono / email</label><input id="r-con" value="${esc(presu&&presu.contacto)}"></div></div>
+   <div class="tres"><div><label for="r-fec">Fecha</label><input id="r-fec" type="date" value="${hoyISO()}"></div><div><label for="r-sena">Seña USD</label><input id="r-sena" type="number" step="100"></div><div><label for="r-vence">Vence</label><input id="r-vence" type="date" value="${masDias(hoyISO(),15)}"></div></div>
+   <label for="r-not">Notas</label><textarea id="r-not" rows="2"></textarea>
+   <div class="pie"><button class="prim" id="r-ok">Registrar reserva</button></div>`);
+  $("#d-x").onclick=cerrarDrawer;
+  $("#r-ok").onclick=async e=>{ const sel=[...document.querySelectorAll("#drawer .lista-locs input:checked")].map(i=>i.value); const cli=$("#r-cli").value.trim();
+    if(!sel.length){toast("Elegí un local");return;} if(!cli){toast("Poné el nombre del cliente");return;}
+    const d={cliente:cli,contacto:$("#r-con").value.trim(),fecha:$("#r-fec").value,sena:+$("#r-sena").value||0,vence:$("#r-vence").value,notas:$("#r-not").value.trim()};
+    if(await guardar("reservar",[sel,d,presu?presu.id:null],sel.length>1?`${sel.length} locales reservados`:"Local reservado",e.target)){ cerrarDrawer(); ir("reservas"); } };
+}
+$("#btn-nueva-res").onclick=()=>generadorReserva({});
+function renderReservas(){
+  const rs=[...S.reservas].sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||"")));
+  if(!rs.length){ $("#res-lista").innerHTML=`<div class="vacio">Sin reservas registradas. Reservá desde un presupuesto, desde un cliente o con “Crear reserva”.</div>`; return; }
+  const hoy=hoyISO();
+  $("#res-lista").innerHTML=`<table><thead><tr><th>Fecha</th><th>${esc(unidadLbl())}</th><th>Cliente</th><th>Asesor</th><th class="num">Precio</th><th class="num">Seña</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr>
+   <td>${fmtF(r.fecha)}</td><td><b>${esc(r.codigo)}</b>${r.presupuesto?`<div class="muted">${esc(r.presupuesto)}</div>`:""}</td><td>${esc(r.cliente)}${r.contacto?`<div class="muted">${esc(r.contacto)}</div>`:""}</td>
+   <td>${r.asesor?esc(r.asesor):"—"}${contactoTxt(asesorDe(r.asesor))?`<div class="muted">${esc(contactoTxt(asesorDe(r.asesor)))}</div>`:""}</td>
+   <td class="num">${usd(r.precio)}</td><td class="num">${r.sena?usd(r.sena):"—"}</td><td>${fmtF(r.vence)}${r.estado==="activa"&&r.vence&&r.vence<hoy?`<div class="aviso">Vencida</div>`:""}</td>
+   <td><span class="pill p-${esc(r.estado)}">${EST_RES[r.estado]||esc(r.estado)}</span></td>
+   <td><div class="acc"><button data-a="doc" data-id="${esc(r.id)}">Documento</button>${r.estado==="firmada"&&can("plan_pagos")?`<button data-a="plan" data-id="${esc(r.id)}">Plan de pagos${S.cuotas.some(c=>c.reserva_id===r.id)?" ✓":""}</button>`:""}${r.estado==="activa"&&can("firmar_reservas")?`<button data-a="firmada" data-id="${esc(r.id)}">Firmó boleto</button><button class="peligro" data-a="caida" data-id="${esc(r.id)}">Se cayó</button>`:""}</div></td></tr>`).join("")}</tbody></table>`;
+}
+$("#res-lista").addEventListener("click",e=>{ const b=e.target.closest("button[data-a]"); if(!b) return; const r=S.reservas.find(x=>x.id===b.dataset.id); if(!r) return;
+  if(b.dataset.a==="doc"){ generadorReserva({ids:[String(r.localId)], reserva:r}); return; }
+  if(b.dataset.a==="plan"){ planPagos(r); return; }
+  guardar("cerrarReserva",[r.id,b.dataset.a], b.dataset.a==="firmada"?`${r.codigo} pasó a vendida`:`${r.codigo} vuelve a estar disponible`, b); });
+
+/* ---------- documento de reserva (modelo legal; los datos variables salen del proyecto) ---------- */
+const MEMBRETE = "__MEMBRETE__";
+const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const CORREDOR_DEF = { nombre:"FABIAN LUSARRETA", matricula:"CMCPDJLM, número 1166, Folio 189, Tomo 2", sistema:"COLDWELL BANKER NOVA", domicilio:"calle Arcos 4363, Ciudad Autónoma de Buenos Aires" };
+
+/* Números en letras (castellano, mayúsculas, como en los documentos legales) */
+function enLetras(n){
+  n=Math.round(Math.abs(+n||0));
+  if(n===0) return "CERO";
+  const U=["","UNO","DOS","TRES","CUATRO","CINCO","SEIS","SIETE","OCHO","NUEVE"];
+  const E=["DIEZ","ONCE","DOCE","TRECE","CATORCE","QUINCE","DIECISÉIS","DIECISIETE","DIECIOCHO","DIECINUEVE"];
+  const V=["VEINTE","VEINTIUNO","VEINTIDÓS","VEINTITRÉS","VEINTICUATRO","VEINTICINCO","VEINTISÉIS","VEINTISIETE","VEINTIOCHO","VEINTINUEVE"];
+  const D=["","","","TREINTA","CUARENTA","CINCUENTA","SESENTA","SETENTA","OCHENTA","NOVENTA"];
+  const C=["","CIENTO","DOSCIENTOS","TRESCIENTOS","CUATROCIENTOS","QUINIENTOS","SEISCIENTOS","SETECIENTOS","OCHOCIENTOS","NOVECIENTOS"];
+  const menorMil=x=>{
+    if(x===100) return "CIEN";
+    const c=Math.floor(x/100), r=x%100; let t=c?C[c]:"";
+    let d="";
+    if(r<10) d=U[r]; else if(r<20) d=E[r-10]; else if(r<30) d=V[r-20]; else d=D[Math.floor(r/10)]+(r%10?" Y "+U[r%10]:"");
+    return [t,d].filter(Boolean).join(" ");
+  };
+  const apocope=s=>s.replace(/VEINTIUNO$/,"VEINTIÚN").replace(/UNO$/,"UN");
+  const millones=Math.floor(n/1e6), miles=Math.floor((n%1e6)/1000), resto=n%1000, partes=[];
+  if(millones) partes.push(millones===1?"UN MILLÓN":apocope(enLetras(millones))+" MILLONES");
+  if(miles) partes.push(miles===1?"MIL":apocope(menorMil(miles))+" MIL");
+  if(resto) partes.push(menorMil(resto));
+  return partes.join(" ");
+}
+const uss = n => "U$S"+ent(n);
+const m2txt = n => Number(n||0).toLocaleString("es-AR",{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function leerCorredor(){ try{ return {...CORREDOR_DEF, ...(JSON.parse(localStorage.getItem("lb-corredor")||"{}"))}; }catch(e){ return {...CORREDOR_DEF}; } }
+function guardarCorredor(c){ try{ localStorage.setItem("lb-corredor",JSON.stringify(c)); }catch(e){} }
+
+/* Texto del documento con los datos del panel */
+function docReservaHTML(R){
+  const ls=R.locales; const plural=ls.length>1;
+  const v=(x,ph)=> x?`<span class="dv">${esc(x)}</span>`:`<span class="dh">${esc(ph)}</span>`;
+  const lista = ls.length ? ls.map((l,i)=>`${i===0?"N° ":""}${esc(l.codigo)} de ${i===0?"aproximadamente ":""}${m2txt(l.m2)} m2`).reduce((a,t,i,arr)=>a+(i===0?"":(i===arr.length-1?" Y ":", "))+t,"") : "N° ____ de aproximadamente ____ m2";
+  const D=((P()||{}).doc)||{}, FR=NIV().frases||{};
+  const plantas=[...new Set(ls.map(l=>l.planta))];
+  const frase=g=>FR[g]||[g!==""?`${NIV().grupo} ${g}`:"", ""].filter(Boolean).join("");
+  const ubic = plantas.length<=1 ? `${frase(plantas[0]??"")||"el emprendimiento"}${FR[plantas[0]]?"":","} dentro` : `${plantas.map(p=>(FR[p]||frase(p)).replace(/ situad[ao]$/,"")).join(" y ")}, dentro`;
+  const dd=(k,ph)=>D[k]?esc(D[k]):`<span class="dh">${esc(ph)}</span>`;
+  const ambas = ls.length===2?"ambas":"todas";
+  const objeto = plural
+    ? `adquirir las unidades privativas que se designan provisoriamente con el <b>${lista}</b> (en adelante la “Unidad Privativa”), ${ambas} ubicadas en ${ubic} del Emprendimiento`
+    : `adquirir la unidad privativa que se designa provisoriamente con el <b>${lista}</b> (en adelante la “Unidad Privativa”), ubicada en ${ubic} del Emprendimiento`;
+  const sujeto = ls.length===2 ? "ambas Unidades Funcionales" : plural ? `las ${enLetras(ls.length).toLowerCase()} (${ls.length}) Unidades Funcionales` : "la Unidad Funcional";
+  const saldo=Math.max(0,(R.precio||0)-(R.anticipo||0));
+  const pago = saldo>0 && R.cuotas>0
+    ? `anticipo de DÓLARES ESTADOUNIDENSES ${enLetras(R.anticipo)} (${uss(R.anticipo)}) a la firma del boleto y saldo de DÓLARES ESTADOUNIDENSES ${enLetras(saldo)} (${uss(saldo)}) en ${enLetras(R.cuotas)} (${R.cuotas}) cuotas mensuales fijas en dólares.`
+    : saldo>0
+      ? `anticipo de DÓLARES ESTADOUNIDENSES ${enLetras(R.anticipo)} (${uss(R.anticipo)}) a la firma del boleto y saldo de DÓLARES ESTADOUNIDENSES ${enLetras(saldo)} (${uss(saldo)}) según se acuerde en el boleto.`
+      : `pago total de DÓLARES ESTADOUNIDENSES ${enLetras(R.precio)} (${uss(R.precio)}) a la firma del boleto.`;
+  const f=R.fecha?new Date(R.fecha+"T12:00:00"):null;
+  const fechaTxt = f?`a los ${f.getDate()} días del mes ${MESES[f.getMonth()]} de ${f.getFullYear()}`:"a los ___ días del mes ________ de ____";
+  const C=R.corredor;
+  const cs=R.compradores.length?R.compradores:[{genero:"m"}];
+  const pl=cs.length>1, fem=cs.every(c=>c.genero==="f");
+  const G={ art: pl?(fem?"las":"los"):(fem?"la":"el"), sust: pl?(fem?"Compradoras":"Compradores"):(fem?"Compradora":"Comprador"),
+    inf: pl?(fem?"informadas":"informados"):(fem?"informada":"informado"), ofer: pl?"Ofertantes":"Ofertante" };
+  G.Art=G.art[0].toUpperCase()+G.art.slice(1);
+  const vb=(sg,p)=>pl?p:sg;
+  const personas=cs.map((c,i)=>`${i?"y de ":""}${v(c.nombre&&c.nombre.toUpperCase(),"NOMBRE Y APELLIDO")} ${esc(c.tipoDoc||"D.N.I.")} ${v(c.doc,"número")}, estado civil ${v(c.estadoCivil,"estado civil")}, ${c.genero==="f"?"domiciliada":"domiciliado"} en la calle ${v(c.domicilio,"domicilio")}, y electrónico ${v(c.email,"email")}`).join(", ");
+  const cab=`<div class="dmem"><img src="${MEMBRETE}" alt="F. Lusarreta · Coldwell Banker Nova"></div>`;
+  return `
+<section class="dpag">${cab}
+<h2 class="dtit">RESERVA ${dd("fideicomiso","FIDEICOMISO / VENDEDORA")}</h2>
+<p>${esc(C.nombre)}, con matrícula de ${esc(C.matricula)}, adherido al sistema ${esc(C.sistema)}, con domicilio legal en la ${esc(C.domicilio)} (en adelante “El Corredor”) actuando por cuenta y orden en este acto del <b>${dd("fideicomiso","FIDEICOMISO / VENDEDORA")}</b>, recibe en este acto de ${personas} (en adelante ${G.art} “${G.sust}”), la suma de dólares estadounidenses billete ${R.monto?enLetras(R.monto):"____"} (${R.monto?uss(R.monto):"U$S____"}) en concepto de RESERVA (en adelante la “Reserva”), que estará sujeta a los términos y condiciones que a continuación se detallan:</p>
+<p><b>ANTECEDENTES:</b> ${G.Art} ${G.sust} ${vb("declara","declaran")} haber sido debidamente ${G.inf} por la Inmobiliaria del estado en que se encuentra el emprendimiento “${dd("emprendimiento","NOMBRE DEL EMPRENDIMIENTO")}”. Asimismo, ${vb("declara","declaran")} haber sido debidamente ${G.inf} de la estructura legal del emprendimiento ${dd("fideicomiso","FIDEICOMISO")}, Clave Única de Identificación Tributaria ${dd("cuit","CUIT")}, constituido el día ${dd("constituido","fecha de constitución")}.</p>
+<p class="dh4">1.- OBJETO:</p>
+<p>${G.Art} ${G.sust} ${vb("ofrece","ofrecen")} de manera irrevocable a ${dd("fideicomiso","FIDEICOMISO / VENDEDORA")} (“la Vendedora”), ${objeto} <b>“${dd("emprendimientoCorto",(D.emprendimiento||"NOMBRE DEL EMPRENDIMIENTO"))}”</b> ${dd("ubicacion","ubicado en … (dirección y datos catastrales)")}.</p>
+<p class="dh4">2.- PRECIO. FORMA DE PAGO:</p>
+<p>2.1. ${G.Art} ${G.sust} ${vb("ofrece","ofrecen")} adquirir ${sujeto} por un Precio de DÓLARES ESTADOUNIDENSES ${R.precio?enLetras(R.precio):"____"} (${R.precio?uss(R.precio):"U$S____"}).</p>
+<p>2.2. Forma de Pago: ${pago}</p>
+<p class="dh4">3.- SUSCRIPCIÓN DEL BOLETO DE COMPRAVENTA:</p>
+<p>La firma del Boleto de Compraventa será antes de los ${R.dias||"__"} días de conformada la reserva. La Inmobiliaria (o la Vendedora) comunicarán a ${G.art} ${G.sust} al Domicilio Electrónico constituido en este acto, el día y la hora en que ${vb("deberá","deberán")} concurrir a ${dd("banco","lugar de firma del boleto")}, a fin de suscribir el Boleto de Compraventa, debiendo abonar en dicho momento los importes pactados según la forma de pago elegida.</p>
+</section>
+<section class="dpag">${cab}
+<p class="dh4">4.- ESCRITURA:</p>
+<p>La escritura traslativa de dominio de la unidad privativa se otorgará por ante ${dd("escribano","el escribano … (nombre, registro, domicilio y contacto)")}, tendrá lugar una vez cancelada la totalidad del Precio acordado, finalizadas las obras proyectadas, en base a títulos perfectos y libre de todo gravamen una vez aprobado el trámite de inscripción del plano de Propiedad Horizontal. Los gastos de escrituración, impuestos y honorarios serán soportados en su totalidad por ${G.art} ${G.sust}, al igual que el uno por ciento (1%) del precio de venta de la Unidad Funcional en concepto de “Fondo Operativo o de Caja”, y el uno por ciento (1%) del precio de venta en concepto de “Fondo de Equipamiento”.</p>
+<p class="dh4">5.- INCUMPLIMIENTOS:</p>
+<p>5.1. Si ${G.art} ${G.sust} no ${vb("concurriera","concurrieran")} a celebrar el Boleto de Compraventa en el lugar, día y hora fijada para la celebración del mismo, ${vb("incurrirá","incurrirán")} en incumplimiento, en cuyo caso ${vb("perderá","perderán")} la suma abonada en este acto como Reserva, en concepto penalidad única, total y definitiva, comprensiva de cualquier daño que pudiere invocar la Vendedora.</p>
+<p>5.2. Si fuera la Vendedora quien no concurriera a celebrar el Boleto de Compraventa en el lugar, día y hora fijada para la celebración del mismo, incurrirá en incumplimiento, en cuyo caso la Inmobiliaria interviniente deberá reintegrar la suma entregada en este acto como Reserva, con una suma igual en concepto penalidad única, total y definitiva, comprensiva de cualquier daño que ${vb("pudiere","pudieren")} invocar ${G.art} ${G.sust}.</p>
+<p><b>6. - HONORARIOS:</b> Al momento de la firma del Contrato de Incorporación al Fideicomiso, ${G.art} ${G.ofer} ${vb("abonará","abonarán")} a la Martillera interviniente la suma equivalente al ${num(R.honorarios,2)}% más IVA del total del precio acordado, en concepto de honorarios.${R.comparte?` Participa en esta Operación la Martillera ${esc(R.comparte)}.`:""}</p>
+<p>En prueba de conformidad, se firman tres (3) ejemplares, de un mismo tenor y al mismo efecto, ${fechaTxt}.</p>
+<table class="dfirmas">${[{t:"COLDWELL BANKER"},...cs.map(c=>({t:"OFERTANTE",n:c.nombre}))].reduce((filas,f,i)=>{ if(i%2===0) filas.push([]); filas[filas.length-1].push(f); return filas; },[]).map(fila=>`<tr>${fila.map(f=>`<td><div class="dlin"></div>${f.t}${f.n?`<div class="dacl">${esc(f.n)}</div>`:""}</td>`).join("")}${fila.length<2?"<td></td>":""}</tr>`).join("")}</table>
+</section>
+<section class="dpag">${cab}
+<h2 class="dtit">ACEPTACIÓN DE RESERVA.</h2>
+<p>${dd("fideicomiso","FIDEICOMISO / VENDEDORA")}, constituyendo domicilio a los efectos de esta Reserva en ${dd("domicilioVendedora","domicilio de la vendedora")} y domicilio electrónico en __________________________, en su carácter de Fiduciaria ó Desarrolladora del ${dd("fideicomiso","Fideicomiso")}, en adelante la “VENDEDORA”, ACEPTA la presente Reserva, en las condiciones aquí indicadas.</p>
+<div class="dacep">
+<div class="dlin" style="width:60%"></div>
+<p style="margin:0">Firma del Fiduciario o de la Desarrolladora<br>del ${dd("fideicomiso","Fideicomiso")}</p>
+<p>Aclaración nombre:______________________________________</p>
+<table class="dcampos"><tr><td>DNI: ______________________</td><td>Fecha:____________________</td></tr></table>
+<p>E-Mail: _______________________________________________</p>
+</div>
+</section>`;
+}
+const DOC_CSS = `
+.dpag{box-sizing:border-box;background:#fff;color:#111;font-family:Carlito,Calibri,"Segoe UI",Arial,sans-serif;font-size:11pt;line-height:1.45;text-align:justify;padding:14mm 22mm 18mm;margin:0 auto 18px;max-width:210mm;box-shadow:0 2px 12px rgba(0,0,0,.12)}
+.dpag p{margin:0 0 9px}
+.dmem{text-align:right;margin-bottom:14px}
+.dmem img{width:46mm;height:auto;display:inline-block}
+.dtit{text-align:center;font-size:11pt;font-weight:700;text-decoration:underline;margin:18px 0 22px}
+.dh4{font-weight:700;margin:14px 0 4px!important}
+.dv{background:#fff6d6}
+.dh{background:#ffe1dc;color:#9a2a1f}
+.dfirmas{width:100%;margin-top:60px;border-collapse:collapse}
+.dfirmas td{width:50%;text-align:center;vertical-align:top;padding:0 14px;font-size:10.5pt}
+.dfirmas tr+tr td{padding-top:55px}
+.dlin{border-top:1px solid #111;margin:0 auto 6px;width:80%}
+.dacl{font-size:9.5pt;color:#444;margin-top:2px}
+.dacep{margin-top:70px}
+.dcampos{width:100%;border-collapse:collapse;margin:0 0 9px}
+.dcampos td{padding:0}
+`;
+function documentoReserva(R){
+  const html=docReservaHTML(R).replace(/<span class="d[vh]">|<\/span>/g,"");
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Reserva ${esc(R.locales.map(l=>l.codigo).join("-"))} ${esc(R.nombre||"")}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap"><style>@page{size:A4;margin:0}body{margin:0;background:#fff}${DOC_CSS}.dpag{box-shadow:none;margin:0;max-width:none;page-break-after:always;break-after:page}.dpag:last-child{page-break-after:auto;break-after:auto}</style></head><body>${html}</body></html>`;
+}
+
+/* Panel de la izquierda + vista del documento */
+function generadorReserva(base){
+  base=base||{};
+  const presu=base.presu||null;
+  const sel=new Set(base.ids||[]);
+  const cond=presu?presu.cond:S.cond;
+  const corredor=leerCorredor();
+  const soloDoc=!!base.reserva;
+  const cand=Object.values(S.locales).filter(l=>l.estado==="disponible"||sel.has(l.id)).sort((a,b)=>(sel.has(b.id)-sel.has(a.id))||PLANTAS.findIndex(p=>p.k===a.planta)-PLANTAS.findIndex(p=>p.k===b.planta)||ordenLoc(a,b));
+  const g=$("#gen"); g.hidden=false; document.body.style.overflow="hidden";
+  const r=base.reserva||{};
+  g.innerHTML=`<div class="gbar"><button id="g-x">← Volver</button><h2>${soloDoc?"Documento de reserva":"Crear reserva"}</h2>
+    <div class="gacc"><button id="g-imp">Imprimir / PDF</button>${soloDoc?"":`<button class="prim" id="g-reg">Registrar reserva</button>`}</div></div>
+  <div class="gcuerpo"><aside class="gpanel" id="g-form">
+    ${presu?`<div class="muted" style="margin-bottom:6px">Desde presupuesto ${esc(presu.numero)}</div>`:""}
+    <fieldset><legend>${esc(plural(unidadLbl()))}</legend>
+      <input id="g-buscar" placeholder="Filtrar: A3, B2, nave 4…" ${soloDoc?"hidden":""}>
+      <div class="lista-locs" id="g-locs">${cand.map(l=>`<label data-q="${esc((l.codigo+" "+ubicTxt(l)).toLowerCase())}"><input type="checkbox" value="${esc(l.id)}" ${sel.has(l.id)?"checked":""} ${soloDoc?"disabled":""}> <b>${esc(l.codigo)}</b> <span class="muted">${esc(ubicCorta(l))} · ${esc(datoTile(l))}</span><span class="pr">${usd(precioDe(l))}</span></label>`).join("")}</div>
+    </fieldset>
+    <fieldset><legend>Compradores</legend>
+      <datalist id="g-ecs"><option>soltero</option><option>soltera</option><option>casado</option><option>casada</option><option>divorciado</option><option>divorciada</option><option>viudo</option><option>viuda</option></datalist>
+      <div id="g-comps"></div>
+      <button type="button" id="g-addc" style="margin-top:10px">+ Agregar otro comprador</button>
+    </fieldset>
+    <fieldset><legend>Montos (USD)</legend>
+      <label for="g-monto">Monto de la reserva</label><input id="g-monto" type="number" step="500" value="${esc(r.sena||(((P()||{}).doc||{}).montoReserva)||10000)}">
+      <label for="g-precio">Precio total ofrecido</label><input id="g-precio" type="number" step="1000">
+      <div class="muted" id="g-lista" style="font-size:12px;margin-top:3px"></div>
+      <div class="dos"><div><label for="g-ant">Anticipo a la firma del boleto</label><input id="g-ant" type="number" step="1000"></div><div><label for="g-cuo">Cuotas mensuales</label><input id="g-cuo" type="number" value="${esc(cond.cuotas||36)}"></div></div>
+      <div class="calc" id="g-saldo"></div>
+    </fieldset>
+    <fieldset><legend>Plazos y honorarios</legend>
+      <div class="dos"><div><label for="g-dias">Días para firmar el boleto</label><input id="g-dias" type="number" value="${esc((((P()||{}).doc||{}).diasBoleto)||10)}"></div><div><label for="g-hon">Honorarios % (+ IVA)</label><input id="g-hon" type="number" step="0.5" value="${esc((((P()||{}).doc||{}).honorarios)??3)}"></div></div>
+      <label for="g-comp">Martillera que participa (opcional)</label><input id="g-comp" placeholder="María Silvina Rodriguez Jurado CMCPSI5290 quien comparte 1% de su cliente">
+      <label for="g-fecha">Fecha de firma</label><input id="g-fecha" type="date" value="${esc(r.fecha||hoyISO())}">
+    </fieldset>
+    <details class="fijos"><summary>Datos del corredor</summary>
+      <label for="g-cnom">Corredor</label><input id="g-cnom" value="${esc(corredor.nombre)}">
+      <label for="g-cmat">Matrícula</label><input id="g-cmat" value="${esc(corredor.matricula)}">
+      <label for="g-csis">Adherido al sistema</label><input id="g-csis" value="${esc(corredor.sistema)}">
+      <label for="g-cdom">Domicilio legal</label><input id="g-cdom" value="${esc(corredor.domicilio)}">
+      <div class="muted" style="font-size:12px;margin-top:4px">Se recuerdan en este dispositivo.</div>
+    </details>
+    <p class="muted" style="font-size:12px">En el documento, lo amarillo sale de este panel y lo rojo falta completar. Al imprimir no se ven los colores.</p>
+  </aside>
+  <div class="gvista"><div id="g-doc-vista"></div></div></div>`;
+  const contactoIni=base.contacto||r.contacto||"";
+  const bloqueComprador=(c,i)=>`<div class="gcomp" data-i="${i}"><div class="gcomp-cab"><b>Comprador ${i+1}</b>${i?`<button type="button" class="c-quitar">Quitar</button>`:""}</div>
+      <div class="seg c-gen" role="group" aria-label="Género"><button type="button" data-g="m" aria-pressed="${c.genero!=="f"}">Sr.</button><button type="button" data-g="f" aria-pressed="${c.genero==="f"}">Sra.</button></div>
+      <label>Nombre y apellido</label><input class="c-nom" value="${esc(c.nombre||"")}">
+      <div class="dos"><div><label>Documento</label><select class="c-tdoc">${["D.N.I.","C.U.I.T.","Pasaporte"].map(t=>`<option ${c.tipoDoc===t?"selected":""}>${t}</option>`).join("")}</select></div><div><label>Número</label><input class="c-doc" inputmode="numeric" placeholder="18.155.356" value="${esc(c.doc||"")}"></div></div>
+      <label>Estado civil</label><input class="c-ec" list="g-ecs" placeholder="${c.genero==="f"?"casada":"casado"}" value="${esc(c.estadoCivil||"")}">
+      <label>Domicilio (calle, número, piso, localidad)</label><input class="c-dom" placeholder="Mendoza 5056 6°A CABA" value="${esc(c.domicilio||"")}">
+      <div class="dos"><div><label>Email</label><input class="c-mail" type="email" value="${esc(c.email||"")}"></div><div><label>Teléfono</label><input class="c-tel" type="tel" value="${esc(c.tel||"")}"></div></div></div>`;
+  const docG=(base.reserva&&base.reserva.documento)||null;
+  let compradores=docG&&docG.compradores&&docG.compradores.length?docG.compradores:[{genero:"m",nombre:base.cliente||r.cliente||"",tipoDoc:"D.N.I.",email:/@/.test(contactoIni)?contactoIni.split(" · ").find(x=>/@/.test(x)):"",tel:contactoIni.split(" · ").find(x=>x&&!/@/.test(x))||""}];
+  const leerComps=()=>[...g.querySelectorAll(".gcomp")].map(b=>({genero:b.querySelector('.c-gen [aria-pressed="true"]').dataset.g,nombre:b.querySelector(".c-nom").value.trim(),tipoDoc:b.querySelector(".c-tdoc").value,doc:b.querySelector(".c-doc").value.trim(),estadoCivil:b.querySelector(".c-ec").value.trim(),domicilio:b.querySelector(".c-dom").value.trim(),email:b.querySelector(".c-mail").value.trim(),tel:b.querySelector(".c-tel").value.trim()}));
+  const pintarComps=()=>{ $("#g-comps").innerHTML=compradores.map(bloqueComprador).join(""); $("#g-addc").hidden=compradores.length>=4; };
+  pintarComps();
+  $("#g-addc").onclick=()=>{ compradores=leerComps(); compradores.push({genero:"m",tipoDoc:"D.N.I."}); pintarComps(); pintar(); g.querySelector(`.gcomp[data-i="${compradores.length-1}"] .c-nom`).focus(); };
+  $("#g-comps").addEventListener("click",e=>{
+    const q=e.target.closest(".c-quitar"); if(q){ compradores=leerComps(); compradores.splice(+q.closest(".gcomp").dataset.i,1); pintarComps(); pintar(); return; }
+    const gb=e.target.closest(".c-gen button"); if(gb){ gb.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===gb))); pintar(); }
+  });
+  let precioTocado=false, antTocado=false;
+  const leer=()=>{
+    const ids=[...g.querySelectorAll("#g-locs input:checked")].map(i=>i.value);
+    const locales=ids.map(id=>S.locales[id]).filter(Boolean);
+    const lista=locales.reduce((s,l)=>s+(precioDe(l)||0),0);
+    if(!precioTocado) $("#g-precio").value=lista?Math.round(presu?(presu.items||[]).filter(i=>ids.includes(i.id)).reduce((s,i)=>s+i.precio,0)||lista:lista):"";
+    const precio=+$("#g-precio").value||0;
+    if(!antTocado) $("#g-ant").value=precio?Math.round(precio*(cond.anticipoPct||30)/100):"";
+    const anticipo=+$("#g-ant").value||0, cuotas=+$("#g-cuo").value||0, saldo=Math.max(0,precio-anticipo);
+    $("#g-lista").textContent=lista?`Precio de lista: ${usd(lista)}${precio&&precio!==lista?` · diferencia ${usd(precio-lista)}`:""}`:"";
+    $("#g-saldo").textContent=precio?`Saldo ${usd(saldo)}${cuotas&&saldo?` en ${cuotas} cuotas de ${usd(saldo/cuotas)}`:""}`:"Elegí al menos un local.";
+    const C={nombre:$("#g-cnom").value.trim(),matricula:$("#g-cmat").value.trim(),sistema:$("#g-csis").value.trim(),domicilio:$("#g-cdom").value.trim()};
+    const comps=leerComps();
+    return {ids,locales,precio,anticipo,cuotas,monto:+$("#g-monto").value||0,compradores:comps,nombre:comps.map(c=>c.nombre).filter(Boolean).join(" y "),
+      dias:+$("#g-dias").value||0,honorarios:+$("#g-hon").value||0,comparte:$("#g-comp").value.trim(),fecha:$("#g-fecha").value,corredor:C};
+  };
+  const pintar=()=>{ const R=leer(); $("#g-doc-vista").innerHTML=docReservaHTML(R); };
+  $("#g-precio").addEventListener("input",()=>{precioTocado=true;});
+  $("#g-ant").addEventListener("input",()=>{antTocado=true;});
+  g.querySelector("#g-form").addEventListener("input",pintar);
+  g.querySelector("#g-form").addEventListener("change",e=>{ if(e.target.id&&e.target.id.startsWith("g-c")) guardarCorredor(leer().corredor); pintar(); });
+  const buscar=$("#g-buscar"); if(buscar) buscar.addEventListener("input",e=>{ const q=e.target.value.toLowerCase().trim(); g.querySelectorAll("#g-locs label").forEach(l=>l.hidden=q&&!l.dataset.q.includes(q)); });
+  if(docG){ const setv=(id,v)=>{ if(v!=null&&v!==""&&$(id)) $(id).value=v; };
+    setv("#g-precio",docG.precio); setv("#g-ant",docG.anticipo); setv("#g-cuo",docG.cuotas); setv("#g-monto",docG.monto); setv("#g-dias",docG.dias); setv("#g-hon",docG.honorarios); setv("#g-comp",docG.comparte); setv("#g-fecha",docG.fecha);
+    if(docG.precio) precioTocado=true; if(docG.anticipo) antTocado=true; }
+  pintar();
+  $("#g-x").onclick=cerrarGenerador;
+  const falta=R=>{ if(!R.locales.length) return "Elegí al menos un local."; if(R.compradores.some(c=>!c.nombre)) return "Falta el nombre de un comprador."; if(!R.monto) return "Falta el monto de la reserva."; if(!R.precio) return "Falta el precio."; return ""; };
+  const nombreArchivo=R=>`Reserva ${R.locales.map(l=>l.codigo).join("-")} ${R.nombre}`.replace(/[\\/:*?"<>|]/g,"").trim();
+  $("#g-imp").onclick=()=>{ const R=leer(); const w=window.open("","_blank"); if(!w){toast("El navegador bloqueó la ventana. Permití ventanas emergentes.");return;} w.document.write(documentoReserva(R)); w.document.close(); setTimeout(()=>{ try{w.print();}catch(e){} },900); };
+  const reg=$("#g-reg"); if(reg) reg.onclick=async e=>{
+    const R=leer(); const m=falta(R); if(m){toast(m);return;}
+    const ocup=R.locales.filter(l=>l.estado!=="disponible"); if(ocup.length){ toast(`Ya no está disponible: ${ocup.map(l=>l.codigo).join(", ")}`); return; }
+    const notas=[...R.compradores.map(c=>[c.nombre, c.doc&&`${c.tipoDoc} ${c.doc}`, c.estadoCivil, c.domicilio&&("domicilio "+c.domicilio), c.email, c.tel].filter(Boolean).join(", ")), `precio ofrecido ${usd(R.precio)}`, `anticipo ${usd(R.anticipo)}`, R.cuotas?`${R.cuotas} cuotas`:"", `boleto en ${R.dias} días`, `honorarios ${R.honorarios}% + IVA`].filter(x=>x&&x!=="D.N.I.").join(" · ");
+    const c1=R.compradores[0]||{};
+    const documento={compradores:R.compradores,precio:R.precio,anticipo:R.anticipo,cuotas:R.cuotas,monto:R.monto,dias:R.dias,honorarios:R.honorarios,comparte:R.comparte,fecha:R.fecha,ids:R.ids,corredor:R.corredor};
+    const d={cliente_id:base.clienteId||(base.reserva&&base.reserva.clienteId)||null,cliente:R.nombre,contacto:[c1.tel,c1.email].filter(Boolean).join(" · "),fecha:R.fecha,sena:R.monto,vence:masDias(R.fecha||hoyISO(),R.dias||10),notas,documento};
+    if(await guardar("reservar",[R.ids,d,presu?presu.id:null],R.ids.length>1?`${R.ids.length} locales reservados`:"Reserva registrada",e.target)){
+      e.target.hidden=true; toast("Reserva registrada. Ahora podés imprimir o guardar el PDF.");
+    }
+  };
+}
+function cerrarGenerador(){ const g=$("#gen"); g.hidden=true; g.innerHTML=""; document.body.style.overflow=""; }
+
+(()=>{ const st=document.createElement("style"); st.textContent=DOC_CSS; document.head.appendChild(st); })();
+addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("#gen").hidden && $("#drawer").hidden) cerrarGenerador(); });
+
+/* ---------- historial ---------- */
+function renderHist(){
+  $("#hist").innerHTML = S.hist.length ? S.hist.map(h=>`<li><time>${fmtF((h.ts||"").slice(0,10))} ${(h.ts||"").slice(11,16)}</time><span>${esc(h.texto)}${h.por?` <span class="muted">· ${esc(String(h.por).split("@")[0])}</span>`:""}</span></li>`).join("") : `<li class="vacio">Todavía no hay movimientos.</li>`;
+}
+
+function renderTodo(){ renderProyectos(); aplicarPermisos(); renderAdmin(); if(!S.pid) return; renderResumen(); renderTablero(); renderPresus(); renderReservas(); renderClientes(); renderCobranzas(); renderHist(); }
+ir("proyectos"); renderFiltros(); iniciarSesion();
+</script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<style>
+[hidden]{display:none!important}
+nav.tabs button{color:var(--on-brand);opacity:.7;background:transparent;border:0;padding:7px 12px;border-radius:6px;font-weight:500}
+nav.tabs button:hover{opacity:1}
+nav.tabs button[aria-current]{opacity:1;background:rgba(255,255,255,.14)}
+.cargando{opacity:.55;pointer-events:none}
+#salir{background:transparent;color:var(--on-brand);border-color:rgba(255,255,255,.3);padding:5px 10px;font-size:12.5px}
+.login{position:fixed;inset:0;z-index:40;background:var(--brand);display:flex;align-items:center;justify-content:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.login form{background:var(--panel);color:var(--ink);border-radius:12px;padding:24px 22px;width:min(360px,100%);box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.login .marca{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.login img{width:52px;height:52px;border-radius:6px}
+.login h2{font:700 19px/1.15 var(--f-display);margin:0}
+.login input{font-size:16px;padding:10px 12px}
+.login button{width:100%;margin-top:16px;padding:11px;font-size:15px}
+.login .error{color:var(--ven);font-size:13px;margin-top:10px;min-height:1em}
+@media (max-width:640px){
+  header.top .wrap{gap:10px;padding-block:8px}
+  header.top img{width:36px;height:36px}
+  header.top h1{font-size:16px}
+  header.top .sub{display:none}
+  nav.tabs{order:3;width:100%;margin-left:0;flex-wrap:nowrap;overflow-x:auto;justify-content:space-between}
+  nav.tabs button{padding:7px 8px;font-size:13.5px;flex:1}
+  #salir{margin-left:auto}
+  .kpi .n{font-size:22px}
+  .kpi .s{font-size:11.5px}
+  .barra h2{width:100%}
+  .locs{gap:5px}
+  .loc{padding:7px 4px}
+  .drawer{width:100%!important}
+  .hist time{min-width:74px}
+  input,select,textarea{font-size:16px}
+}
+</style>
+<style id="hoja-css">
+.h-cab{width:100%;border-collapse:collapse;border-bottom:2px solid #111;margin-bottom:16px}
+.h-cab td{vertical-align:middle;padding:0 0 12px}
+.h-cab img{width:64px;height:64px;display:block}
+.h-t{font:800 20px/1.1 "Archivo",Arial,sans-serif;letter-spacing:.02em;color:#111}
+.h-s{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em}
+.h-n{text-align:right;font-size:12px;color:#333}
+.h-n b{display:block;font:700 15px "Archivo",Arial,sans-serif;color:#111}
+.h-cli{width:100%;font-size:13px;margin-bottom:12px;color:#111;border-collapse:collapse}
+.h-cli td{padding:0 0 4px}
+.h-tab{width:100%;border-collapse:collapse;font-size:12px;font-family:"Inter",Arial,sans-serif;font-variant-numeric:tabular-nums}
+.h-tab th{background:#111;color:#fff;text-align:left;padding:7px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.h-tab td{padding:7px 8px;border-bottom:1px solid #ddd;color:#111}
+.h-tab .r{text-align:right;white-space:nowrap}
+.h-tab tr.tot td{font-weight:700;border-top:2px solid #111;border-bottom:0}
+.h-cond{width:100%;margin-top:16px;font-size:12.5px;border-collapse:collapse;color:#111}
+.h-cond td{padding:5px 0;border-bottom:1px dotted #bbb}
+.h-cond td.v{text-align:right;font-weight:700}
+.h-cond td.sep{width:24px;border:0}
+.h-nota{margin-top:14px;font-size:12px;color:#333;white-space:pre-wrap}
+.h-pie{margin-top:22px;font-size:10.5px;color:#555;border-top:1px solid #ccc;padding-top:8px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <img src="__LOGO__" alt="Coldwell Banker">
+  <div><h1>Paseo Black · Locales</h1><div class="sub">Coldwell Banker · Escobar, Zona Puertos</div></div>
+  <button id="salir" title="Cerrar sesión en este dispositivo">Salir</button>
+  <nav class="tabs" aria-label="Secciones">
+    <button data-v="locales">Locales</button><button data-v="presupuestos">Presupuestos</button><button data-v="reservas">Reservas</button><button data-v="historial">Historial</button>
+  </nav>
+</div></header>
+
+<div class="wrap">
+  <div class="estado-conn" id="conn">Cargando datos de la planilla…</div>
+  <div class="resumen" id="resumen"></div>
+
+  <section class="vista" id="v-locales">
+    <div class="barra">
+      <h2>Disponibilidad</h2>
+      <div class="seg" id="f-planta"></div>
+      <div class="seg" id="f-estado"></div>
+      <button id="btn-act">Actualizar</button>
+    </div>
+    <div class="leyenda"><span class="pill p-disponible">Disponible</span><span class="pill p-reservado">Reservado</span><span class="pill p-vendido">Vendido</span><span class="pill p-no_disponible">No disponible</span><span>Tocá un local para ver su ficha o cambiar el estado.</span></div>
+    <div id="tablero"><div class="vacio">Cargando locales…</div></div>
+  </section>
+
+  <section class="vista" id="v-presupuestos" hidden>
+    <div class="barra"><h2>Presupuestos</h2><button class="prim" id="btn-nuevo-presu">Nuevo presupuesto</button></div>
+    <div id="presu-editor" hidden></div>
+    <div class="tabla" id="presu-lista"></div>
+  </section>
+
+  <section class="vista" id="v-reservas" hidden>
+    <div class="barra"><h2>Reservas</h2><button class="prim" id="btn-nueva-res">Nueva reserva</button></div>
+    <div class="tabla" id="res-lista"></div>
+  </section>
+
+  <section class="vista" id="v-historial" hidden>
+    <div class="barra"><h2>Historial</h2><span class="muted">Últimos 300 movimientos</span></div>
+    <ul class="hist" id="hist"></ul>
+  </section>
+</div>
+
+<div class="login" id="login" hidden>
+  <form id="f-login" autocomplete="on">
+    <div class="marca"><img src="__LOGO__" alt="Coldwell Banker"><div><h2>Paseo Black · Locales</h2><div class="muted">Coldwell Banker</div></div></div>
+    <label for="l-nombre">Tu nombre</label><input id="l-nombre" name="username" autocomplete="username" required placeholder="Ej: Mariana">
+    <label for="l-clave">Clave</label><input id="l-clave" name="password" type="password" autocomplete="current-password" required>
+    <button class="prim" id="l-ok" type="submit">Entrar</button>
+    <div class="error" id="l-err" role="alert"></div>
+  </form>
+</div>
+<div class="velo" id="velo" hidden></div>
+<aside class="drawer" id="drawer" hidden></aside>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const LOGO = "__LOGO__";
+const PLANTAS = [{k:"PB",n:"Planta baja"},{k:"1",n:"Primer nivel"},{k:"2",n:"Segundo nivel"}];
+const ESTADOS = {disponible:"Disponible",reservado:"Reservado",vendido:"Vendido",no_disponible:"No disponible"};
+const EST_PRESU = {abierto:"Vigente",aceptado:"Aceptado",rechazado:"Rechazado",vencido:"Vencido"};
+const EST_RES = {activa:"Activa",firmada:"Boleto firmado",caida:"Caída"};
+const S = {locales:{}, presus:[], reservas:[], hist:[], cond:{anticipoPct:30,cuotas:36,honorariosPct:4,certificacionArs:160000,vigenciaDias:30}, fPlanta:"todas", fEstado:"todos", cargado:false, vista:"locales"};
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const usd = n => (n==null||n===""||isNaN(n)) ? "—" : "USD " + Math.round(n).toLocaleString("es-AR");
+const ars = n => "$ " + Math.round(n||0).toLocaleString("es-AR");
+const num = (n,d=1) => Number(n||0).toLocaleString("es-AR",{maximumFractionDigits:d});
+const ent = n => Math.round(n||0).toLocaleString("es-AR");
+const hoyISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const masDias = (iso,n) => { const d=new Date(iso+"T12:00:00"); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); };
+const fmtF = iso => iso ? String(iso).slice(8,10)+"/"+String(iso).slice(5,7)+"/"+String(iso).slice(0,4) : "—";
+const precioDe = l => (l && l.m2 && l.usdM2) ? l.m2*l.usdM2 : null;
+const ordenLoc = (a,b) => (a.orden??0)-(b.orden??0);
+function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>el.hidden=true,3200); }
+
+/* ---------- conexión con la planilla ---------- */
+const CLAVE_LS="lb-sesion";
+function leerSesion(){ try{ return JSON.parse(localStorage.getItem(CLAVE_LS)||"null"); }catch(e){ return null; } }
+function guardarSesion(v){ try{ v?localStorage.setItem(CLAVE_LS,JSON.stringify(v)):localStorage.removeItem(CLAVE_LS); }catch(e){} }
+S.sesion=leerSesion();
+function llamar(fn, ...args){
+  return new Promise((ok,mal)=>{ google.script.run.withSuccessHandler(ok).withFailureHandler(mal)[fn](...args); });
+}
+async function api(fn, ...args){
+  if(!S.sesion){ mostrarLogin(); throw new Error("Entrá con la clave para continuar."); }
+  try{ return await llamar(fn, S.sesion.token, ...args); }
+  catch(e){ const m=String(e&&e.message||e); if(m.includes("SESION")){ S.sesion=null; guardarSesion(null); mostrarLogin("Tu sesión venció. Entrá de nuevo."); throw new Error("Tu sesión venció."); } throw new Error(m.replace(/^Error:\s*/,"")); }
+}
+function mostrarLogin(msg){
+  $("#login").hidden=false; $("#l-err").textContent=msg||"";
+  try{ $("#l-nombre").value=localStorage.getItem("lb-nombre")||$("#l-nombre").value; }catch(e){}
+  setTimeout(()=>($("#l-nombre").value?$("#l-clave"):$("#l-nombre")).focus(),50);
+}
+$("#f-login").addEventListener("submit",async e=>{
+  e.preventDefault(); const b=$("#l-ok"); b.disabled=true; b.textContent="Entrando…"; $("#l-err").textContent="";
+  try{ const r=JSON.parse(await llamar("entrar",$("#l-clave").value,$("#l-nombre").value));
+    S.sesion=r; guardarSesion(r); try{ localStorage.setItem("lb-nombre",r.nombre); }catch(e){}
+    $("#l-clave").value=""; $("#login").hidden=true; $("#conn").textContent="Cargando datos…"; cargar(); }
+  catch(err){ $("#l-err").textContent=String(err&&err.message||err).replace(/^Error:\s*/,""); }
+  b.disabled=false; b.textContent="Entrar";
+});
+$("#salir").onclick=async()=>{ const t=S.sesion&&S.sesion.token; S.sesion=null; guardarSesion(null); S.cargado=false; S.locales={}; S.presus=[]; S.reservas=[]; S.hist=[]; renderTodo(); mostrarLogin(); if(t){ try{ await llamar("salir",t); }catch(e){} } };
+function aplicar(json){
+  const d = typeof json==="string" ? JSON.parse(json) : json;
+  S.locales={}; d.locales.forEach(l=>S.locales[l.id]=l);
+  S.presus=d.presus; S.reservas=d.reservas; S.hist=d.hist; S.cond={...S.cond,...d.cond}; S.usuario=d.usuario; S.cargado=true;
+  $("#conn").textContent="Datos al día · "+new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})+(d.usuario?" · "+d.usuario:"");
+  renderTodo();
+}
+async function cargar(){
+  if(!S.sesion){ mostrarLogin(); $("#conn").textContent="Entrá con la clave para ver los datos."; return; }
+  try{ aplicar(await api("getDatos")); }
+  catch(e){ $("#conn").textContent="No se pudieron leer los datos: "+(e&&e.message||e);
+    if(!S.cargado) $("#tablero").innerHTML=`<div class="vacio">Sin acceso a los datos.</div>`; }
+}
+async function guardar(fn,args,msg,boton){
+  if(boton) boton.disabled=true; document.body.classList.add("cargando");
+  try{ const r=await api(fn,...args); const o=typeof r==="string"?JSON.parse(r):r; aplicar(o.datos||o); if(msg) toast(msg); return o; }
+  catch(e){ toast(e&&e.message?e.message:"No se pudo guardar. Probá de nuevo."); if(boton) boton.disabled=false; return null; }
+  finally{ document.body.classList.remove("cargando"); }
+}
+$("#btn-act").onclick=()=>{ $("#conn").textContent="Actualizando…"; cargar(); };
+setInterval(()=>{ if(S.sesion && !document.hidden && $("#drawer").hidden && $("#presu-editor").hidden) cargar(); },60000);
+
+/* ---------- vistas ---------- */
+const VISTAS=["locales","presupuestos","reservas","historial"];
+function ir(v){ S.vista=v; VISTAS.forEach(x=>{ $("#v-"+x).hidden = x!==v; const b=document.querySelector(`nav.tabs button[data-v="${x}"]`); if(x===v)b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); }); window.scrollTo(0,0); }
+document.querySelector("nav.tabs").addEventListener("click",e=>{ const b=e.target.closest("button[data-v]"); if(b) ir(b.dataset.v); });
+ir("locales");
+
+/* ---------- resumen ---------- */
+function renderResumen(){
+  const ls=Object.values(S.locales); const g={disponible:[],reservado:[],vendido:[],no_disponible:[]};
+  ls.forEach(l=>(g[l.estado]||g.no_disponible).push(l));
+  const tot=a=>a.reduce((s,l)=>s+(precioDe(l)||0),0), m2=a=>a.reduce((s,l)=>s+(l.m2||0),0);
+  const presVig=S.presus.filter(p=>estadoPresu(p)==="abierto").length;
+  $("#resumen").innerHTML = ls.length ? `
+   <div class="kpi disp"><div class="l">Disponibles</div><div class="n">${g.disponible.length}</div><div class="s">${usd(tot(g.disponible))} · ${num(m2(g.disponible))} m²</div></div>
+   <div class="kpi res"><div class="l">Reservados</div><div class="n">${g.reservado.length}</div><div class="s">${usd(tot(g.reservado))}</div></div>
+   <div class="kpi ven"><div class="l">Vendidos</div><div class="n">${g.vendido.length}</div><div class="s">${usd(tot(g.vendido))}</div></div>
+   <div class="kpi"><div class="l">Presupuestos vigentes</div><div class="n">${presVig}</div><div class="s">${S.reservas.filter(r=>r.estado==="activa").length} reservas activas</div></div>` : "";
+}
+
+/* ---------- tablero ---------- */
+function renderFiltros(){
+  $("#f-planta").innerHTML=[["todas","Todas"],...PLANTAS.map(p=>[p.k,p.k==="PB"?"PB":p.k+"° nivel"])].map(([k,n])=>`<button data-k="${k}" aria-pressed="${S.fPlanta===k}">${n}</button>`).join("");
+  $("#f-estado").innerHTML=[["todos","Todos"],["disponible","Disponibles"],["reservado","Reservados"],["vendido","Vendidos"]].map(([k,n])=>`<button data-k="${k}" aria-pressed="${S.fEstado===k}">${n}</button>`).join("");
+}
+$("#f-planta").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return; S.fPlanta=b.dataset.k; renderFiltros(); renderTablero();});
+$("#f-estado").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return; S.fEstado=b.dataset.k; renderFiltros(); renderTablero();});
+function renderTablero(){
+  const ls=Object.values(S.locales);
+  if(!ls.length){ $("#tablero").innerHTML=`<div class="vacio">${S.cargado?"La planilla no tiene locales. Ejecutá la función instalar desde Apps Script.":"Cargando locales…"}</div>`; return; }
+  let h="";
+  for(const p of PLANTAS){ if(S.fPlanta!=="todas"&&S.fPlanta!==p.k) continue;
+    const dePlanta=ls.filter(l=>l.planta===p.k).sort(ordenLoc); if(!dePlanta.length) continue;
+    const naves=[...new Set(dePlanta.map(l=>l.nave))].sort((a,b)=>a-b);
+    h+=`<div class="planta"><h3>${p.n}</h3><div class="naves">`;
+    for(const n of naves){ const enNave=dePlanta.filter(l=>l.nave===n); const vis=enNave.filter(l=>S.fEstado==="todos"||l.estado===S.fEstado);
+      if(!vis.length) continue;
+      const disp=enNave.filter(l=>l.estado==="disponible").length;
+      h+=`<div class="nave"><div class="t"><span>Nave ${n}</span><span>${disp}/${enNave.length} libres</span></div><div class="locs">`+
+        vis.map(l=>`<button class="loc ${esc(l.estado)}" data-id="${esc(l.id)}" title="${esc(l.codigo+' · '+(ESTADOS[l.estado]||l.estado)+(l.cliente?' · '+l.cliente:''))}"><b>${esc(l.codigo)}</b><span>${num(l.m2)} m²</span><span>${precioDe(l)?"$"+Math.round(precioDe(l)/1000)+"k":"s/precio"}</span></button>`).join("")+`</div></div>`;
+    }
+    h+=`</div></div>`;
+  }
+  $("#tablero").innerHTML=h||`<div class="vacio">No hay locales con ese filtro.</div>`;
+}
+$("#tablero").addEventListener("click",e=>{const b=e.target.closest(".loc"); if(b) abrirLocal(b.dataset.id);});
+
+/* ---------- ficha de local ---------- */
+function abrirDrawer(html,ancho){ const d=$("#drawer"); d.style.width=ancho||""; d.innerHTML=html; d.hidden=false; $("#velo").hidden=false; }
+function cerrarDrawer(){ $("#drawer").hidden=true; $("#velo").hidden=true; }
+$("#velo").addEventListener("click",cerrarDrawer);
+addEventListener("keydown",e=>{ if(e.key==="Escape") cerrarDrawer(); });
+function abrirLocal(id){
+  const l=S.locales[id]; if(!l) return;
+  const presus=S.presus.filter(p=>(p.items||[]).some(i=>i.id===id));
+  const res=S.reservas.filter(r=>String(r.localId)===String(id));
+  const hist=S.hist.filter(h=>h.localId===l.codigo).slice(0,8);
+  abrirDrawer(`<div class="cab"><div><h3>Local ${esc(l.codigo)}</h3><div class="muted">${esc(PLANTAS.find(p=>p.k===l.planta)?.n)} · Nave ${esc(l.nave)}</div></div><button id="d-x">Cerrar</button></div>
+   <div class="tres"><div><label for="d-m2">Superficie m²</label><input id="d-m2" type="number" step="0.01" value="${esc(l.m2)}"></div><div><label for="d-usd">USD por m²</label><input id="d-usd" type="number" step="50" value="${esc(l.usdM2??"")}"></div><div><label for="d-precio">Precio</label><input id="d-precio" disabled value="${esc(usd(precioDe(l)))}"></div></div>
+   <div class="dos"><div><label for="d-estado">Estado</label><select id="d-estado">${Object.entries(ESTADOS).map(([k,n])=>`<option value="${k}" ${l.estado===k?"selected":""}>${n}</option>`).join("")}</select></div><div><label for="d-cliente">Cliente</label><input id="d-cliente" value="${esc(l.cliente)}"></div></div>
+   <label for="d-rubro">Rubro</label><input id="d-rubro" value="${esc(l.rubro)}">
+   <label for="d-notas">Notas</label><textarea id="d-notas" rows="3">${esc(l.notas)}</textarea>
+   <div class="pie"><button class="prim" id="d-guardar">Guardar cambios</button>${l.estado==="disponible"?`<button id="d-reservar">Reservar este local</button>`:""}</div>
+   <h4 style="margin:22px 0 6px">Presupuestos donde aparece</h4>${presus.length?presus.map(p=>`<div>${esc(p.numero)} · ${esc(p.cliente||"sin cliente")} <span class="pill p-${estadoPresu(p)}">${EST_PRESU[estadoPresu(p)]}</span></div>`).join(""):`<div class="muted">Ninguno</div>`}
+   <h4 style="margin:16px 0 6px">Reservas</h4>${res.length?res.map(r=>`<div>${fmtF(r.fecha)} · ${esc(r.cliente)} <span class="pill p-${esc(r.estado)}">${EST_RES[r.estado]||esc(r.estado)}</span></div>`).join(""):`<div class="muted">Ninguna</div>`}
+   <h4 style="margin:16px 0 6px">Movimientos</h4>${hist.length?hist.map(h=>`<div class="muted">${fmtF((h.ts||"").slice(0,10))} · ${esc(h.texto)}</div>`).join(""):`<div class="muted">Sin movimientos</div>`}`);
+  const upd=()=>{ const v=(+$("#d-m2").value)*(+$("#d-usd").value); $("#d-precio").value=v?usd(v):"—"; };
+  $("#d-m2").oninput=upd; $("#d-usd").oninput=upd;
+  $("#d-x").onclick=cerrarDrawer;
+  $("#d-guardar").onclick=async e=>{
+    const campos={m2:+$("#d-m2").value||l.m2, usdM2:$("#d-usd").value===""?null:+$("#d-usd").value, estado:$("#d-estado").value, cliente:$("#d-cliente").value.trim(), rubro:$("#d-rubro").value.trim(), notas:$("#d-notas").value.trim()};
+    if(await guardar("guardarLocal",[l.id,campos],"Local actualizado",e.target)) cerrarDrawer();
+  };
+  const r=$("#d-reservar"); if(r) r.onclick=()=>formReserva(l.id);
+}
+
+/* ---------- presupuestos ---------- */
+function estadoPresu(p){ if(p.estado==="abierto" && p.vigencia && p.vigencia < hoyISO()) return "vencido"; return p.estado||"abierto"; }
+function calcItems(items,c){ return items.map(i=>{ const anticipo=i.precio*c.anticipoPct/100; const cuota=c.cuotas?(i.precio-anticipo)/c.cuotas:0; return {...i,anticipo,cuota}; }); }
+function hojaHTML(p){
+  const c=p.cond, it=calcItems(p.items,c); const sum=k=>it.reduce((s,i)=>s+(i[k]||0),0);
+  return `<table class="h-cab"><tr><td style="width:78px"><img src="${LOGO}" alt="Coldwell Banker"></td><td><div class="h-t">Presupuesto de locales</div><div class="h-s">Paseo de Compras Black · Escobar, Zona Puertos · Venta de pozo</div></td><td class="h-n"><b>${esc(p.numero||"Borrador")}</b>${fmtF(p.fecha)}</td></tr></table>
+  <table class="h-cli"><tr><td><b>Cliente:</b> ${esc(p.cliente||"—")}${p.contacto?` · ${esc(p.contacto)}`:""}</td><td style="text-align:right"><b>Vigente hasta:</b> ${fmtF(p.vigencia)}</td></tr></table>
+  <table class="h-tab"><thead><tr><th>Local</th><th>Ubicación</th><th class="r">Sup. m²</th><th class="r">USD/m²</th><th class="r">Precio USD</th><th class="r">Anticipo ${c.anticipoPct}%</th><th class="r">${c.cuotas} cuotas de</th><th>Rubro</th></tr></thead><tbody>
+  ${it.map(i=>`<tr><td><b>${esc(i.codigo)}</b></td><td>${esc(i.ubic)}</td><td class="r">${num(i.m2,2)}</td><td class="r">${ent(i.usdM2)}</td><td class="r">${ent(i.precio)}</td><td class="r">${ent(i.anticipo)}</td><td class="r">${ent(i.cuota)}</td><td>${esc(i.rubro||"")}</td></tr>`).join("")}
+  ${it.length>1?`<tr class="tot"><td colspan="2">Total ${it.length} locales</td><td class="r">${num(sum("m2"),2)}</td><td></td><td class="r">${ent(sum("precio"))}</td><td class="r">${ent(sum("anticipo"))}</td><td class="r">${ent(sum("cuota"))}</td><td></td></tr>`:""}</tbody></table>
+  <table class="h-cond"><tr><td>Forma de pago</td><td class="v">${c.anticipoPct}% anticipo + ${c.cuotas} cuotas</td><td class="sep"></td><td>Moneda</td><td class="v">Dólares estadounidenses</td></tr>
+  <tr><td>A la firma: honorarios inmobiliarios</td><td class="v">${num(c.honorariosPct)}%</td><td class="sep"></td><td>Certificación de firmas (aprox.)</td><td class="v">${ars(c.certificacionArs)} por local</td></tr></table>
+  ${p.notas?`<div class="h-nota">${esc(p.notas)}</div>`:""}
+  <div class="h-pie">Coldwell Banker · Precios sujetos a disponibilidad al momento de la reserva. Presupuesto vigente hasta ${fmtF(p.vigencia)}.</div>`;
+}
+function documentoPresu(p){
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Presupuesto ${esc(p.numero)} ${esc(p.cliente||"")}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600&display=swap"><style>body{margin:0;background:#fff;font:13px/1.45 Inter,Arial,sans-serif;color:#111}.hoja{max-width:820px;margin:24px auto;padding:0 28px}@media print{.hoja{margin:0;padding:0}}${$("#hoja-css").textContent}</style></head><body><div class="hoja">${hojaHTML(p)}</div></body></html>`;
+}
+function renderPresus(){
+  const ps=[...S.presus].sort((a,b)=>String(b.numero||"").localeCompare(String(a.numero||"")));
+  if(!ps.length){ $("#presu-lista").innerHTML=`<div class="vacio">Todavía no hay presupuestos. Tocá “Nuevo presupuesto” para armar el primero.</div>`; return; }
+  $("#presu-lista").innerHTML=`<table><thead><tr><th>N°</th><th>Fecha</th><th>Cliente</th><th>Locales</th><th class="num">Total USD</th><th>Condiciones</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody>${ps.map(p=>{
+    const est=estadoPresu(p); const ocupados=(p.items||[]).filter(i=>S.locales[i.id]&&S.locales[i.id].estado!=="disponible"&&S.locales[i.id].cliente!==p.cliente);
+    return `<tr><td><b>${esc(p.numero)}</b></td><td>${fmtF(p.fecha)}</td><td>${esc(p.cliente||"—")}</td><td>${(p.items||[]).map(i=>esc(i.codigo)).join(", ")}${ocupados.length&&est==="abierto"?`<div class="aviso">Ya no disponibles: ${ocupados.map(i=>esc(i.codigo)).join(", ")}</div>`:""}</td>
+    <td class="num">${usd((p.items||[]).reduce((s,i)=>s+i.precio,0))}</td><td>${p.cond.anticipoPct}% + ${p.cond.cuotas} cuotas</td><td>${fmtF(p.vigencia)}</td><td><span class="pill p-${est}">${EST_PRESU[est]||esc(est)}</span></td>
+    <td><div class="acc"><button data-a="ver" data-id="${esc(p.id)}">Ver</button><button data-a="copiar" data-id="${esc(p.id)}">Duplicar</button>${est==="abierto"?`<button data-a="aceptar" data-id="${esc(p.id)}">Reservar</button><button data-a="rechazar" data-id="${esc(p.id)}">Rechazado</button>`:""}</div></td></tr>`;}).join("")}</tbody></table>`;
+}
+$("#presu-lista").addEventListener("click",async e=>{ const b=e.target.closest("button[data-a]"); if(!b) return; const p=S.presus.find(x=>x.id===b.dataset.id); if(!p) return;
+  if(b.dataset.a==="ver") verPresu(p);
+  if(b.dataset.a==="copiar") editorPresu({cliente:p.cliente,contacto:p.contacto,notas:p.notas,cond:{...p.cond},ids:p.items.map(i=>i.id)});
+  if(b.dataset.a==="rechazar") guardar("estadoPresupuesto",[p.id,"rechazado"],"Presupuesto marcado como rechazado",b);
+  if(b.dataset.a==="aceptar") reservarDesdePresu(p);
+});
+function verPresu(p){
+  abrirDrawer(`<div class="cab"><h3>${esc(p.numero)}</h3><button id="d-x">Cerrar</button></div>
+   <div class="pie" style="margin:0 0 12px"><button class="prim" id="d-pdf">Guardar PDF en Drive</button><button id="d-imp">Imprimir</button><button id="d-copiar">Copiar texto para WhatsApp</button></div>
+   <div id="d-link"></div>
+   <div class="hoja-wrap"><div class="hoja" style="min-width:0;padding:20px;font-size:12px">${hojaHTML(p)}</div></div>`,"min(860px,100%)");
+  $("#d-x").onclick=cerrarDrawer;
+  $("#d-imp").onclick=()=>{ const w=window.open("","_blank"); if(!w){toast("El navegador bloqueó la ventana. Permití ventanas emergentes.");return;} w.document.write(documentoPresu(p)); w.document.close(); setTimeout(()=>{ try{w.print();}catch(e){} },700); };
+  $("#d-pdf").onclick=async e=>{ e.target.disabled=true; e.target.textContent="Generando PDF…";
+    try{ const url=await api("guardarPdf",documentoPresu(p),`Presupuesto ${p.numero} ${(p.cliente||"").replace(/[\\/:*?"<>|]/g,"")}`.trim());
+      $("#d-link").innerHTML=`<p>PDF guardado en la carpeta “Presupuestos Coldwell Banker” de tu Drive: <a href="${esc(url)}" target="_blank" rel="noopener">abrir PDF</a></p>`; toast("PDF guardado en Drive"); }
+    catch(err){ toast("No se pudo crear el PDF: "+(err&&err.message||err)); }
+    e.target.disabled=false; e.target.textContent="Guardar PDF en Drive"; };
+  $("#d-copiar").onclick=()=>copiarTexto(textoWhatsApp(p));
+}
+function textoWhatsApp(p){ const it=calcItems(p.items,p.cond);
+  return `*Coldwell Banker · Paseo Black Escobar*\nPresupuesto ${p.numero}${p.cliente?" · "+p.cliente:""}\n\n`+it.map(i=>`• Local ${i.codigo} (${i.ubic}) ${num(i.m2,2)} m² — USD ${ent(i.precio)}\n   Anticipo ${p.cond.anticipoPct}%: USD ${ent(i.anticipo)} + ${p.cond.cuotas} cuotas de USD ${ent(i.cuota)}`).join("\n")+
+  `\n\nA la firma: ${num(p.cond.honorariosPct)}% honorarios inmobiliarios + certificación de firmas ${ars(p.cond.certificacionArs)} por local (aprox.)\nVigente hasta ${fmtF(p.vigencia)}`; }
+async function copiarTexto(t){ try{ await navigator.clipboard.writeText(t); toast("Copiado"); }catch(e){ abrirDrawer(`<div class="cab"><h3>Copiá el texto</h3><button id="d-x">Cerrar</button></div><textarea id="d-txt" rows="16">${esc(t)}</textarea>`); $("#d-x").onclick=cerrarDrawer; $("#d-txt").select(); } }
+function editorPresu(base){
+  const c={...S.cond,...(base&&base.cond||{})}; const sel=new Set(base&&base.ids||[]);
+  const disp=Object.values(S.locales).filter(l=>l.estado==="disponible"&&precioDe(l)).sort((a,b)=>PLANTAS.findIndex(p=>p.k===a.planta)-PLANTAS.findIndex(p=>p.k===b.planta)||ordenLoc(a,b));
+  const ed=$("#presu-editor"); ed.hidden=false; ir("presupuestos");
+  ed.innerHTML=`<div class="editor" style="margin-bottom:22px"><div class="form"><h3>Armar presupuesto</h3>
+    <div class="dos"><div><label for="p-cli">Cliente</label><input id="p-cli" value="${esc(base&&base.cliente)}"></div><div><label for="p-con">Teléfono / email</label><input id="p-con" value="${esc(base&&base.contacto)}"></div></div>
+    <label for="p-buscar">Locales disponibles (${disp.length})</label><input id="p-buscar" placeholder="Filtrar: A1, B2, nave 3…">
+    <div class="lista-locs" id="p-locs">${disp.map(l=>`<label data-q="${esc((l.codigo+" "+l.planta+" nave "+l.nave+" "+(l.rubro||"")).toLowerCase())}"><input type="checkbox" value="${esc(l.id)}" ${sel.has(l.id)?"checked":""}> <b>${esc(l.codigo)}</b> <span class="muted">${l.planta==="PB"?"PB":l.planta+"°"} N${esc(l.nave)} · ${num(l.m2)} m²</span><span class="pr">${usd(precioDe(l))}</span></label>`).join("")}</div>
+    <div class="tres"><div><label for="p-ant">Anticipo %</label><input id="p-ant" type="number" value="${c.anticipoPct}"></div><div><label for="p-cuo">Cuotas</label><input id="p-cuo" type="number" value="${c.cuotas}"></div><div><label for="p-hon">Honorarios %</label><input id="p-hon" type="number" step="0.5" value="${c.honorariosPct}"></div></div>
+    <div class="dos"><div><label for="p-cert">Certificación $ x local</label><input id="p-cert" type="number" step="1000" value="${c.certificacionArs}"></div><div><label for="p-vig">Vigente hasta</label><input id="p-vig" type="date" value="${masDias(hoyISO(),c.vigenciaDias||30)}"></div></div>
+    <label for="p-not">Notas para el cliente</label><textarea id="p-not" rows="2">${esc(base&&base.notas)}</textarea>
+    <div class="pie"><button class="prim" id="p-guardar">Guardar presupuesto</button><button id="p-cancel">Cancelar</button></div></div>
+    <div class="hoja-wrap"><div class="hoja" id="p-hoja"></div></div></div>`;
+  const leer=()=>{ const ids=[...ed.querySelectorAll("#p-locs input:checked")].map(i=>i.value);
+    return {cliente:$("#p-cli").value.trim(),contacto:$("#p-con").value.trim(),notas:$("#p-not").value.trim(),fecha:hoyISO(),vigencia:$("#p-vig").value,
+      cond:{anticipoPct:+$("#p-ant").value||0,cuotas:+$("#p-cuo").value||0,honorariosPct:+$("#p-hon").value||0,certificacionArs:+$("#p-cert").value||0},
+      items:ids.map(id=>{const l=S.locales[id]; return {id,codigo:l.codigo,ubic:(l.planta==="PB"?"Planta baja":l.planta+"° nivel")+" · Nave "+l.nave,m2:l.m2,usdM2:l.usdM2,precio:precioDe(l),rubro:l.rubro||""};})}; };
+  const pint=()=>{ const p=leer(); $("#p-hoja").innerHTML=p.items.length?hojaHTML(p):`<div class="vacio" style="color:#666">Marcá uno o más locales a la izquierda para ver el presupuesto.</div>`; };
+  ed.oninput=pint; pint();
+  $("#p-buscar").addEventListener("input",e=>{ const q=e.target.value.toLowerCase().trim(); ed.querySelectorAll("#p-locs label").forEach(l=>l.hidden=q&&!l.dataset.q.includes(q)); });
+  $("#p-cancel").onclick=()=>{ ed.hidden=true; ed.innerHTML=""; };
+  $("#p-guardar").onclick=async e=>{ const p=leer(); if(!p.items.length){toast("Elegí al menos un local");return;}
+    const info=await guardar("crearPresupuesto",[p],null,e.target); if(!info) return;
+    ed.hidden=true; ed.innerHTML=""; toast("Presupuesto "+info.numero+" guardado");
+    const nuevo=S.presus.find(x=>x.id===info.id); if(nuevo) verPresu(nuevo); };
+  ed.scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("#btn-nuevo-presu").onclick=()=>editorPresu(null);
+
+/* ---------- reservas ---------- */
+function reservarDesdePresu(p){
+  const libres=p.items.filter(i=>S.locales[i.id]?.estado==="disponible");
+  if(!libres.length){ toast("Ninguno de esos locales sigue disponible"); return; }
+  formReserva(libres.map(i=>i.id), p);
+}
+function formReserva(ids,presu){
+  ids=[].concat(ids||[]);
+  const disp=Object.values(S.locales).filter(l=>l.estado==="disponible").sort(ordenLoc);
+  abrirDrawer(`<div class="cab"><h3>Nueva reserva</h3><button id="d-x">Cerrar</button></div>
+   ${presu?`<div class="muted">Desde presupuesto ${esc(presu.numero)}</div>`:""}
+   <label>Locales a reservar</label><div class="lista-locs">${disp.map(l=>`<label><input type="checkbox" value="${esc(l.id)}" ${ids.includes(l.id)?"checked":""}> <b>${esc(l.codigo)}</b><span class="pr">${usd(precioDe(l))}</span></label>`).join("")}</div>
+   <div class="dos"><div><label for="r-cli">Cliente</label><input id="r-cli" value="${esc(presu&&presu.cliente)}"></div><div><label for="r-con">Teléfono / email</label><input id="r-con" value="${esc(presu&&presu.contacto)}"></div></div>
+   <div class="tres"><div><label for="r-fec">Fecha</label><input id="r-fec" type="date" value="${hoyISO()}"></div><div><label for="r-sena">Seña USD</label><input id="r-sena" type="number" step="100"></div><div><label for="r-vence">Vence</label><input id="r-vence" type="date" value="${masDias(hoyISO(),15)}"></div></div>
+   <label for="r-not">Notas</label><textarea id="r-not" rows="2"></textarea>
+   <div class="pie"><button class="prim" id="r-ok">Registrar reserva</button></div>`);
+  $("#d-x").onclick=cerrarDrawer;
+  $("#r-ok").onclick=async e=>{ const sel=[...document.querySelectorAll("#drawer .lista-locs input:checked")].map(i=>i.value); const cli=$("#r-cli").value.trim();
+    if(!sel.length){toast("Elegí un local");return;} if(!cli){toast("Poné el nombre del cliente");return;}
+    const d={cliente:cli,contacto:$("#r-con").value.trim(),fecha:$("#r-fec").value,sena:+$("#r-sena").value||0,vence:$("#r-vence").value,notas:$("#r-not").value.trim()};
+    if(await guardar("reservar",[sel,d,presu?presu.id:null],sel.length>1?`${sel.length} locales reservados`:"Local reservado",e.target)){ cerrarDrawer(); ir("reservas"); } };
+}
+$("#btn-nueva-res").onclick=()=>formReserva([]);
+function renderReservas(){
+  const rs=[...S.reservas].sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||"")));
+  if(!rs.length){ $("#res-lista").innerHTML=`<div class="vacio">Sin reservas registradas. Reservá desde un presupuesto o con “Nueva reserva”.</div>`; return; }
+  const hoy=hoyISO();
+  $("#res-lista").innerHTML=`<table><thead><tr><th>Fecha</th><th>Local</th><th>Cliente</th><th class="num">Precio</th><th class="num">Seña</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr>
+   <td>${fmtF(r.fecha)}</td><td><b>${esc(r.codigo)}</b>${r.presupuesto?`<div class="muted">${esc(r.presupuesto)}</div>`:""}</td><td>${esc(r.cliente)}${r.contacto?`<div class="muted">${esc(r.contacto)}</div>`:""}</td>
+   <td class="num">${usd(r.precio)}</td><td class="num">${r.sena?usd(r.sena):"—"}</td><td>${fmtF(r.vence)}${r.estado==="activa"&&r.vence&&r.vence<hoy?`<div class="aviso">Vencida</div>`:""}</td>
+   <td><span class="pill p-${esc(r.estado)}">${EST_RES[r.estado]||esc(r.estado)}</span></td>
+   <td>${r.estado==="activa"?`<div class="acc"><button data-a="firmada" data-id="${esc(r.id)}">Firmó boleto</button><button class="peligro" data-a="caida" data-id="${esc(r.id)}">Se cayó</button></div>`:""}</td></tr>`).join("")}</tbody></table>`;
+}
+$("#res-lista").addEventListener("click",e=>{ const b=e.target.closest("button[data-a]"); if(!b) return; const r=S.reservas.find(x=>x.id===b.dataset.id); if(!r) return;
+  guardar("cerrarReserva",[r.id,b.dataset.a], b.dataset.a==="firmada"?`${r.codigo} pasó a vendido`:`${r.codigo} vuelve a estar disponible`, b); });
+
+/* ---------- historial ---------- */
+function renderHist(){
+  $("#hist").innerHTML = S.hist.length ? S.hist.map(h=>`<li><time>${fmtF((h.ts||"").slice(0,10))} ${(h.ts||"").slice(11,16)}</time><span>${esc(h.texto)}${h.por?` <span class="muted">· ${esc(String(h.por).split("@")[0])}</span>`:""}</span></li>`).join("") : `<li class="vacio">Todavía no hay movimientos.</li>`;
+}
+
+function renderTodo(){ renderResumen(); renderTablero(); renderPresus(); renderReservas(); renderHist(); }
+renderFiltros(); renderTodo(); cargar();
+</script>
+</body>
+</html>

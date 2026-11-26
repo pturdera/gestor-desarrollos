@@ -1,0 +1,31 @@
+do $t$
+declare a uuid := (select id from public.perfiles where rol='admin' limit 1); r text := ''; p public.presupuestos; cli uuid; res uuid; n int; pid uuid := '00000000-0000-4000-8000-000000000001'; nuevo uuid;
+begin
+  perform set_config('role','authenticated',true);
+  perform set_config('request.jwt.claims', json_build_object('sub',a,'role','authenticated')::text, true);
+  r := r || 'proyectos: ' || (select string_agg(nombre||' ('||tipo||')', ', ') from public.proyectos) || E'\n';
+  r := r || 'unidades Black: ' || (select count(*) from public.unidades where proyecto_id=pid) || ' A13 precio ' || (select precio from public.unidades where id='A13') || E'\n';
+  insert into public.proyectos(nombre, tipo, niveles) values ('Torre Prueba','edificio','{"grupo":"Torre","subgrupo":"Piso","unidad":"Departamento"}') returning id into nuevo;
+  insert into public.unidades(proyecto_id, codigo, grupo, subgrupo, m2, precio_lista, ambientes, orden) values (nuevo,'1A','A','1',55,120000,2,1),(nuevo,'A13','A','1',40,90000,1,2);
+  r := r || 'torre: ' || (select string_agg(codigo||'='||precio, ', ') from public.unidades where proyecto_id=nuevo) || E'\n';
+  insert into public.clientes(proyecto_id, nombre, telefono) values (pid,'Juan Interesado','11 5555') returning id into cli;
+  r := r || 'cliente asesor: ' || (select asesor from public.clientes where id=cli) || E'\n';
+  p := public.crear_presupuesto(jsonb_build_object('proyecto_id',pid,'cliente_id',cli,'cliente','Juan Interesado','items','[{"id":"A13","codigo":"A13","precio":206000}]'::jsonb));
+  r := r || 'presupuesto ' || p.nro || ', cliente estado: ' || (select estado from public.clientes where id=cli) || E'\n';
+  begin perform public.reservar(array['A13', (select id from public.unidades where proyecto_id=nuevo and codigo='1A')], '{"cliente":"X"}'::jsonb, null); r := r || 'mezcla proyectos permitida (MAL)'; exception when others then r := r || 'mezcla: ' || sqlerrm || E'\n'; end;
+  perform public.reservar(array['A13'], jsonb_build_object('cliente','Juan Interesado','sena',10000,'fecha','2026-11-26'), p.id);
+  select id into res from public.reservas where unidad_id='A13';
+  r := r || 'reserva proyecto ok: ' || ((select proyecto_id from public.reservas where id=res)=pid) || ', cliente: ' || (select estado from public.clientes where id=cli) || E'\n';
+  perform public.cerrar_reserva(res,'firmada');
+  r := r || 'vendida: ' || (select estado from public.unidades where id='A13') || ', cliente: ' || (select estado from public.clientes where id=cli) || E'\n';
+  n := public.generar_plan(res, 61800, '2026-12-01', 36, 4005.56, '2027-01-10');
+  r := r || 'cuotas: ' || (select count(*) from public.cuotas where reserva_id=res) || ' total USD ' || (select sum(monto) from public.cuotas where reserva_id=res) || ' última ' || (select max(vencimiento) from public.cuotas where reserva_id=res) || E'\n';
+  perform public.registrar_pago((select id from public.cuotas where reserva_id=res and numero=0), 61800, '2026-12-01', 'transferencia');
+  begin perform public.generar_plan(res, 1, null, 1, 1, '2027-01-01'); r := r || 'rehizo con pagos (MAL)'; exception when others then r := r || 'rehacer: ' || sqlerrm || E'\n'; end;
+  insert into public.seguimientos(cliente_id, tipo, texto) values (cli,'llamada','Pidió financiación');
+  r := r || 'seguimientos: ' || (select string_agg(tipo||':'||texto||' ['||autor||']', ' | ' order by creado) from public.seguimientos where cliente_id=cli) || E'\n';
+  perform public.guardar_unidad('B17', '{"precio_lista":"150000"}'::jsonb);
+  r := r || 'B17 precio fijo: ' || (select precio from public.unidades where id='B17') || E'\n';
+  r := r || 'historial: ' || (select string_agg(texto, ' | ' order by id desc) from (select * from public.historial order by id desc limit 4) h) || E'\n';
+  raise exception E'RESULTADO\n%', r;
+end $t$;

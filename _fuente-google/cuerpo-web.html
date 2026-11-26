@@ -1,0 +1,686 @@
+<style>
+[hidden]{display:none!important}
+nav.tabs button{color:var(--on-brand);opacity:.7;background:transparent;border:0;padding:7px 12px;border-radius:6px;font-weight:500}
+nav.tabs button:hover{opacity:1}
+nav.tabs button[aria-current]{opacity:1;background:rgba(255,255,255,.14)}
+.cargando{opacity:.55;pointer-events:none}
+#gen{position:fixed;inset:0;z-index:25;background:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.gbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--brand);color:var(--on-brand);padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.gbar h2{font:700 17px/1.2 var(--f-display);margin:0}
+.gbar>button{background:transparent;color:var(--on-brand);border-color:rgba(255,255,255,.3)}
+.gacc{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.gacc button:not(.prim){background:transparent;color:var(--on-brand);border-color:rgba(255,255,255,.3)}
+.gcuerpo{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr)}
+.gpanel{overflow:auto;background:var(--panel);border-right:1px solid var(--line);padding:14px 16px 40px}
+.gpanel fieldset{border:1px solid var(--line);border-radius:8px;padding:6px 12px 12px;margin:0 0 12px}
+.gpanel legend{font-weight:600;padding:0 4px}
+.gcomp{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.gcomp:first-child{border-top:0;margin-top:0;padding-top:4px}
+.gcomp-cab{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.gcomp-cab button{padding:3px 9px;font-size:12px}
+.gcomp .seg button{padding:4px 12px}
+.gpanel .lista-locs{max-height:210px}
+.gpanel details.fijos{border:1px dashed var(--line);border-radius:8px;padding:8px 12px;margin:0 0 12px}
+.gpanel details.fijos summary{cursor:pointer;font-weight:600}
+.gpanel .calc{font-size:12.5px;background:var(--soft);border-radius:6px;padding:8px 10px;margin-top:10px;font-variant-numeric:tabular-nums}
+.gvista{overflow:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 40px 18px;background:var(--soft)}
+@media (max-width:820px){ .gcuerpo{grid-template-columns:1fr;overflow:auto} .gpanel,.gvista{overflow:visible} .gpanel{border-right:0;border-bottom:1px solid var(--line)} .dpag{padding:18px 16px!important;font-size:10.5pt!important} }
+#salir,#yo{background:transparent;color:var(--on-brand);border-color:rgba(255,255,255,.3);padding:5px 10px;font-size:12.5px}
+#yo{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.login{position:fixed;inset:0;z-index:40;background:var(--brand);display:flex;align-items:center;justify-content:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.login form{background:var(--panel);color:var(--ink);border-radius:12px;padding:24px 22px;width:min(360px,100%);box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.login .marca{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.login img{width:52px;height:52px;border-radius:6px}
+.login h2{font:700 19px/1.15 var(--f-display);margin:0}
+.login input{font-size:16px;padding:10px 12px}
+.login button{width:100%;margin-top:16px;padding:11px;font-size:15px}
+.login .error{color:var(--ven);font-size:13px;margin-top:10px;min-height:1em}
+@media (max-width:640px){
+  header.top .wrap{gap:10px;padding-block:8px}
+  header.top img{width:36px;height:36px}
+  header.top h1{font-size:16px}
+  header.top .sub{display:none}
+  nav.tabs{order:3;width:100%;margin-left:0;flex-wrap:nowrap;overflow-x:auto;justify-content:space-between}
+  nav.tabs button{padding:7px 8px;font-size:13.5px;flex:1}
+  #yo{margin-left:auto;max-width:120px}
+  .kpi .n{font-size:22px}
+  .kpi .s{font-size:11.5px}
+  .barra h2{width:100%}
+  .locs{gap:5px}
+  .loc{padding:7px 4px}
+  .drawer{width:100%!important}
+  .hist time{min-width:74px}
+  input,select,textarea{font-size:16px}
+}
+</style>
+<style id="hoja-css">
+.h-cab{width:100%;border-collapse:collapse;border-bottom:2px solid #111;margin-bottom:16px}
+.h-cab td{vertical-align:middle;padding:0 0 12px}
+.h-cab img{width:64px;height:64px;display:block}
+.h-t{font:800 20px/1.1 "Archivo",Arial,sans-serif;letter-spacing:.02em;color:#111}
+.h-s{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em}
+.h-n{text-align:right;font-size:12px;color:#333}
+.h-n b{display:block;font:700 15px "Archivo",Arial,sans-serif;color:#111}
+.h-cli{width:100%;font-size:13px;margin-bottom:12px;color:#111;border-collapse:collapse}
+.h-cli td{padding:0 0 4px}
+.h-ase td{padding-top:2px;font-size:12px;color:#333}
+.h-tab{width:100%;border-collapse:collapse;font-size:12px;font-family:"Inter",Arial,sans-serif;font-variant-numeric:tabular-nums}
+.h-tab th{background:#111;color:#fff;text-align:left;padding:7px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.h-tab td{padding:7px 8px;border-bottom:1px solid #ddd;color:#111}
+.h-tab .r{text-align:right;white-space:nowrap}
+.h-tab tr.tot td{font-weight:700;border-top:2px solid #111;border-bottom:0}
+.h-cond{width:100%;margin-top:16px;font-size:12.5px;border-collapse:collapse;color:#111}
+.h-cond td{padding:5px 0;border-bottom:1px dotted #bbb}
+.h-cond td.v{text-align:right;font-weight:700}
+.h-cond td.sep{width:24px;border:0}
+.h-nota{margin-top:14px;font-size:12px;color:#333;white-space:pre-wrap}
+.h-pie{margin-top:22px;font-size:10.5px;color:#555;border-top:1px solid #ccc;padding-top:8px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <img src="__LOGO__" alt="Coldwell Banker">
+  <div><h1>Paseo Black · Locales</h1><div class="sub">Coldwell Banker · Escobar, Zona Puertos</div></div>
+  <button id="yo" title="Mis datos de contacto">Mis datos</button>
+  <button id="salir" title="Cerrar sesión en este dispositivo">Salir</button>
+  <nav class="tabs" aria-label="Secciones">
+    <button data-v="locales">Locales</button><button data-v="presupuestos">Presupuestos</button><button data-v="reservas">Reservas</button><button data-v="historial">Historial</button>
+  </nav>
+</div></header>
+
+<div class="wrap">
+  <div class="estado-conn" id="conn">Cargando datos de la planilla…</div>
+  <div class="resumen" id="resumen"></div>
+
+  <section class="vista" id="v-locales">
+    <div class="barra">
+      <h2>Disponibilidad</h2>
+      <div class="seg" id="f-planta"></div>
+      <div class="seg" id="f-estado"></div>
+      <button id="btn-act">Actualizar</button>
+    </div>
+    <div class="leyenda"><span class="pill p-disponible">Disponible</span><span class="pill p-reservado">Reservado</span><span class="pill p-vendido">Vendido</span><span class="pill p-no_disponible">No disponible</span><span>Tocá un local para ver su ficha o cambiar el estado.</span></div>
+    <div id="tablero"><div class="vacio">Cargando locales…</div></div>
+  </section>
+
+  <section class="vista" id="v-presupuestos" hidden>
+    <div class="barra"><h2>Presupuestos</h2><button class="prim" id="btn-nuevo-presu">Nuevo presupuesto</button></div>
+    <div id="presu-editor" hidden></div>
+    <div class="tabla" id="presu-lista"></div>
+  </section>
+
+  <section class="vista" id="v-reservas" hidden>
+    <div class="barra"><h2>Reservas</h2><button class="prim" id="btn-nueva-res">Crear reserva</button></div>
+    <div class="tabla" id="res-lista"></div>
+  </section>
+
+  <section class="vista" id="v-historial" hidden>
+    <div class="barra"><h2>Historial</h2><span class="muted">Últimos 300 movimientos</span></div>
+    <ul class="hist" id="hist"></ul>
+  </section>
+</div>
+
+<div class="login" id="login" hidden>
+  <form id="f-login" autocomplete="on">
+    <div class="marca"><img src="__LOGO__" alt="Coldwell Banker"><div><h2>Paseo Black · Locales</h2><div class="muted">Coldwell Banker</div></div></div>
+    <label for="l-nombre">Tu nombre</label><input id="l-nombre" name="username" autocomplete="username" required placeholder="Ej: Mariana">
+    <label for="l-clave">Clave</label><input id="l-clave" name="password" type="password" autocomplete="current-password" required>
+    <div id="l-api-caja" hidden><label for="l-api">Dirección del sistema</label><input id="l-api" type="url" inputmode="url" placeholder="https://script.google.com/macros/s/…/exec"><div class="muted" style="font-size:12px;margin-top:4px">Se pide una sola vez en cada dispositivo.</div></div>
+    <button class="prim" id="l-ok" type="submit">Entrar</button>
+    <div class="error" id="l-err" role="alert"></div>
+  </form>
+</div>
+<div id="gen" hidden></div>
+<div class="velo" id="velo" hidden></div>
+<aside class="drawer" id="drawer" hidden></aside>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const LOGO = "__LOGO__";
+const PLANTAS = [{k:"PB",n:"Planta baja"},{k:"1",n:"Primer nivel"},{k:"2",n:"Segundo nivel"}];
+const ESTADOS = {disponible:"Disponible",reservado:"Reservado",vendido:"Vendido",no_disponible:"No disponible"};
+const EST_PRESU = {abierto:"Vigente",aceptado:"Aceptado",rechazado:"Rechazado",vencido:"Vencido"};
+const EST_RES = {activa:"Activa",firmada:"Boleto firmado",caida:"Caída"};
+const S = {locales:{}, presus:[], reservas:[], hist:[], cond:{anticipoPct:30,cuotas:36,honorariosPct:4,certificacionArs:160000,vigenciaDias:30}, fPlanta:"todas", fEstado:"todos", cargado:false, vista:"locales"};
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const usd = n => (n==null||n===""||isNaN(n)) ? "—" : "USD " + Math.round(n).toLocaleString("es-AR");
+const ars = n => "$ " + Math.round(n||0).toLocaleString("es-AR");
+const num = (n,d=1) => Number(n||0).toLocaleString("es-AR",{maximumFractionDigits:d});
+const ent = n => Math.round(n||0).toLocaleString("es-AR");
+const hoyISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const masDias = (iso,n) => { const d=new Date(iso+"T12:00:00"); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); };
+const fmtF = iso => iso ? String(iso).slice(8,10)+"/"+String(iso).slice(5,7)+"/"+String(iso).slice(0,4) : "—";
+const precioDe = l => (l && l.m2 && l.usdM2) ? l.m2*l.usdM2 : null;
+const ordenLoc = (a,b) => (a.orden??0)-(b.orden??0);
+function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>el.hidden=true,3200); }
+
+/* ---------- conexión con la planilla ---------- */
+const CLAVE_LS="lb-sesion";
+function leerSesion(){ try{ return JSON.parse(localStorage.getItem(CLAVE_LS)||"null"); }catch(e){ return null; } }
+function guardarSesion(v){ try{ v?localStorage.setItem(CLAVE_LS,JSON.stringify(v)):localStorage.removeItem(CLAVE_LS); }catch(e){} }
+S.sesion=leerSesion();
+/* Dirección del sistema: la URL /exec de la aplicación web de Apps Script de la planilla. */
+const API_FIJA = "__API__";
+let API_MEMO="";
+function apiUrl(){ if(API_FIJA && !API_FIJA.startsWith("__")) return API_FIJA; if(API_MEMO) return API_MEMO; try{ return localStorage.getItem("lb-api")||""; }catch(e){ return ""; } }
+async function llamar(fn, ...args){
+  const url=apiUrl();
+  if(!url) throw new Error("Falta la dirección del sistema.");
+  let r;
+  try{ r=await fetch(url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn,args}),redirect:"follow"}); }
+  catch(e){ throw new Error("No hay conexión con el sistema. Revisá internet y la dirección del sistema."); }
+  let j=null; try{ j=await r.json(); }catch(e){}
+  if(!j) throw new Error("El sistema no respondió bien. Revisá que la dirección termine en /exec y que la app esté publicada para “Cualquier persona”.");
+  if(!j.ok) throw new Error(j.error||"Error del sistema");
+  return j.data;
+}
+async function api(fn, ...args){
+  if(!S.sesion){ mostrarLogin(); throw new Error("Entrá con la clave para continuar."); }
+  try{ return await llamar(fn, S.sesion.token, ...args); }
+  catch(e){ const m=String(e&&e.message||e); if(m.includes("SESION")){ S.sesion=null; guardarSesion(null); mostrarLogin("Tu sesión venció. Entrá de nuevo."); throw new Error("Tu sesión venció."); } throw new Error(m.replace(/^Error:\s*/,"")); }
+}
+function mostrarLogin(msg){
+  $("#login").hidden=false; $("#l-err").textContent=msg||"";
+  const fija=API_FIJA && !API_FIJA.startsWith("__"); $("#l-api-caja").hidden=fija; $("#l-api").required=!fija; if(!fija) $("#l-api").value=apiUrl();
+  try{ $("#l-nombre").value=localStorage.getItem("lb-nombre")||$("#l-nombre").value; }catch(e){}
+  setTimeout(()=>($("#l-nombre").value?$("#l-clave"):$("#l-nombre")).focus(),50);
+}
+$("#f-login").addEventListener("submit",async e=>{
+  e.preventDefault(); const b=$("#l-ok");
+  if(!$("#l-api-caja").hidden){ const u=$("#l-api").value.trim(); if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(u)){ $("#l-err").textContent="La dirección del sistema tiene que empezar con https://script.google.com/macros/s/ y terminar en /exec."; return; } API_MEMO=u; try{ localStorage.setItem("lb-api",u); }catch(err){} }
+  b.disabled=true; b.textContent="Entrando…"; $("#l-err").textContent="";
+  try{ const r=JSON.parse(await llamar("entrar",$("#l-clave").value,$("#l-nombre").value));
+    S.sesion=r; S.perfil=r.perfil||{nombre:r.nombre,telefono:"",email:""}; guardarSesion(r); try{ localStorage.setItem("lb-nombre",r.nombre); }catch(e){}
+    pintarYo(); if(!S.perfil.telefono && !S.perfil.email) setTimeout(()=>misDatos("Completá tu teléfono y email: van a salir en los presupuestos que armes."),900);
+    $("#l-clave").value=""; $("#login").hidden=true; $("#conn").textContent="Cargando datos…"; cargar(); }
+  catch(err){ $("#l-err").textContent=String(err&&err.message||err).replace(/^Error:\s*/,""); }
+  b.disabled=false; b.textContent="Entrar";
+});
+$("#salir").onclick=async()=>{ const t=S.sesion&&S.sesion.token; S.sesion=null; guardarSesion(null); try{ localStorage.removeItem("lb-datos"); }catch(e){} S.cargado=false; S.perfil=null; S.asesores=[]; pintarYo(); S.locales={}; S.presus=[]; S.reservas=[]; S.hist=[]; renderTodo(); mostrarLogin(); if(t){ try{ await llamar("salir",t); }catch(e){} } };
+function aplicar(json, deCopia){
+  const d = typeof json==="string" ? JSON.parse(json) : json;
+  if(!deCopia){ try{ localStorage.setItem("lb-datos", typeof json==="string"?json:JSON.stringify(json)); }catch(e){} }
+  S.locales={}; d.locales.forEach(l=>S.locales[l.id]=l);
+  S.presus=d.presus; S.reservas=d.reservas; S.hist=d.hist; S.cond={...S.cond,...d.cond}; S.usuario=d.usuario; S.cargado=true;
+  S.asesores=d.asesores||[]; const mio=asesorDe(d.usuario||(S.sesion&&S.sesion.nombre)); if(mio) S.perfil=mio; pintarYo();
+  $("#conn").textContent=deCopia?"Mostrando los últimos datos de este dispositivo · actualizando…":"Datos al día · "+new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})+(d.usuario?" · "+d.usuario:"");
+  renderTodo();
+}
+async function cargar(){
+  if(!S.sesion){ mostrarLogin(); $("#conn").textContent="Entrá con la clave para ver los datos."; return; }
+  try{ aplicar(await api("getDatos")); }
+  catch(e){ $("#conn").textContent="No se pudieron leer los datos: "+(e&&e.message||e);
+    if(!S.cargado) $("#tablero").innerHTML=`<div class="vacio">Sin acceso a los datos.</div>`; }
+}
+async function guardar(fn,args,msg,boton){
+  if(boton) boton.disabled=true; document.body.classList.add("cargando"); toast("Guardando…");
+  try{ const r=await api(fn,...args); const o=typeof r==="string"?JSON.parse(r):r; aplicar(o.datos||o); if(msg) toast(msg); return o; }
+  catch(e){ const m=e&&e.message?e.message:"No se pudo guardar. Probá de nuevo."; toast(m.includes("Pedido desconocido")?"Falta actualizar el código de Google de la planilla para usar esta función.":m); if(boton) boton.disabled=false; return null; }
+  finally{ document.body.classList.remove("cargando"); }
+}
+$("#btn-act").onclick=()=>{ $("#conn").textContent="Actualizando…"; cargar(); };
+setInterval(()=>{ if(S.sesion && !document.hidden && $("#drawer").hidden && $("#presu-editor").hidden && $("#gen").hidden) cargar(); },60000);
+
+/* ---------- mis datos de contacto ---------- */
+const clavePersona = n => String(n||"").trim().toLowerCase().replace(/\s+/g," ");
+function asesorDe(nombre){ const k=clavePersona(nombre); return (S.asesores||[]).find(a=>clavePersona(a.nombre)===k)||null; }
+function contactoTxt(a){ return a?[a.telefono,a.email].filter(Boolean).join(" · "):""; }
+function pintarYo(){ const n=(S.perfil&&S.perfil.nombre)||(S.sesion&&S.sesion.nombre)||""; $("#yo").textContent=n?n.split(" ")[0]+" · Mis datos":"Mis datos"; }
+function misDatos(msg){
+  const p=S.perfil||{nombre:(S.sesion&&S.sesion.nombre)||"",telefono:"",email:""};
+  abrirDrawer(`<div class="cab"><div><h3>Mis datos</h3><div class="muted">Salen en los presupuestos y reservas que hagas</div></div><button id="d-x">Cerrar</button></div>
+   ${msg?`<p class="aviso" style="color:var(--res)">${esc(msg)}</p>`:""}
+   <label for="m-nom">Nombre</label><input id="m-nom" value="${esc(p.nombre)}" disabled>
+   <div class="muted" style="font-size:12px;margin-top:4px">Es el nombre con el que entraste. Usá siempre el mismo para que se guarden tus datos.</div>
+   <label for="m-tel">Teléfono / WhatsApp</label><input id="m-tel" type="tel" inputmode="tel" autocomplete="tel" value="${esc(p.telefono)}" placeholder="Ej: 11 5555-5555">
+   <label for="m-mail">Email</label><input id="m-mail" type="email" autocomplete="email" value="${esc(p.email)}" placeholder="nombre@coldwellbanker.com.ar">
+   <div class="pie"><button class="prim" id="m-ok">Guardar mis datos</button></div>
+   ${(S.asesores||[]).length?`<h4 style="margin:22px 0 6px">Equipo</h4>${S.asesores.map(a=>`<div style="padding:4px 0"><b>${esc(a.nombre)}</b> <span class="muted">${esc(contactoTxt(a))}</span></div>`).join("")}`:""}`);
+  $("#d-x").onclick=cerrarDrawer;
+  $("#m-ok").onclick=async e=>{
+    const r=await guardar("guardarPerfil",[{telefono:$("#m-tel").value.trim(),email:$("#m-mail").value.trim()}],"Tus datos quedaron guardados",e.target);
+    if(r&&r.perfil){ S.perfil=r.perfil; pintarYo(); cerrarDrawer(); }
+  };
+}
+$("#yo").onclick=()=>misDatos();
+
+/* ---------- vistas ---------- */
+const VISTAS=["locales","presupuestos","reservas","historial"];
+function ir(v){ S.vista=v; VISTAS.forEach(x=>{ $("#v-"+x).hidden = x!==v; const b=document.querySelector(`nav.tabs button[data-v="${x}"]`); if(x===v)b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); }); window.scrollTo(0,0); }
+document.querySelector("nav.tabs").addEventListener("click",e=>{ const b=e.target.closest("button[data-v]"); if(b) ir(b.dataset.v); });
+ir("locales");
+
+/* ---------- resumen ---------- */
+function renderResumen(){
+  const ls=Object.values(S.locales); const g={disponible:[],reservado:[],vendido:[],no_disponible:[]};
+  ls.forEach(l=>(g[l.estado]||g.no_disponible).push(l));
+  const tot=a=>a.reduce((s,l)=>s+(precioDe(l)||0),0), m2=a=>a.reduce((s,l)=>s+(l.m2||0),0);
+  const presVig=S.presus.filter(p=>estadoPresu(p)==="abierto").length;
+  $("#resumen").innerHTML = ls.length ? `
+   <div class="kpi disp"><div class="l">Disponibles</div><div class="n">${g.disponible.length}</div><div class="s">${usd(tot(g.disponible))} · ${num(m2(g.disponible))} m²</div></div>
+   <div class="kpi res"><div class="l">Reservados</div><div class="n">${g.reservado.length}</div><div class="s">${usd(tot(g.reservado))}</div></div>
+   <div class="kpi ven"><div class="l">Vendidos</div><div class="n">${g.vendido.length}</div><div class="s">${usd(tot(g.vendido))}</div></div>
+   <div class="kpi"><div class="l">Presupuestos vigentes</div><div class="n">${presVig}</div><div class="s">${S.reservas.filter(r=>r.estado==="activa").length} reservas activas</div></div>` : "";
+}
+
+/* ---------- tablero ---------- */
+function renderFiltros(){
+  $("#f-planta").innerHTML=[["todas","Todas"],...PLANTAS.map(p=>[p.k,p.k==="PB"?"PB":p.k+"° nivel"])].map(([k,n])=>`<button data-k="${k}" aria-pressed="${S.fPlanta===k}">${n}</button>`).join("");
+  $("#f-estado").innerHTML=[["todos","Todos"],["disponible","Disponibles"],["reservado","Reservados"],["vendido","Vendidos"]].map(([k,n])=>`<button data-k="${k}" aria-pressed="${S.fEstado===k}">${n}</button>`).join("");
+}
+$("#f-planta").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return; S.fPlanta=b.dataset.k; renderFiltros(); renderTablero();});
+$("#f-estado").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return; S.fEstado=b.dataset.k; renderFiltros(); renderTablero();});
+function renderTablero(){
+  const ls=Object.values(S.locales);
+  if(!ls.length){ $("#tablero").innerHTML=`<div class="vacio">${S.cargado?"La planilla no tiene locales. Ejecutá la función instalar desde Apps Script.":"Cargando locales…"}</div>`; return; }
+  let h="";
+  for(const p of PLANTAS){ if(S.fPlanta!=="todas"&&S.fPlanta!==p.k) continue;
+    const dePlanta=ls.filter(l=>l.planta===p.k).sort(ordenLoc); if(!dePlanta.length) continue;
+    const naves=[...new Set(dePlanta.map(l=>l.nave))].sort((a,b)=>a-b);
+    h+=`<div class="planta"><h3>${p.n}</h3><div class="naves">`;
+    for(const n of naves){ const enNave=dePlanta.filter(l=>l.nave===n); const vis=enNave.filter(l=>S.fEstado==="todos"||l.estado===S.fEstado);
+      if(!vis.length) continue;
+      const disp=enNave.filter(l=>l.estado==="disponible").length;
+      h+=`<div class="nave"><div class="t"><span>Nave ${n}</span><span>${disp}/${enNave.length} libres</span></div><div class="locs">`+
+        vis.map(l=>`<button class="loc ${esc(l.estado)}" data-id="${esc(l.id)}" title="${esc(l.codigo+' · '+(ESTADOS[l.estado]||l.estado)+(l.cliente?' · '+l.cliente:''))}"><b>${esc(l.codigo)}</b><span>${num(l.m2)} m²</span><span>${precioDe(l)?"$"+Math.round(precioDe(l)/1000)+"k":"s/precio"}</span></button>`).join("")+`</div></div>`;
+    }
+    h+=`</div></div>`;
+  }
+  $("#tablero").innerHTML=h||`<div class="vacio">No hay locales con ese filtro.</div>`;
+}
+$("#tablero").addEventListener("click",e=>{const b=e.target.closest(".loc"); if(b) abrirLocal(b.dataset.id);});
+
+/* ---------- ficha de local ---------- */
+function abrirDrawer(html,ancho){ const d=$("#drawer"); d.style.width=ancho||""; d.innerHTML=html; d.hidden=false; $("#velo").hidden=false; }
+function cerrarDrawer(){ $("#drawer").hidden=true; $("#velo").hidden=true; }
+$("#velo").addEventListener("click",cerrarDrawer);
+addEventListener("keydown",e=>{ if(e.key==="Escape") cerrarDrawer(); });
+function abrirLocal(id){
+  const l=S.locales[id]; if(!l) return;
+  const presus=S.presus.filter(p=>(p.items||[]).some(i=>i.id===id));
+  const res=S.reservas.filter(r=>String(r.localId)===String(id));
+  const hist=S.hist.filter(h=>h.localId===l.codigo).slice(0,8);
+  abrirDrawer(`<div class="cab"><div><h3>Local ${esc(l.codigo)}</h3><div class="muted">${esc(PLANTAS.find(p=>p.k===l.planta)?.n)} · Nave ${esc(l.nave)}</div></div><button id="d-x">Cerrar</button></div>
+   <div class="tres"><div><label for="d-m2">Superficie m²</label><input id="d-m2" type="number" step="0.01" value="${esc(l.m2)}"></div><div><label for="d-usd">USD por m²</label><input id="d-usd" type="number" step="50" value="${esc(l.usdM2??"")}"></div><div><label for="d-precio">Precio</label><input id="d-precio" disabled value="${esc(usd(precioDe(l)))}"></div></div>
+   <div class="dos"><div><label for="d-estado">Estado</label><select id="d-estado">${Object.entries(ESTADOS).map(([k,n])=>`<option value="${k}" ${l.estado===k?"selected":""}>${n}</option>`).join("")}</select></div><div><label for="d-cliente">Cliente</label><input id="d-cliente" value="${esc(l.cliente)}"></div></div>
+   <label for="d-rubro">Rubro</label><input id="d-rubro" value="${esc(l.rubro)}">
+   <label for="d-notas">Notas</label><textarea id="d-notas" rows="3">${esc(l.notas)}</textarea>
+   <div class="pie"><button class="prim" id="d-guardar">Guardar cambios</button>${l.estado==="disponible"?`<button id="d-reservar">Reservar este local</button>`:""}</div>
+   <h4 style="margin:22px 0 6px">Presupuestos donde aparece</h4>${presus.length?presus.map(p=>`<div>${esc(p.numero)} · ${esc(p.cliente||"sin cliente")} <span class="pill p-${estadoPresu(p)}">${EST_PRESU[estadoPresu(p)]}</span></div>`).join(""):`<div class="muted">Ninguno</div>`}
+   <h4 style="margin:16px 0 6px">Reservas</h4>${res.length?res.map(r=>`<div>${fmtF(r.fecha)} · ${esc(r.cliente)}${r.asesor?` · <span class="muted">${esc(r.asesor)}</span>`:""} <span class="pill p-${esc(r.estado)}">${EST_RES[r.estado]||esc(r.estado)}</span></div>`).join(""):`<div class="muted">Ninguna</div>`}
+   <h4 style="margin:16px 0 6px">Movimientos</h4>${hist.length?hist.map(h=>`<div class="muted">${fmtF((h.ts||"").slice(0,10))} · ${esc(h.texto)}</div>`).join(""):`<div class="muted">Sin movimientos</div>`}`);
+  const upd=()=>{ const v=(+$("#d-m2").value)*(+$("#d-usd").value); $("#d-precio").value=v?usd(v):"—"; };
+  $("#d-m2").oninput=upd; $("#d-usd").oninput=upd;
+  $("#d-x").onclick=cerrarDrawer;
+  $("#d-guardar").onclick=async e=>{
+    const campos={m2:+$("#d-m2").value||l.m2, usdM2:$("#d-usd").value===""?null:+$("#d-usd").value, estado:$("#d-estado").value, cliente:$("#d-cliente").value.trim(), rubro:$("#d-rubro").value.trim(), notas:$("#d-notas").value.trim()};
+    if(await guardar("guardarLocal",[l.id,campos],"Local actualizado",e.target)) cerrarDrawer();
+  };
+  const r=$("#d-reservar"); if(r) r.onclick=()=>{ cerrarDrawer(); generadorReserva({ids:[l.id]}); };
+}
+
+/* ---------- presupuestos ---------- */
+function estadoPresu(p){ if(p.estado==="abierto" && p.vigencia && p.vigencia < hoyISO()) return "vencido"; return p.estado||"abierto"; }
+function calcItems(items,c){ return items.map(i=>{ const anticipo=i.precio*c.anticipoPct/100; const cuota=c.cuotas?(i.precio-anticipo)/c.cuotas:0; return {...i,anticipo,cuota}; }); }
+function hojaHTML(p){
+  const c=p.cond, it=calcItems(p.items,c); const sum=k=>it.reduce((s,i)=>s+(i[k]||0),0);
+  return `<table class="h-cab"><tr><td style="width:78px"><img src="${LOGO}" alt="Coldwell Banker"></td><td><div class="h-t">Presupuesto de locales</div><div class="h-s">Paseo de Compras Black · Escobar, Zona Puertos · Venta de pozo</div></td><td class="h-n"><b>${esc(p.numero||"Borrador")}</b>${fmtF(p.fecha)}</td></tr></table>
+  <table class="h-cli"><tr><td><b>Cliente:</b> ${esc(p.cliente||"—")}${p.contacto?` · ${esc(p.contacto)}`:""}</td><td style="text-align:right"><b>Vigente hasta:</b> ${fmtF(p.vigencia)}</td></tr>
+  ${p.asesor&&p.asesor.nombre?`<tr class="h-ase"><td colspan="2"><b>Asesor:</b> ${esc(p.asesor.nombre)}${contactoTxt(p.asesor)?` · ${esc(contactoTxt(p.asesor))}`:""}</td></tr>`:""}</table>
+  <table class="h-tab"><thead><tr><th>Local</th><th>Ubicación</th><th class="r">Sup. m²</th><th class="r">USD/m²</th><th class="r">Precio USD</th><th class="r">Anticipo ${c.anticipoPct}%</th><th class="r">${c.cuotas} cuotas de</th><th>Rubro</th></tr></thead><tbody>
+  ${it.map(i=>`<tr><td><b>${esc(i.codigo)}</b></td><td>${esc(i.ubic)}</td><td class="r">${num(i.m2,2)}</td><td class="r">${ent(i.usdM2)}</td><td class="r">${ent(i.precio)}</td><td class="r">${ent(i.anticipo)}</td><td class="r">${ent(i.cuota)}</td><td>${esc(i.rubro||"")}</td></tr>`).join("")}
+  ${it.length>1?`<tr class="tot"><td colspan="2">Total ${it.length} locales</td><td class="r">${num(sum("m2"),2)}</td><td></td><td class="r">${ent(sum("precio"))}</td><td class="r">${ent(sum("anticipo"))}</td><td class="r">${ent(sum("cuota"))}</td><td></td></tr>`:""}</tbody></table>
+  <table class="h-cond"><tr><td>Forma de pago</td><td class="v">${c.anticipoPct}% anticipo + ${c.cuotas} cuotas</td><td class="sep"></td><td>Moneda</td><td class="v">Dólares estadounidenses</td></tr>
+  <tr><td>A la firma: honorarios inmobiliarios</td><td class="v">${num(c.honorariosPct)}%</td><td class="sep"></td><td>Certificación de firmas (aprox.)</td><td class="v">${ars(c.certificacionArs)} por local</td></tr></table>
+  ${p.notas?`<div class="h-nota">${esc(p.notas)}</div>`:""}
+  <div class="h-pie">Coldwell Banker · Precios sujetos a disponibilidad al momento de la reserva. Presupuesto vigente hasta ${fmtF(p.vigencia)}.</div>`;
+}
+function documentoPresu(p){
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Presupuesto ${esc(p.numero)} ${esc(p.cliente||"")}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600&display=swap"><style>body{margin:0;background:#fff;font:13px/1.45 Inter,Arial,sans-serif;color:#111}.hoja{max-width:820px;margin:24px auto;padding:0 28px}@media print{.hoja{margin:0;padding:0}}${$("#hoja-css").textContent}</style></head><body><div class="hoja">${hojaHTML(p)}</div></body></html>`;
+}
+function renderPresus(){
+  const ps=[...S.presus].sort((a,b)=>String(b.numero||"").localeCompare(String(a.numero||"")));
+  if(!ps.length){ $("#presu-lista").innerHTML=`<div class="vacio">Todavía no hay presupuestos. Tocá “Nuevo presupuesto” para armar el primero.</div>`; return; }
+  $("#presu-lista").innerHTML=`<table><thead><tr><th>N°</th><th>Fecha</th><th>Cliente</th><th>Locales</th><th class="num">Total USD</th><th>Condiciones</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody>${ps.map(p=>{
+    const est=estadoPresu(p); const ocupados=(p.items||[]).filter(i=>S.locales[i.id]&&S.locales[i.id].estado!=="disponible"&&S.locales[i.id].cliente!==p.cliente);
+    return `<tr><td><b>${esc(p.numero)}</b></td><td>${fmtF(p.fecha)}</td><td>${esc(p.cliente||"—")}${p.asesor&&p.asesor.nombre?`<div class="muted">Asesor: ${esc(p.asesor.nombre)}</div>`:""}</td><td>${(p.items||[]).map(i=>esc(i.codigo)).join(", ")}${ocupados.length&&est==="abierto"?`<div class="aviso">Ya no disponibles: ${ocupados.map(i=>esc(i.codigo)).join(", ")}</div>`:""}</td>
+    <td class="num">${usd((p.items||[]).reduce((s,i)=>s+i.precio,0))}</td><td>${p.cond.anticipoPct}% + ${p.cond.cuotas} cuotas</td><td>${fmtF(p.vigencia)}</td><td><span class="pill p-${est}">${EST_PRESU[est]||esc(est)}</span></td>
+    <td><div class="acc"><button data-a="ver" data-id="${esc(p.id)}">Ver</button><button data-a="copiar" data-id="${esc(p.id)}">Duplicar</button>${est==="abierto"?`<button data-a="aceptar" data-id="${esc(p.id)}">Reservar</button><button data-a="rechazar" data-id="${esc(p.id)}">Rechazado</button>`:""}</div></td></tr>`;}).join("")}</tbody></table>`;
+}
+$("#presu-lista").addEventListener("click",async e=>{ const b=e.target.closest("button[data-a]"); if(!b) return; const p=S.presus.find(x=>x.id===b.dataset.id); if(!p) return;
+  if(b.dataset.a==="ver") verPresu(p);
+  if(b.dataset.a==="copiar") editorPresu({cliente:p.cliente,contacto:p.contacto,notas:p.notas,cond:{...p.cond},ids:p.items.map(i=>i.id)});
+  if(b.dataset.a==="rechazar") guardar("estadoPresupuesto",[p.id,"rechazado"],"Presupuesto marcado como rechazado",b);
+  if(b.dataset.a==="aceptar") reservarDesdePresu(p);
+});
+function verPresu(p){
+  abrirDrawer(`<div class="cab"><h3>${esc(p.numero)}</h3><button id="d-x">Cerrar</button></div>
+   <div class="pie" style="margin:0 0 12px"><button class="prim" id="d-pdf">Guardar PDF en Drive</button><button id="d-imp">Imprimir</button><button id="d-copiar">Copiar texto para WhatsApp</button></div>
+   <div id="d-link"></div>
+   <div class="hoja-wrap"><div class="hoja" style="min-width:0;padding:20px;font-size:12px">${hojaHTML(p)}</div></div>`,"min(860px,100%)");
+  $("#d-x").onclick=cerrarDrawer;
+  $("#d-imp").onclick=()=>{ const w=window.open("","_blank"); if(!w){toast("El navegador bloqueó la ventana. Permití ventanas emergentes.");return;} w.document.write(documentoPresu(p)); w.document.close(); setTimeout(()=>{ try{w.print();}catch(e){} },700); };
+  $("#d-pdf").onclick=async e=>{ e.target.disabled=true; e.target.textContent="Generando PDF…";
+    try{ const url=await api("guardarPdf",documentoPresu(p),`Presupuesto ${p.numero} ${(p.cliente||"").replace(/[\\/:*?"<>|]/g,"")}`.trim());
+      $("#d-link").innerHTML=`<p>PDF guardado en la carpeta “Presupuestos Coldwell Banker” de tu Drive: <a href="${esc(url)}" target="_blank" rel="noopener">abrir PDF</a></p>`; toast("PDF guardado en Drive"); }
+    catch(err){ toast("No se pudo crear el PDF: "+(err&&err.message||err)); }
+    e.target.disabled=false; e.target.textContent="Guardar PDF en Drive"; };
+  $("#d-copiar").onclick=()=>copiarTexto(textoWhatsApp(p));
+}
+function textoWhatsApp(p){ const it=calcItems(p.items,p.cond);
+  return `*Coldwell Banker · Paseo Black Escobar*\nPresupuesto ${p.numero}${p.cliente?" · "+p.cliente:""}\n\n`+it.map(i=>`• Local ${i.codigo} (${i.ubic}) ${num(i.m2,2)} m² — USD ${ent(i.precio)}\n   Anticipo ${p.cond.anticipoPct}%: USD ${ent(i.anticipo)} + ${p.cond.cuotas} cuotas de USD ${ent(i.cuota)}`).join("\n")+
+  `\n\nA la firma: ${num(p.cond.honorariosPct)}% honorarios inmobiliarios + certificación de firmas ${ars(p.cond.certificacionArs)} por local (aprox.)\nVigente hasta ${fmtF(p.vigencia)}`+
+  (p.asesor&&p.asesor.nombre?`\n\nTe atiende: ${p.asesor.nombre}${contactoTxt(p.asesor)?" · "+contactoTxt(p.asesor):""}`:""); }
+async function copiarTexto(t){ try{ await navigator.clipboard.writeText(t); toast("Copiado"); }catch(e){ abrirDrawer(`<div class="cab"><h3>Copiá el texto</h3><button id="d-x">Cerrar</button></div><textarea id="d-txt" rows="16">${esc(t)}</textarea>`); $("#d-x").onclick=cerrarDrawer; $("#d-txt").select(); } }
+function editorPresu(base){
+  const c={...S.cond,...(base&&base.cond||{})}; const sel=new Set(base&&base.ids||[]);
+  const disp=Object.values(S.locales).filter(l=>l.estado==="disponible"&&precioDe(l)).sort((a,b)=>PLANTAS.findIndex(p=>p.k===a.planta)-PLANTAS.findIndex(p=>p.k===b.planta)||ordenLoc(a,b));
+  const ed=$("#presu-editor"); ed.hidden=false; ir("presupuestos");
+  ed.innerHTML=`<div class="editor" style="margin-bottom:22px"><div class="form"><h3>Armar presupuesto</h3>
+    <div class="dos"><div><label for="p-cli">Cliente</label><input id="p-cli" value="${esc(base&&base.cliente)}"></div><div><label for="p-con">Teléfono / email</label><input id="p-con" value="${esc(base&&base.contacto)}"></div></div>
+    <label for="p-buscar">Locales disponibles (${disp.length})</label><input id="p-buscar" placeholder="Filtrar: A1, B2, nave 3…">
+    <div class="lista-locs" id="p-locs">${disp.map(l=>`<label data-q="${esc((l.codigo+" "+l.planta+" nave "+l.nave+" "+(l.rubro||"")).toLowerCase())}"><input type="checkbox" value="${esc(l.id)}" ${sel.has(l.id)?"checked":""}> <b>${esc(l.codigo)}</b> <span class="muted">${l.planta==="PB"?"PB":l.planta+"°"} N${esc(l.nave)} · ${num(l.m2)} m²</span><span class="pr">${usd(precioDe(l))}</span></label>`).join("")}</div>
+    <div class="tres"><div><label for="p-ant">Anticipo %</label><input id="p-ant" type="number" value="${c.anticipoPct}"></div><div><label for="p-cuo">Cuotas</label><input id="p-cuo" type="number" value="${c.cuotas}"></div><div><label for="p-hon">Honorarios %</label><input id="p-hon" type="number" step="0.5" value="${c.honorariosPct}"></div></div>
+    <div class="dos"><div><label for="p-cert">Certificación $ x local</label><input id="p-cert" type="number" step="1000" value="${c.certificacionArs}"></div><div><label for="p-vig">Vigente hasta</label><input id="p-vig" type="date" value="${masDias(hoyISO(),c.vigenciaDias||30)}"></div></div>
+    <label for="p-not">Notas para el cliente</label><textarea id="p-not" rows="2">${esc(base&&base.notas)}</textarea>
+    <div class="pie"><button class="prim" id="p-guardar">Guardar presupuesto</button><button id="p-cancel">Cancelar</button></div></div>
+    <div class="hoja-wrap"><div class="hoja" id="p-hoja"></div></div></div>`;
+  const leer=()=>{ const ids=[...ed.querySelectorAll("#p-locs input:checked")].map(i=>i.value);
+    return {asesor:S.perfil||null,cliente:$("#p-cli").value.trim(),contacto:$("#p-con").value.trim(),notas:$("#p-not").value.trim(),fecha:hoyISO(),vigencia:$("#p-vig").value,
+      cond:{anticipoPct:+$("#p-ant").value||0,cuotas:+$("#p-cuo").value||0,honorariosPct:+$("#p-hon").value||0,certificacionArs:+$("#p-cert").value||0},
+      items:ids.map(id=>{const l=S.locales[id]; return {id,codigo:l.codigo,ubic:(l.planta==="PB"?"Planta baja":l.planta+"° nivel")+" · Nave "+l.nave,m2:l.m2,usdM2:l.usdM2,precio:precioDe(l),rubro:l.rubro||""};})}; };
+  const pint=()=>{ const p=leer(); $("#p-hoja").innerHTML=p.items.length?hojaHTML(p):`<div class="vacio" style="color:#666">Marcá uno o más locales a la izquierda para ver el presupuesto.</div>`; };
+  ed.oninput=pint; pint();
+  $("#p-buscar").addEventListener("input",e=>{ const q=e.target.value.toLowerCase().trim(); ed.querySelectorAll("#p-locs label").forEach(l=>l.hidden=q&&!l.dataset.q.includes(q)); });
+  $("#p-cancel").onclick=()=>{ ed.hidden=true; ed.innerHTML=""; };
+  $("#p-guardar").onclick=async e=>{ const p=leer(); if(!p.items.length){toast("Elegí al menos un local");return;}
+    const info=await guardar("crearPresupuesto",[p],null,e.target); if(!info) return;
+    ed.hidden=true; ed.innerHTML=""; toast("Presupuesto "+info.numero+" guardado");
+    const nuevo=S.presus.find(x=>x.id===info.id); if(nuevo) verPresu(nuevo); };
+  ed.scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("#btn-nuevo-presu").onclick=()=>editorPresu(null);
+
+/* ---------- reservas ---------- */
+function reservarDesdePresu(p){
+  const libres=p.items.filter(i=>S.locales[i.id]?.estado==="disponible");
+  if(!libres.length){ toast("Ninguno de esos locales sigue disponible"); return; }
+  generadorReserva({ids:libres.map(i=>i.id), presu:p, cliente:p.cliente, contacto:p.contacto});
+}
+function formReserva(ids,presu){
+  ids=[].concat(ids||[]);
+  const disp=Object.values(S.locales).filter(l=>l.estado==="disponible").sort(ordenLoc);
+  abrirDrawer(`<div class="cab"><h3>Nueva reserva</h3><button id="d-x">Cerrar</button></div>
+   ${presu?`<div class="muted">Desde presupuesto ${esc(presu.numero)}</div>`:""}
+   <label>Locales a reservar</label><div class="lista-locs">${disp.map(l=>`<label><input type="checkbox" value="${esc(l.id)}" ${ids.includes(l.id)?"checked":""}> <b>${esc(l.codigo)}</b><span class="pr">${usd(precioDe(l))}</span></label>`).join("")}</div>
+   <div class="dos"><div><label for="r-cli">Cliente</label><input id="r-cli" value="${esc(presu&&presu.cliente)}"></div><div><label for="r-con">Teléfono / email</label><input id="r-con" value="${esc(presu&&presu.contacto)}"></div></div>
+   <div class="tres"><div><label for="r-fec">Fecha</label><input id="r-fec" type="date" value="${hoyISO()}"></div><div><label for="r-sena">Seña USD</label><input id="r-sena" type="number" step="100"></div><div><label for="r-vence">Vence</label><input id="r-vence" type="date" value="${masDias(hoyISO(),15)}"></div></div>
+   <label for="r-not">Notas</label><textarea id="r-not" rows="2"></textarea>
+   <div class="pie"><button class="prim" id="r-ok">Registrar reserva</button></div>`);
+  $("#d-x").onclick=cerrarDrawer;
+  $("#r-ok").onclick=async e=>{ const sel=[...document.querySelectorAll("#drawer .lista-locs input:checked")].map(i=>i.value); const cli=$("#r-cli").value.trim();
+    if(!sel.length){toast("Elegí un local");return;} if(!cli){toast("Poné el nombre del cliente");return;}
+    const d={cliente:cli,contacto:$("#r-con").value.trim(),fecha:$("#r-fec").value,sena:+$("#r-sena").value||0,vence:$("#r-vence").value,notas:$("#r-not").value.trim()};
+    if(await guardar("reservar",[sel,d,presu?presu.id:null],sel.length>1?`${sel.length} locales reservados`:"Local reservado",e.target)){ cerrarDrawer(); ir("reservas"); } };
+}
+$("#btn-nueva-res").onclick=()=>generadorReserva({});
+function renderReservas(){
+  const rs=[...S.reservas].sort((a,b)=>String(b.fecha||"").localeCompare(String(a.fecha||"")));
+  if(!rs.length){ $("#res-lista").innerHTML=`<div class="vacio">Sin reservas registradas. Reservá desde un presupuesto o con “Nueva reserva”.</div>`; return; }
+  const hoy=hoyISO();
+  $("#res-lista").innerHTML=`<table><thead><tr><th>Fecha</th><th>Local</th><th>Cliente</th><th>Asesor</th><th class="num">Precio</th><th class="num">Seña</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody>${rs.map(r=>`<tr>
+   <td>${fmtF(r.fecha)}</td><td><b>${esc(r.codigo)}</b>${r.presupuesto?`<div class="muted">${esc(r.presupuesto)}</div>`:""}</td><td>${esc(r.cliente)}${r.contacto?`<div class="muted">${esc(r.contacto)}</div>`:""}</td>
+   <td>${r.asesor?esc(r.asesor):"—"}${contactoTxt(asesorDe(r.asesor))?`<div class="muted">${esc(contactoTxt(asesorDe(r.asesor)))}</div>`:""}</td>
+   <td class="num">${usd(r.precio)}</td><td class="num">${r.sena?usd(r.sena):"—"}</td><td>${fmtF(r.vence)}${r.estado==="activa"&&r.vence&&r.vence<hoy?`<div class="aviso">Vencida</div>`:""}</td>
+   <td><span class="pill p-${esc(r.estado)}">${EST_RES[r.estado]||esc(r.estado)}</span></td>
+   <td><div class="acc"><button data-a="doc" data-id="${esc(r.id)}">Documento</button>${r.estado==="activa"?`<button data-a="firmada" data-id="${esc(r.id)}">Firmó boleto</button><button class="peligro" data-a="caida" data-id="${esc(r.id)}">Se cayó</button>`:""}</div></td></tr>`).join("")}</tbody></table>`;
+}
+$("#res-lista").addEventListener("click",e=>{ const b=e.target.closest("button[data-a]"); if(!b) return; const r=S.reservas.find(x=>x.id===b.dataset.id); if(!r) return;
+  if(b.dataset.a==="doc"){ generadorReserva({ids:[String(r.localId)], reserva:r}); return; }
+  guardar("cerrarReserva",[r.id,b.dataset.a], b.dataset.a==="firmada"?`${r.codigo} pasó a vendido`:`${r.codigo} vuelve a estar disponible`, b); });
+
+/* ---------- documento de reserva (basado en "RESERVA BLACK modelo") ---------- */
+const MEMBRETE = "__MEMBRETE__";
+const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const CORREDOR_DEF = { nombre:"FABIAN LUSARRETA", matricula:"CMCPDJLM, número 1166, Folio 189, Tomo 2", sistema:"COLDWELL BANKER NOVA", domicilio:"calle Arcos 4363, Ciudad Autónoma de Buenos Aires" };
+
+/* Números en letras (castellano, mayúsculas, como en los documentos legales) */
+function enLetras(n){
+  n=Math.round(Math.abs(+n||0));
+  if(n===0) return "CERO";
+  const U=["","UNO","DOS","TRES","CUATRO","CINCO","SEIS","SIETE","OCHO","NUEVE"];
+  const E=["DIEZ","ONCE","DOCE","TRECE","CATORCE","QUINCE","DIECISÉIS","DIECISIETE","DIECIOCHO","DIECINUEVE"];
+  const V=["VEINTE","VEINTIUNO","VEINTIDÓS","VEINTITRÉS","VEINTICUATRO","VEINTICINCO","VEINTISÉIS","VEINTISIETE","VEINTIOCHO","VEINTINUEVE"];
+  const D=["","","","TREINTA","CUARENTA","CINCUENTA","SESENTA","SETENTA","OCHENTA","NOVENTA"];
+  const C=["","CIENTO","DOSCIENTOS","TRESCIENTOS","CUATROCIENTOS","QUINIENTOS","SEISCIENTOS","SETECIENTOS","OCHOCIENTOS","NOVECIENTOS"];
+  const menorMil=x=>{
+    if(x===100) return "CIEN";
+    const c=Math.floor(x/100), r=x%100; let t=c?C[c]:"";
+    let d="";
+    if(r<10) d=U[r]; else if(r<20) d=E[r-10]; else if(r<30) d=V[r-20]; else d=D[Math.floor(r/10)]+(r%10?" Y "+U[r%10]:"");
+    return [t,d].filter(Boolean).join(" ");
+  };
+  const apocope=s=>s.replace(/VEINTIUNO$/,"VEINTIÚN").replace(/UNO$/,"UN");
+  const millones=Math.floor(n/1e6), miles=Math.floor((n%1e6)/1000), resto=n%1000, partes=[];
+  if(millones) partes.push(millones===1?"UN MILLÓN":apocope(enLetras(millones))+" MILLONES");
+  if(miles) partes.push(miles===1?"MIL":apocope(menorMil(miles))+" MIL");
+  if(resto) partes.push(menorMil(resto));
+  return partes.join(" ");
+}
+const uss = n => "U$S"+ent(n);
+const m2txt = n => Number(n||0).toLocaleString("es-AR",{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function leerCorredor(){ try{ return {...CORREDOR_DEF, ...(JSON.parse(localStorage.getItem("lb-corredor")||"{}"))}; }catch(e){ return {...CORREDOR_DEF}; } }
+function guardarCorredor(c){ try{ localStorage.setItem("lb-corredor",JSON.stringify(c)); }catch(e){} }
+
+/* Texto del documento con los datos del panel */
+function docReservaHTML(R){
+  const ls=R.locales; const plural=ls.length>1;
+  const v=(x,ph)=> x?`<span class="dv">${esc(x)}</span>`:`<span class="dh">${esc(ph)}</span>`;
+  const lista = ls.length ? ls.map((l,i)=>`${i===0?"N° ":""}${esc(l.codigo)} de ${i===0?"aproximadamente ":""}${m2txt(l.m2)} m2`).reduce((a,t,i,arr)=>a+(i===0?"":(i===arr.length-1?" Y ":", "))+t,"") : "N° ____ de aproximadamente ____ m2";
+  const nombrePlanta={PB:["la Planta Baja","situada"],"1":["el Primer Nivel","situado"],"2":["el Segundo Nivel","situado"]};
+  const plantas=[...new Set(ls.map(l=>l.planta))];
+  const ubic = plantas.length<=1 ? (()=>{ const p=nombrePlanta[plantas[0]]||["la Planta ____","situada"]; return `${p[0]} ${p[1]} dentro`; })() : `${plantas.map(p=>(nombrePlanta[p]||[p])[0]).join(" y ")}, dentro`;
+  const ambas = ls.length===2?"ambas":"todas";
+  const objeto = plural
+    ? `adquirir las unidades privativas que se designan provisoriamente con el <b>${lista}</b> (en adelante la “Unidad Privativa”), ${ambas} ubicadas en ${ubic} del Emprendimiento`
+    : `adquirir la unidad privativa que se designa provisoriamente con el <b>${lista}</b> (en adelante la “Unidad Privativa”), ubicada en ${ubic} del Emprendimiento`;
+  const sujeto = ls.length===2 ? "ambas Unidades Funcionales" : plural ? `las ${enLetras(ls.length).toLowerCase()} (${ls.length}) Unidades Funcionales` : "la Unidad Funcional";
+  const saldo=Math.max(0,(R.precio||0)-(R.anticipo||0));
+  const pago = saldo>0 && R.cuotas>0
+    ? `anticipo de DÓLARES ESTADOUNIDENSES ${enLetras(R.anticipo)} (${uss(R.anticipo)}) a la firma del boleto y saldo de DÓLARES ESTADOUNIDENSES ${enLetras(saldo)} (${uss(saldo)}) en ${enLetras(R.cuotas)} (${R.cuotas}) cuotas mensuales fijas en dólares.`
+    : saldo>0
+      ? `anticipo de DÓLARES ESTADOUNIDENSES ${enLetras(R.anticipo)} (${uss(R.anticipo)}) a la firma del boleto y saldo de DÓLARES ESTADOUNIDENSES ${enLetras(saldo)} (${uss(saldo)}) según se acuerde en el boleto.`
+      : `pago total de DÓLARES ESTADOUNIDENSES ${enLetras(R.precio)} (${uss(R.precio)}) a la firma del boleto.`;
+  const f=R.fecha?new Date(R.fecha+"T12:00:00"):null;
+  const fechaTxt = f?`a los ${f.getDate()} días del mes ${MESES[f.getMonth()]} de ${f.getFullYear()}`:"a los ___ días del mes ________ de ____";
+  const C=R.corredor;
+  const cs=R.compradores.length?R.compradores:[{genero:"m"}];
+  const pl=cs.length>1, fem=cs.every(c=>c.genero==="f");
+  const G={ art: pl?(fem?"las":"los"):(fem?"la":"el"), sust: pl?(fem?"Compradoras":"Compradores"):(fem?"Compradora":"Comprador"),
+    inf: pl?(fem?"informadas":"informados"):(fem?"informada":"informado"), ofer: pl?"Ofertantes":"Ofertante" };
+  G.Art=G.art[0].toUpperCase()+G.art.slice(1);
+  const vb=(sg,p)=>pl?p:sg;
+  const personas=cs.map((c,i)=>`${i?"y de ":""}${v(c.nombre&&c.nombre.toUpperCase(),"NOMBRE Y APELLIDO")} ${esc(c.tipoDoc||"D.N.I.")} ${v(c.doc,"número")}, estado civil ${v(c.estadoCivil,"estado civil")}, ${c.genero==="f"?"domiciliada":"domiciliado"} en la calle ${v(c.domicilio,"domicilio")}, y electrónico ${v(c.email,"email")}`).join(", ");
+  const cab=`<div class="dmem"><img src="${MEMBRETE}" alt="F. Lusarreta · Coldwell Banker Nova"></div>`;
+  return `
+<section class="dpag">${cab}
+<h2 class="dtit">RESERVA FIDEICOMISO INMOBILIARIO BLACK</h2>
+<p>${esc(C.nombre)}, con matrícula de ${esc(C.matricula)}, adherido al sistema ${esc(C.sistema)}, con domicilio legal en la ${esc(C.domicilio)} (en adelante “El Corredor”) actuando por cuenta y orden en este acto del <b>FIDEICOMISO INMOBILIARIO BLACK</b>, recibe en este acto de ${personas} (en adelante ${G.art} “${G.sust}”), la suma de dólares estadounidenses billete ${R.monto?enLetras(R.monto):"____"} (${R.monto?uss(R.monto):"U$S____"}) en concepto de RESERVA (en adelante la “Reserva”), que estará sujeta a los términos y condiciones que a continuación se detallan:</p>
+<p><b>ANTECEDENTES:</b> ${G.Art} ${G.sust} ${vb("declara","declaran")} haber sido debidamente ${G.inf} por la Inmobiliaria del estado en que se encuentra el emprendimiento “PASEO DE COMPRAS BLACK”. Asimismo, ${vb("declara","declaran")} haber sido debidamente ${G.inf} de la estructura legal del emprendimiento FIDEICOMISO INMOBILIARIO BLACK, Clave Única de Identificación Tributaria 30-71866388-8, constituido el día el 5 de marzo de 2024.</p>
+<p class="dh4">1.- OBJETO:</p>
+<p>${G.Art} ${G.sust} ${vb("ofrece","ofrecen")} de manera irrevocable a FIDEICOMISO INMOBILIARIO BLACK (“la Vendedora”), ${objeto} <b>“BLACK Paseo de Compras”</b> ubicado en la calle Santa Teresa N°2560 entre San Miguel e Islandia; designado según su título como Lote 2 de la fracción H, Nomenclatura catastral: Circunscripción XII, Sección R, Quinta 5, Parcela 7, Partida Inmobiliaria: 118- 039020-1, Matricula 7423 de Escobar, provincia de Buenos Aires.</p>
+<p class="dh4">2.- PRECIO. FORMA DE PAGO:</p>
+<p>2.1. ${G.Art} ${G.sust} ${vb("ofrece","ofrecen")} adquirir ${sujeto} por un Precio de DÓLARES ESTADOUNIDENSES ${R.precio?enLetras(R.precio):"____"} (${R.precio?uss(R.precio):"U$S____"}).</p>
+<p>2.2. Forma de Pago: ${pago}</p>
+<p class="dh4">3.- SUSCRIPCIÓN DEL BOLETO DE COMPRAVENTA:</p>
+<p>La firma del Boleto de Compraventa será antes de los ${R.dias||"__"} días de conformada la reserva. La Inmobiliaria (o la Vendedora) comunicarán a ${G.art} ${G.sust} al Domicilio Electrónico constituido en este acto, el día y la hora en que ${vb("deberá","deberán")} concurrir a la Sucursal del Banco Macro Nordelta, Tigre, Provincia de Buenos Aires, a fin de suscribir el Boleto de Compraventa, debiendo abonar en dicho momento los importes pactados según la forma de pago elegida.</p>
+</section>
+<section class="dpag">${cab}
+<p class="dh4">4.- ESCRITURA:</p>
+<p>La escritura traslativa de dominio de la unidad privativa se otorgará por ante el escribano Christian José MANZELLA, Registro 41 del Partido de Vicente López, con domicilio en la Avenida Guillermo Rawson número 3415, de La Lucila, Partido de Vicente López, Provincia de Buenos Aires, Teléfono 7078-8800, correo electrónico: cjm@escribaniamanzella.com, tendrá lugar una vez cancelada la totalidad del Precio acordado, finalizadas las obras proyectadas, en base a títulos perfectos y libre de todo gravamen una vez aprobado el trámite de inscripción del plano de Propiedad Horizontal. Los gastos de escrituración, impuestos y honorarios serán soportados en su totalidad por ${G.art} ${G.sust}, al igual que el uno por ciento (1%) del precio de venta de la Unidad Funcional en concepto de “Fondo Operativo o de Caja”, y el uno por ciento (1%) del precio de venta en concepto de “Fondo de Equipamiento”.</p>
+<p class="dh4">5.- INCUMPLIMIENTOS:</p>
+<p>5.1. Si ${G.art} ${G.sust} no ${vb("concurriera","concurrieran")} a celebrar el Boleto de Compraventa en el lugar, día y hora fijada para la celebración del mismo, ${vb("incurrirá","incurrirán")} en incumplimiento, en cuyo caso ${vb("perderá","perderán")} la suma abonada en este acto como Reserva, en concepto penalidad única, total y definitiva, comprensiva de cualquier daño que pudiere invocar la Vendedora.</p>
+<p>5.2. Si fuera la Vendedora quien no concurriera a celebrar el Boleto de Compraventa en el lugar, día y hora fijada para la celebración del mismo, incurrirá en incumplimiento, en cuyo caso la Inmobiliaria interviniente deberá reintegrar la suma entregada en este acto como Reserva, con una suma igual en concepto penalidad única, total y definitiva, comprensiva de cualquier daño que ${vb("pudiere","pudieren")} invocar ${G.art} ${G.sust}.</p>
+<p><b>6. - HONORARIOS:</b> Al momento de la firma del Contrato de Incorporación al Fideicomiso, ${G.art} ${G.ofer} ${vb("abonará","abonarán")} a la Martillera interviniente la suma equivalente al ${num(R.honorarios,2)}% más IVA del total del precio acordado, en concepto de honorarios.${R.comparte?` Participa en esta Operación la Martillera ${esc(R.comparte)}.`:""}</p>
+<p>En prueba de conformidad, se firman tres (3) ejemplares, de un mismo tenor y al mismo efecto, ${fechaTxt}.</p>
+<table class="dfirmas">${[{t:"COLDWELL BANKER"},...cs.map(c=>({t:"OFERTANTE",n:c.nombre}))].reduce((filas,f,i)=>{ if(i%2===0) filas.push([]); filas[filas.length-1].push(f); return filas; },[]).map(fila=>`<tr>${fila.map(f=>`<td><div class="dlin"></div>${f.t}${f.n?`<div class="dacl">${esc(f.n)}</div>`:""}</td>`).join("")}${fila.length<2?"<td></td>":""}</tr>`).join("")}</table>
+</section>
+<section class="dpag">${cab}
+<h2 class="dtit">ACEPTACIÓN DE RESERVA.</h2>
+<p>FIDEICOMISO INMOBILIARIO BLACK, constituyendo domicilio a los efectos de esta Reserva en la calle MATURIN número 2655, planta baja, departamento "2", de la Ciudad Autónoma de Buenos Aires y domicilio electrónico en __________________________, en su carácter de Fiduciaria ó Desarrolladora del Fideicomiso Inmobiliario Black, en adelante la “VENDEDORA”, ACEPTA la presente Reserva, en las condiciones aquí indicadas.</p>
+<div class="dacep">
+<div class="dlin" style="width:60%"></div>
+<p style="margin:0">Firma del Fiduciario o de la Desarrolladora<br>del Fideicomiso Inmobiliario Black</p>
+<p>Aclaración nombre:______________________________________</p>
+<table class="dcampos"><tr><td>DNI: ______________________</td><td>Fecha:____________________</td></tr></table>
+<p>E-Mail: _______________________________________________</p>
+</div>
+</section>`;
+}
+const DOC_CSS = `
+.dpag{box-sizing:border-box;background:#fff;color:#111;font-family:Carlito,Calibri,"Segoe UI",Arial,sans-serif;font-size:11pt;line-height:1.45;text-align:justify;padding:14mm 22mm 18mm;margin:0 auto 18px;max-width:210mm;box-shadow:0 2px 12px rgba(0,0,0,.12)}
+.dpag p{margin:0 0 9px}
+.dmem{text-align:right;margin-bottom:14px}
+.dmem img{width:46mm;height:auto;display:inline-block}
+.dtit{text-align:center;font-size:11pt;font-weight:700;text-decoration:underline;margin:18px 0 22px}
+.dh4{font-weight:700;margin:14px 0 4px!important}
+.dv{background:#fff6d6}
+.dh{background:#ffe1dc;color:#9a2a1f}
+.dfirmas{width:100%;margin-top:60px;border-collapse:collapse}
+.dfirmas td{width:50%;text-align:center;vertical-align:top;padding:0 14px;font-size:10.5pt}
+.dfirmas tr+tr td{padding-top:55px}
+.dlin{border-top:1px solid #111;margin:0 auto 6px;width:80%}
+.dacl{font-size:9.5pt;color:#444;margin-top:2px}
+.dacep{margin-top:70px}
+.dcampos{width:100%;border-collapse:collapse;margin:0 0 9px}
+.dcampos td{padding:0}
+`;
+function documentoReserva(R){
+  const html=docReservaHTML(R).replace(/<span class="d[vh]">|<\/span>/g,"");
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Reserva ${esc(R.locales.map(l=>l.codigo).join("-"))} ${esc(R.nombre||"")}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap"><style>@page{size:A4;margin:0}body{margin:0;background:#fff}${DOC_CSS}.dpag{box-shadow:none;margin:0;max-width:none;page-break-after:always;break-after:page}.dpag:last-child{page-break-after:auto;break-after:auto}</style></head><body>${html}</body></html>`;
+}
+
+/* Panel de la izquierda + vista del documento */
+function generadorReserva(base){
+  base=base||{};
+  const presu=base.presu||null;
+  const sel=new Set(base.ids||[]);
+  const cond=presu?presu.cond:S.cond;
+  const corredor=leerCorredor();
+  const soloDoc=!!base.reserva;
+  const cand=Object.values(S.locales).filter(l=>l.estado==="disponible"||sel.has(l.id)).sort((a,b)=>(sel.has(b.id)-sel.has(a.id))||PLANTAS.findIndex(p=>p.k===a.planta)-PLANTAS.findIndex(p=>p.k===b.planta)||ordenLoc(a,b));
+  const g=$("#gen"); g.hidden=false; document.body.style.overflow="hidden";
+  const r=base.reserva||{};
+  g.innerHTML=`<div class="gbar"><button id="g-x">← Volver</button><h2>${soloDoc?"Documento de reserva":"Crear reserva"}</h2>
+    <div class="gacc"><button id="g-imp">Imprimir / PDF</button><button id="g-pdf">Guardar PDF en Drive</button>${soloDoc?"":`<button class="prim" id="g-reg">Registrar reserva</button>`}</div></div>
+  <div class="gcuerpo"><aside class="gpanel" id="g-form">
+    ${presu?`<div class="muted" style="margin-bottom:6px">Desde presupuesto ${esc(presu.numero)}</div>`:""}
+    <fieldset><legend>Locales</legend>
+      <input id="g-buscar" placeholder="Filtrar: A3, B2, nave 4…" ${soloDoc?"hidden":""}>
+      <div class="lista-locs" id="g-locs">${cand.map(l=>`<label data-q="${esc((l.codigo+" "+l.planta+" nave "+l.nave).toLowerCase())}"><input type="checkbox" value="${esc(l.id)}" ${sel.has(l.id)?"checked":""} ${soloDoc?"disabled":""}> <b>${esc(l.codigo)}</b> <span class="muted">${l.planta==="PB"?"PB":l.planta+"°"} N${esc(l.nave)} · ${num(l.m2,2)} m²</span><span class="pr">${usd(precioDe(l))}</span></label>`).join("")}</div>
+    </fieldset>
+    <fieldset><legend>Compradores</legend>
+      <datalist id="g-ecs"><option>soltero</option><option>soltera</option><option>casado</option><option>casada</option><option>divorciado</option><option>divorciada</option><option>viudo</option><option>viuda</option></datalist>
+      <div id="g-comps"></div>
+      <button type="button" id="g-addc" style="margin-top:10px">+ Agregar otro comprador</button>
+    </fieldset>
+    <fieldset><legend>Montos (USD)</legend>
+      <label for="g-monto">Monto de la reserva</label><input id="g-monto" type="number" step="500" value="${esc(r.sena||10000)}">
+      <label for="g-precio">Precio total ofrecido</label><input id="g-precio" type="number" step="1000">
+      <div class="muted" id="g-lista" style="font-size:12px;margin-top:3px"></div>
+      <div class="dos"><div><label for="g-ant">Anticipo a la firma del boleto</label><input id="g-ant" type="number" step="1000"></div><div><label for="g-cuo">Cuotas mensuales</label><input id="g-cuo" type="number" value="${esc(cond.cuotas||36)}"></div></div>
+      <div class="calc" id="g-saldo"></div>
+    </fieldset>
+    <fieldset><legend>Plazos y honorarios</legend>
+      <div class="dos"><div><label for="g-dias">Días para firmar el boleto</label><input id="g-dias" type="number" value="10"></div><div><label for="g-hon">Honorarios % (+ IVA)</label><input id="g-hon" type="number" step="0.5" value="3"></div></div>
+      <label for="g-comp">Martillera que participa (opcional)</label><input id="g-comp" placeholder="María Silvina Rodriguez Jurado CMCPSI5290 quien comparte 1% de su cliente">
+      <label for="g-fecha">Fecha de firma</label><input id="g-fecha" type="date" value="${esc(r.fecha||hoyISO())}">
+    </fieldset>
+    <details class="fijos"><summary>Datos del corredor</summary>
+      <label for="g-cnom">Corredor</label><input id="g-cnom" value="${esc(corredor.nombre)}">
+      <label for="g-cmat">Matrícula</label><input id="g-cmat" value="${esc(corredor.matricula)}">
+      <label for="g-csis">Adherido al sistema</label><input id="g-csis" value="${esc(corredor.sistema)}">
+      <label for="g-cdom">Domicilio legal</label><input id="g-cdom" value="${esc(corredor.domicilio)}">
+      <div class="muted" style="font-size:12px;margin-top:4px">Se recuerdan en este dispositivo.</div>
+    </details>
+    <p class="muted" style="font-size:12px">En el documento, lo amarillo sale de este panel y lo rojo falta completar. Al imprimir no se ven los colores.</p>
+  </aside>
+  <div class="gvista"><div id="g-doc-vista"></div></div></div>`;
+  const contactoIni=base.contacto||r.contacto||"";
+  const bloqueComprador=(c,i)=>`<div class="gcomp" data-i="${i}"><div class="gcomp-cab"><b>Comprador ${i+1}</b>${i?`<button type="button" class="c-quitar">Quitar</button>`:""}</div>
+      <div class="seg c-gen" role="group" aria-label="Género"><button type="button" data-g="m" aria-pressed="${c.genero!=="f"}">Sr.</button><button type="button" data-g="f" aria-pressed="${c.genero==="f"}">Sra.</button></div>
+      <label>Nombre y apellido</label><input class="c-nom" value="${esc(c.nombre||"")}">
+      <div class="dos"><div><label>Documento</label><select class="c-tdoc">${["D.N.I.","C.U.I.T.","Pasaporte"].map(t=>`<option ${c.tipoDoc===t?"selected":""}>${t}</option>`).join("")}</select></div><div><label>Número</label><input class="c-doc" inputmode="numeric" placeholder="18.155.356" value="${esc(c.doc||"")}"></div></div>
+      <label>Estado civil</label><input class="c-ec" list="g-ecs" placeholder="${c.genero==="f"?"casada":"casado"}" value="${esc(c.estadoCivil||"")}">
+      <label>Domicilio (calle, número, piso, localidad)</label><input class="c-dom" placeholder="Mendoza 5056 6°A CABA" value="${esc(c.domicilio||"")}">
+      <div class="dos"><div><label>Email</label><input class="c-mail" type="email" value="${esc(c.email||"")}"></div><div><label>Teléfono</label><input class="c-tel" type="tel" value="${esc(c.tel||"")}"></div></div></div>`;
+  let compradores=[{genero:"m",nombre:base.cliente||r.cliente||"",tipoDoc:"D.N.I.",email:/@/.test(contactoIni)?contactoIni.split(" · ").find(x=>/@/.test(x)):"",tel:contactoIni.split(" · ").find(x=>x&&!/@/.test(x))||""}];
+  const leerComps=()=>[...g.querySelectorAll(".gcomp")].map(b=>({genero:b.querySelector('.c-gen [aria-pressed="true"]').dataset.g,nombre:b.querySelector(".c-nom").value.trim(),tipoDoc:b.querySelector(".c-tdoc").value,doc:b.querySelector(".c-doc").value.trim(),estadoCivil:b.querySelector(".c-ec").value.trim(),domicilio:b.querySelector(".c-dom").value.trim(),email:b.querySelector(".c-mail").value.trim(),tel:b.querySelector(".c-tel").value.trim()}));
+  const pintarComps=()=>{ $("#g-comps").innerHTML=compradores.map(bloqueComprador).join(""); $("#g-addc").hidden=compradores.length>=4; };
+  pintarComps();
+  $("#g-addc").onclick=()=>{ compradores=leerComps(); compradores.push({genero:"m",tipoDoc:"D.N.I."}); pintarComps(); pintar(); g.querySelector(`.gcomp[data-i="${compradores.length-1}"] .c-nom`).focus(); };
+  $("#g-comps").addEventListener("click",e=>{
+    const q=e.target.closest(".c-quitar"); if(q){ compradores=leerComps(); compradores.splice(+q.closest(".gcomp").dataset.i,1); pintarComps(); pintar(); return; }
+    const gb=e.target.closest(".c-gen button"); if(gb){ gb.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===gb))); pintar(); }
+  });
+  let precioTocado=false, antTocado=false;
+  const leer=()=>{
+    const ids=[...g.querySelectorAll("#g-locs input:checked")].map(i=>i.value);
+    const locales=ids.map(id=>S.locales[id]).filter(Boolean);
+    const lista=locales.reduce((s,l)=>s+(precioDe(l)||0),0);
+    if(!precioTocado) $("#g-precio").value=lista?Math.round(presu?(presu.items||[]).filter(i=>ids.includes(i.id)).reduce((s,i)=>s+i.precio,0)||lista:lista):"";
+    const precio=+$("#g-precio").value||0;
+    if(!antTocado) $("#g-ant").value=precio?Math.round(precio*(cond.anticipoPct||30)/100):"";
+    const anticipo=+$("#g-ant").value||0, cuotas=+$("#g-cuo").value||0, saldo=Math.max(0,precio-anticipo);
+    $("#g-lista").textContent=lista?`Precio de lista: ${usd(lista)}${precio&&precio!==lista?` · diferencia ${usd(precio-lista)}`:""}`:"";
+    $("#g-saldo").textContent=precio?`Saldo ${usd(saldo)}${cuotas&&saldo?` en ${cuotas} cuotas de ${usd(saldo/cuotas)}`:""}`:"Elegí al menos un local.";
+    const C={nombre:$("#g-cnom").value.trim(),matricula:$("#g-cmat").value.trim(),sistema:$("#g-csis").value.trim(),domicilio:$("#g-cdom").value.trim()};
+    const comps=leerComps();
+    return {ids,locales,precio,anticipo,cuotas,monto:+$("#g-monto").value||0,compradores:comps,nombre:comps.map(c=>c.nombre).filter(Boolean).join(" y "),
+      dias:+$("#g-dias").value||0,honorarios:+$("#g-hon").value||0,comparte:$("#g-comp").value.trim(),fecha:$("#g-fecha").value,corredor:C};
+  };
+  const pintar=()=>{ const R=leer(); $("#g-doc-vista").innerHTML=docReservaHTML(R); };
+  $("#g-precio").addEventListener("input",()=>{precioTocado=true;});
+  $("#g-ant").addEventListener("input",()=>{antTocado=true;});
+  g.querySelector("#g-form").addEventListener("input",pintar);
+  g.querySelector("#g-form").addEventListener("change",e=>{ if(e.target.id&&e.target.id.startsWith("g-c")) guardarCorredor(leer().corredor); pintar(); });
+  const buscar=$("#g-buscar"); if(buscar) buscar.addEventListener("input",e=>{ const q=e.target.value.toLowerCase().trim(); g.querySelectorAll("#g-locs label").forEach(l=>l.hidden=q&&!l.dataset.q.includes(q)); });
+  pintar();
+  $("#g-x").onclick=cerrarGenerador;
+  const falta=R=>{ if(!R.locales.length) return "Elegí al menos un local."; if(R.compradores.some(c=>!c.nombre)) return "Falta el nombre de un comprador."; if(!R.monto) return "Falta el monto de la reserva."; if(!R.precio) return "Falta el precio."; return ""; };
+  const nombreArchivo=R=>`Reserva ${R.locales.map(l=>l.codigo).join("-")} ${R.nombre}`.replace(/[\\/:*?"<>|]/g,"").trim();
+  $("#g-imp").onclick=()=>{ const R=leer(); const w=window.open("","_blank"); if(!w){toast("El navegador bloqueó la ventana. Permití ventanas emergentes.");return;} w.document.write(documentoReserva(R)); w.document.close(); setTimeout(()=>{ try{w.print();}catch(e){} },900); };
+  $("#g-pdf").onclick=async e=>{ const R=leer(); const m=falta(R); if(m){toast(m);return;} const b=e.target; b.disabled=true; b.textContent="Generando PDF…";
+    try{ const url=await api("guardarPdf",documentoReserva(R),nombreArchivo(R)); toast("PDF guardado en Drive"); if(/^https:\/\//.test(url)) window.open(url,"_blank"); }
+    catch(err){ toast("No se pudo crear el PDF: "+(err&&err.message||err)); }
+    b.disabled=false; b.textContent="Guardar PDF en Drive"; };
+  const reg=$("#g-reg"); if(reg) reg.onclick=async e=>{
+    const R=leer(); const m=falta(R); if(m){toast(m);return;}
+    const ocup=R.locales.filter(l=>l.estado!=="disponible"); if(ocup.length){ toast(`Ya no está disponible: ${ocup.map(l=>l.codigo).join(", ")}`); return; }
+    const notas=[...R.compradores.map(c=>[c.nombre, c.doc&&`${c.tipoDoc} ${c.doc}`, c.estadoCivil, c.domicilio&&("domicilio "+c.domicilio), c.email, c.tel].filter(Boolean).join(", ")), `precio ofrecido ${usd(R.precio)}`, `anticipo ${usd(R.anticipo)}`, R.cuotas?`${R.cuotas} cuotas`:"", `boleto en ${R.dias} días`, `honorarios ${R.honorarios}% + IVA`].filter(x=>x&&x!=="D.N.I.").join(" · ");
+    const c1=R.compradores[0]||{};
+    const d={cliente:R.nombre,contacto:[c1.tel,c1.email].filter(Boolean).join(" · "),fecha:R.fecha,sena:R.monto,vence:masDias(R.fecha||hoyISO(),R.dias||10),notas};
+    if(await guardar("reservar",[R.ids,d,presu?presu.id:null],R.ids.length>1?`${R.ids.length} locales reservados`:"Reserva registrada",e.target)){
+      e.target.hidden=true; toast("Reserva registrada. Ahora podés imprimir o guardar el PDF.");
+    }
+  };
+}
+function cerrarGenerador(){ const g=$("#gen"); g.hidden=true; g.innerHTML=""; document.body.style.overflow=""; }
+
+(()=>{ const st=document.createElement("style"); st.textContent=DOC_CSS; document.head.appendChild(st); })();
+addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("#gen").hidden && $("#drawer").hidden) cerrarGenerador(); });
+
+/* ---------- historial ---------- */
+function renderHist(){
+  $("#hist").innerHTML = S.hist.length ? S.hist.map(h=>`<li><time>${fmtF((h.ts||"").slice(0,10))} ${(h.ts||"").slice(11,16)}</time><span>${esc(h.texto)}${h.por?` <span class="muted">· ${esc(String(h.por).split("@")[0])}</span>`:""}</span></li>`).join("") : `<li class="vacio">Todavía no hay movimientos.</li>`;
+}
+
+function renderTodo(){ renderResumen(); renderTablero(); renderPresus(); renderReservas(); renderHist(); }
+renderFiltros();
+if(S.sesion){ try{ const c=localStorage.getItem("lb-datos"); if(c) aplicar(c,true); }catch(e){} }
+renderTodo(); cargar();
+</script>
+</body>
+</html>
