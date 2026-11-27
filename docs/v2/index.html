@@ -1289,9 +1289,10 @@ async function prepararEnvioWA(p){
   const movil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
   b.onclick = () => { const txt = textoWhatsApp(p);
     if (movil && navigator.share) { navigator.share({ text: txt }).catch(err => { if (err && err.name !== "AbortError") toast(errTxt(err)); }); return; }
-    /* Computadora: WhatsApp Web respeta los saltos de línea (la app de escritorio por wa.me los junta todos). El texto queda copiado igual, por las dudas. */
+    /* Computadora: wa.me deja elegir entre la app y WhatsApp Web. El texto queda copiado igual, por si los renglones llegan juntos (se pega con Cmd/Ctrl+V). */
     try { navigator.clipboard.writeText(txt).catch(() => {}); } catch (e) {}
-    const tel = telWA(p); window.open(`https://web.whatsapp.com/send?${tel ? `phone=${tel}&` : ""}text=${encodeURIComponent(txt)}`, "whatsapp_web"); };
+    const tel = telWA(p); window.open(`https://wa.me/${tel}?text=${encodeURIComponent(txt)}`, "_blank", "noopener");
+    toast("El texto también quedó copiado: si en WhatsApp sale todo junto, borralo y pegalo con " + (/Mac/.test(navigator.platform) ? "Cmd" : "Ctrl") + " + V."); };
   const m = $("#d-mas"); if (m) { m.hidden = !navigator.share || movil; m.onclick = () => navigator.share({ text: textoWhatsApp(p) }).catch(() => {}); }
 }
 function avisoWA(html){ const c = $("#d-prev"); if (!c) return; let d = c.querySelector(".wa-aviso"); if (!d) { d = document.createElement("div"); d.className = "wa-aviso"; c.prepend(d); } d.innerHTML = html; }
