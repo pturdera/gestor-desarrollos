@@ -1141,7 +1141,7 @@ $("#presu-lista").addEventListener("click",async e=>{ const b=e.target.closest("
 });
 function verPresu(p){
   abrirDrawer(`<div class="cab"><h3>${esc(p.numero)}</h3><button id="d-x">Cerrar</button></div>
-   <div class="pie" style="margin:0 0 12px"><button class="prim" id="d-wa" disabled>Enviar por WhatsApp con foto</button><button id="d-mas" hidden>Compartir…</button><button id="d-copiar">Copiar texto para WhatsApp</button><button id="d-imp">Imprimir / PDF</button></div>
+   <div class="pie" style="margin:0 0 12px"><button class="prim" id="d-wa" disabled>Enviar por WhatsApp</button><button id="d-mas" hidden>Compartir…</button><button id="d-copiar">Copiar texto para WhatsApp</button><button id="d-imp">Imprimir / PDF</button></div>
    <div id="d-link"></div>
    <div id="d-prev" class="wa-prev"><div class="muted">Preparando la vista previa…</div></div>
    <div class="hoja-wrap"><div class="hoja" style="min-width:0;padding:20px;font-size:12px">${hojaHTML(p)}</div></div>`,"min(860px,100%)");
@@ -1151,35 +1151,31 @@ function verPresu(p){
   prepararEnvioWA(p);
 }
 /* Imagen de vista previa del proyecto para mandar junto con el texto del presupuesto */
+/* WhatsApp en un paso: el texto lleva el link de la página pública del proyecto (docs/p/<id>/), que muestra la vista previa.
+   La imagen de esa vista previa se sube al bucket público "publico" (proyectos/<id>.jpg) cada vez que se abre un presupuesto. */
+async function subirVistaPrevia(pid){
+  const blob = await imagenPresu(null, "image/jpeg");
+  const { error } = await sb.storage.from("publico").upload(`proyectos/${pid}.jpg`, blob, { contentType: "image/jpeg", upsert: true, cacheControl: "60" });
+  if (error) throw error; return blob;
+}
 async function prepararEnvioWA(p){
-  let file = null;
-  try { const blob = await imagenPresu(p); file = new File([blob], `${p.numero || "presupuesto"}.png`, { type: "image/png" });
-    const caja = $("#d-prev"); if (!caja) return; const url = URL.createObjectURL(blob);
-    caja.innerHTML = `<img src="${url}" alt="Vista previa del proyecto"><div class="muted">Esta imagen va junto con el texto del presupuesto.</div>`;
-  } catch (e) { const caja = $("#d-prev"); if (caja) caja.innerHTML = `<div class="muted">No se pudo armar la imagen: ${esc(errTxt(e))}</div>`; }
-  const b = $("#d-wa"); if (!b) return; b.disabled = !file;
+  const b = $("#d-wa"); const caja = $("#d-prev"); let listo = false;
+  try { const blob = await subirVistaPrevia(S.pid); listo = true;
+    if (caja) caja.innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="Vista previa del proyecto"><div class="muted">Así se ve la vista previa del link en WhatsApp.</div>`;
+  } catch (e) { if (caja) caja.innerHTML = `<div class="muted">No se pudo preparar la vista previa (${esc(errTxt(e))}). El mensaje sale igual, con el link.</div>`; }
+  if (!b) return; b.disabled = false;
   const movil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
-  const compartir = () => navigator.share({ files: [file], text: textoWhatsApp(p) }).catch(err => { if (err && err.name !== "AbortError") toast(errTxt(err)); });
-  const puedeCompartir = !!(file && navigator.canShare && navigator.canShare({ files: [file] }));
-  b.onclick = async () => { const txt = textoWhatsApp(p);
-    if (movil && puedeCompartir) { try { navigator.clipboard.writeText(txt).catch(() => {}); } catch (e) {} compartir(); return; }
-    /* Computadora: copia la imagen (con la página en foco) y guía los pasos: pegar la imagen en el chat y después el texto como comentario */
-    let copiada = false; try { await navigator.clipboard.write([new ClipboardItem({ "image/png": file })]); copiada = true; } catch (e) {}
-    if (!copiada) { const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = file.name; document.body.appendChild(a); a.click(); a.remove(); }
-    const tel = telWA(p); const tecla = /Mac/.test(navigator.platform) ? "Cmd" : "Ctrl";
-    avisoWA(`<b>${copiada ? "✓ Imagen copiada." : "Se descargó la imagen."}</b><ol>
-      <li>Abrí el chat en WhatsApp${tel ? ` (<a href="https://wa.me/${tel}" target="_blank" rel="noopener">abrir chat del cliente</a>)` : ""} y ${copiada ? `pegá la imagen con <b>${tecla} + V</b>` : "adjuntá la imagen descargada (clip → Fotos)"}.</li>
-      <li>Volvé acá, tocá <button type="button" class="prim wa-txt">Copiar texto</button> y pegalo con <b>${tecla} + V</b> en el comentario de la foto.</li>
-      <li>Enviá.</li></ol>`);
-    const bt = $("#d-prev .wa-txt"); if (bt) bt.onclick = async () => { try { await navigator.clipboard.writeText(txt); bt.textContent = "✓ Texto copiado"; } catch (e) { copiarTexto(txt); } }; };
-  const m = $("#d-mas"); if (m) { m.hidden = !puedeCompartir || movil; m.onclick = compartir; }
+  b.onclick = () => { const txt = textoWhatsApp(p);
+    if (movil && navigator.share) { navigator.share({ text: txt }).catch(err => { if (err && err.name !== "AbortError") toast(errTxt(err)); }); return; }
+    const tel = telWA(p); window.open(`https://wa.me/${tel}?text=${encodeURIComponent(txt)}`, "_blank", "noopener"); };
+  const m = $("#d-mas"); if (m) { m.hidden = !navigator.share || movil; m.onclick = () => navigator.share({ text: textoWhatsApp(p) }).catch(() => {}); }
 }
 function avisoWA(html){ const c = $("#d-prev"); if (!c) return; let d = c.querySelector(".wa-aviso"); if (!d) { d = document.createElement("div"); d.className = "wa-aviso"; c.prepend(d); } d.innerHTML = html; }
 function telWA(p){ const cl = p.clienteId && (S.clientes || []).find(c => c.id === p.clienteId);
   const crudo = (cl && cl.telefono) || ((String(p.contacto || "").match(/\+?\d[\d\s().-]{7,}\d/) || [])[0] || "");
   const d = String(crudo).replace(/\D/g, ""); if (d.length < 8) return "";
   return d.replace(/^0/, "549").replace(/^(?!54)/, "549"); }
-async function imagenPresu(p){
+async function imagenPresu(p, formato){
   const pr = P() || {}; const W = 1200, H = 630, FH = 400;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H; const g = cv.getContext("2d");
   try { await Promise.all([document.fonts.load('700 46px "Archivo"'), document.fonts.load('500 26px "Inter"'), document.fonts.load('600 26px "Inter"')]); } catch (e) {}
@@ -1196,14 +1192,15 @@ async function imagenPresu(p){
   const x = 178, maxW = W - x - 44; g.textBaseline = "alphabetic";
   g.fillStyle = "#ffffff"; g.font = '700 46px "Archivo", Arial, sans-serif'; g.fillText(corta(pr.nombre || "Proyecto", maxW), x, FH + 82);
   g.fillStyle = "#b9bfca"; g.font = '500 26px "Inter", Arial, sans-serif'; g.fillText(corta([pr.localidad, pr.desarrolladora].filter(Boolean).join(" · ") || (TIPOS_PROY[pr.tipo] || ""), maxW), x, FH + 124);
-  const it = p.items || []; const tot = it.reduce((a, i) => a + (+i.precio || 0), 0); const ul = unidadLbl();
-  const linea = it.length === 1 ? `${ul} ${it[0].codigo}${it[0].m2 ? " · " + num(it[0].m2, 2) + " m²" : ""} · USD ${ent(tot)}` : `${it.length} ${plural(ul).toLowerCase()} (${it.map(i => i.codigo).join(", ")}) · USD ${ent(tot)}`;
+  const it = (p && p.items) || []; const tot = it.reduce((a, i) => a + (+i.precio || 0), 0); const ul = unidadLbl();
+  const linea = !p ? (TIPOS_PROY[pr.tipo] || "") : it.length === 1 ? `${ul} ${it[0].codigo}${it[0].m2 ? " · " + num(it[0].m2, 2) + " m²" : ""} · USD ${ent(tot)}` : `${it.length} ${plural(ul).toLowerCase()} (${it.map(i => i.codigo).join(", ")}) · USD ${ent(tot)}`;
   g.fillStyle = "#f5b400"; g.font = '600 28px "Inter", Arial, sans-serif'; g.fillText(corta(linea, maxW), x, FH + 176);
-  g.fillStyle = "#8a909b"; g.font = '500 20px "Inter", Arial, sans-serif'; g.textAlign = "right"; g.fillText(`Presupuesto ${p.numero || ""} · Coldwell Banker`, W - 44, FH + 212); g.textAlign = "left";
-  return await new Promise((ok, mal) => cv.toBlob(b => b ? ok(b) : mal(new Error("No se pudo generar la imagen")), "image/png"));
+  g.fillStyle = "#8a909b"; g.font = '500 20px "Inter", Arial, sans-serif'; g.textAlign = "right"; g.fillText(p ? `Presupuesto ${p.numero || ""} · Coldwell Banker` : "Coldwell Banker", W - 44, FH + 212); g.textAlign = "left";
+  return await new Promise((ok, mal) => cv.toBlob(b => b ? ok(b) : mal(new Error("No se pudo generar la imagen")), formato || "image/png", .85));
 }
+const linkProyecto = pid => `https://pturdera.github.io/gestor-desarrollos/p/${pid}/`;
 function textoWhatsApp(p){ const it=calcItems(p.items,p.cond);
-  return `*Coldwell Banker · ${(P()||{}).nombre||""}*\nPresupuesto ${p.numero}${p.cliente?" · "+p.cliente:""}\n\n`+it.map(i=>`• ${unidadLbl()} ${i.codigo} (${i.ubic}) ${num(i.m2,2)} m² — USD ${ent(i.precio)}\n   Anticipo ${p.cond.anticipoPct}%: USD ${ent(i.anticipo)} + ${p.cond.cuotas} cuotas de USD ${ent(i.cuota)}`).join("\n")+
+  return `*Coldwell Banker · ${(P()||{}).nombre||""}*\n${linkProyecto(S.pid)}\n\nPresupuesto ${p.numero}${p.cliente?" · "+p.cliente:""}\n\n`+it.map(i=>`• ${unidadLbl()} ${i.codigo} (${i.ubic}) ${num(i.m2,2)} m² — USD ${ent(i.precio)}\n   Anticipo ${p.cond.anticipoPct}%: USD ${ent(i.anticipo)} + ${p.cond.cuotas} cuotas de USD ${ent(i.cuota)}`).join("\n")+
   `\n\nA la firma: ${num(p.cond.honorariosPct)}% honorarios inmobiliarios + certificación de firmas ${ars(p.cond.certificacionArs)} por ${unidadLbl().toLowerCase()} (aprox.)\nVigente hasta ${fmtF(p.vigencia)}`+
   (p.asesor&&p.asesor.nombre?`\n\nTe atiende: ${p.asesor.nombre}${contactoTxt(p.asesor)?" · "+contactoTxt(p.asesor):""}`:""); }
 async function copiarTexto(t){ try{ await navigator.clipboard.writeText(t); toast("Copiado"); }catch(e){ abrirDrawer(`<div class="cab"><h3>Copiá el texto</h3><button id="d-x">Cerrar</button></div><textarea id="d-txt" rows="16">${esc(t)}</textarea>`); $("#d-x").onclick=cerrarDrawer; $("#d-txt").select(); } }
