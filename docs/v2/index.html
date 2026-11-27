@@ -1289,7 +1289,9 @@ async function prepararEnvioWA(p){
   const movil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
   b.onclick = () => { const txt = textoWhatsApp(p);
     if (movil && navigator.share) { navigator.share({ text: txt }).catch(err => { if (err && err.name !== "AbortError") toast(errTxt(err)); }); return; }
-    const tel = telWA(p); window.open(`https://wa.me/${tel}?text=${encodeURIComponent(txt)}`, "_blank", "noopener"); };
+    /* Computadora: WhatsApp Web respeta los saltos de línea (la app de escritorio por wa.me los junta todos). El texto queda copiado igual, por las dudas. */
+    try { navigator.clipboard.writeText(txt).catch(() => {}); } catch (e) {}
+    const tel = telWA(p); window.open(`https://web.whatsapp.com/send?${tel ? `phone=${tel}&` : ""}text=${encodeURIComponent(txt)}`, "whatsapp_web"); };
   const m = $("#d-mas"); if (m) { m.hidden = !navigator.share || movil; m.onclick = () => navigator.share({ text: textoWhatsApp(p) }).catch(() => {}); }
 }
 function avisoWA(html){ const c = $("#d-prev"); if (!c) return; let d = c.querySelector(".wa-aviso"); if (!d) { d = document.createElement("div"); d.className = "wa-aviso"; c.prepend(d); } d.innerHTML = html; }
@@ -1321,10 +1323,19 @@ async function imagenPresu(p, formato){
   return await new Promise((ok, mal) => cv.toBlob(b => b ? ok(b) : mal(new Error("No se pudo generar la imagen")), formato || "image/png", .85));
 }
 const linkProyecto = pid => `https://pturdera.github.io/gestor-desarrollos/p/${pid}/`;
-function textoWhatsApp(p){ const it=calcItems(p.items,p.cond);
-  return `*Coldwell Banker · ${(P()||{}).nombre||""}*\n${linkProyecto(S.pid)}\n\nPresupuesto ${p.numero}${p.cliente?" · "+p.cliente:""}\n\n`+it.map(i=>`• ${unidadLbl()} ${i.codigo} (${i.ubic}) ${num(i.m2,2)} m² — USD ${ent(i.precio)}`+((+p.cond.anticipoPct>0||+p.cond.cuotas>0)?`\n   `+[+p.cond.anticipoPct>0?`Anticipo ${num(p.cond.anticipoPct)}%: USD ${ent(i.anticipo)}`:"",+p.cond.cuotas>0?`${p.cond.cuotas} cuotas de USD ${ent(i.cuota)}`:""].filter(Boolean).join(" + "):"")).join("\n")+
-  (()=>{ const f=[+p.cond.honorariosPct>0?`${num(p.cond.honorariosPct)}% honorarios inmobiliarios`:"",+p.cond.certificacionArs>0?`certificación de firmas ${ars(p.cond.certificacionArs)} por ${unidadLbl().toLowerCase()} (aprox.)`:""].filter(Boolean); return f.length?`\n\nA la firma: ${f.join(" + ")}`:"\n"; })()+`\nVigente hasta ${fmtF(p.vigencia)}`+
-  (p.asesor&&p.asesor.nombre?`\n\nTe atiende: ${p.asesor.nombre}${contactoTxt(p.asesor)?" · "+contactoTxt(p.asesor):""}`:""); }
+function textoWhatsApp(p){ const c=p.cond, it=calcItems(p.items,c), ul=unidadLbl(), A=+c.anticipoPct>0, C=+c.cuotas>0;
+  const L=[`*Coldwell Banker · ${(P()||{}).nombre||""}*`, linkProyecto(S.pid), "", `*Presupuesto ${p.numero||""}*`];
+  if (p.cliente) L.push(`Cliente: ${p.cliente}`);
+  it.forEach(i=>{ L.push("", `*${ul} ${i.codigo}*`); if (i.ubic) L.push(i.ubic);
+    L.push(`${i.m2?num(i.m2,2)+" m² · ":""}USD ${ent(i.precio)}`);
+    if (A) L.push(`Anticipo ${num(c.anticipoPct)}%: USD ${ent(i.anticipo)}`);
+    if (C) L.push(`${c.cuotas} cuotas de USD ${ent(i.cuota)}`); });
+  if (it.length>1) L.push("", `*Total: ${it.length} ${plural(ul).toLowerCase()} · USD ${ent(it.reduce((s,i)=>s+(+i.precio||0),0))}*`);
+  const firma=[+c.honorariosPct>0?`${num(c.honorariosPct)}% honorarios inmobiliarios`:"", +c.certificacionArs>0?`Certificación de firmas: ${ars(c.certificacionArs)} por ${ul.toLowerCase()} (aprox.)`:""].filter(Boolean);
+  if (firma.length) L.push("", "*A la firma*", ...firma);
+  if (p.vigencia) L.push("", `Vigente hasta ${fmtF(p.vigencia)}`);
+  if (p.asesor&&p.asesor.nombre) { L.push("", `*Te atiende:* ${p.asesor.nombre}`); if (p.asesor.telefono) L.push(p.asesor.telefono); if (p.asesor.email) L.push(p.asesor.email); }
+  return L.join("\n"); }
 async function copiarTexto(t){ try{ await navigator.clipboard.writeText(t); toast("Copiado"); }catch(e){ abrirDrawer(`<div class="cab"><h3>Copiá el texto</h3><button id="d-x">Cerrar</button></div><textarea id="d-txt" rows="16">${esc(t)}</textarea>`); $("#d-x").onclick=cerrarDrawer; $("#d-txt").select(); } }
 function editorPresu(base){
   const c={...S.cond,...(base&&base.cond||{})}; const sel=new Set(base&&base.ids||[]);
