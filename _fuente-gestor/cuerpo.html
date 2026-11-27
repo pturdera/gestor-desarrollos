@@ -250,6 +250,8 @@ function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clea
 /* ---------- conexión con Supabase ---------- */
 const SB_URL = "__SB_URL__";
 const SB_KEY = "__SB_KEY__";
+/* Sin corrector ortográfico: en Mac el corrector del sistema cuelga y hace cerrar Brave/Chrome al escribir en los formularios */
+document.documentElement.spellcheck = false; document.addEventListener("focusin", e => { const t = e.target; if (t && (t.matches("input,textarea,[contenteditable]"))) { t.spellcheck = false; t.setAttribute("autocorrect", "off"); } }, true);
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
 /* Vuelta desde un link de email (confirmar cambio de email, etc.): mostrar el resultado en castellano y limpiar la dirección */
 (() => { const h = new URLSearchParams(location.hash.slice(1)); const err = h.get("error_code") || h.get("error"), msg = h.get("message");

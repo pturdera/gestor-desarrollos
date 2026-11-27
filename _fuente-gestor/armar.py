@@ -6,7 +6,7 @@ SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6I
 logo = "data:image/jpeg;base64," + base64.b64encode(open(S + "/logo.jpg", "rb").read()).decode()
 memb = "data:image/jpeg;base64," + base64.b64encode(open(B + "/membrete.jpg", "rb").read()).decode()
 css = "\n".join(open(CB + "/reservas-cb.html").read().split("\n")[4:111])
-head = ('<!DOCTYPE html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n'
+head = ('<!DOCTYPE html>\n<html lang="es" spellcheck="false">\n<head>\n<meta charset="utf-8">\n'
   '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
   '<title>Gestor de desarrollos · Coldwell Banker</title>\n<meta name="robots" content="noindex, nofollow">\n'
   '<meta name="theme-color" content="#15171a">\n<meta name="apple-mobile-web-app-title" content="Desarrollos CB">\n'

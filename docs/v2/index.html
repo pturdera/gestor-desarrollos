@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" spellcheck="false">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -369,6 +369,8 @@ function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clea
 /* ---------- conexión con Supabase ---------- */
 const SB_URL = "https://tfnaacvzjtamjgkzofeh.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmbmFhY3Z6anRhbWpna3pvZmVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU3MjY3NTIsImV4cCI6MjExMTMwMjc1Mn0.ctnOCcYGADcNfES-BHCunCnN08r0wdh1_vVhD14_3J8";
+/* Sin corrector ortográfico: en Mac el corrector del sistema cuelga y hace cerrar Brave/Chrome al escribir en los formularios */
+document.documentElement.spellcheck = false; document.addEventListener("focusin", e => { const t = e.target; if (t && (t.matches("input,textarea,[contenteditable]"))) { t.spellcheck = false; t.setAttribute("autocorrect", "off"); } }, true);
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
 /* Vuelta desde un link de email (confirmar cambio de email, etc.): mostrar el resultado en castellano y limpiar la dirección */
 (() => { const h = new URLSearchParams(location.hash.slice(1)); const err = h.get("error_code") || h.get("error"), msg = h.get("message");
