@@ -370,6 +370,15 @@ function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clea
 const SB_URL = "https://tfnaacvzjtamjgkzofeh.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmbmFhY3Z6anRhbWpna3pvZmVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU3MjY3NTIsImV4cCI6MjExMTMwMjc1Mn0.ctnOCcYGADcNfES-BHCunCnN08r0wdh1_vVhD14_3J8";
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+/* Vuelta desde un link de email (confirmar cambio de email, etc.): mostrar el resultado en castellano y limpiar la dirección */
+(() => { const h = new URLSearchParams(location.hash.slice(1)); const err = h.get("error_code") || h.get("error"), msg = h.get("message");
+  if (!err && !msg) return;
+  const txt = err === "otp_expired" ? "El link del email venció o ya se usó. Si estabas cambiando el email, pedí el cambio de nuevo desde Mis datos."
+    : err ? "No se pudo completar: " + (h.get("error_description") || err)
+    : /other email/i.test(msg) ? "Primera confirmación lista. Falta abrir el link que llegó a la otra casilla de email para terminar el cambio."
+    : msg;
+  setTimeout(() => { const el = $("#toast"); if (!el) return; el.textContent = txt; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 9000); }, 600);
+  if (err || msg) history.replaceState(null, "", location.pathname + location.search); })();
 const nroTxt = n => "CB-" + String(n||0).padStart(4,"0");
 const errTxt = e => { const m = String((e && (e.message || e.error_description)) || e || "Error");
   if (/Invalid login credentials/i.test(m)) return "Email o contraseña incorrectos.";
@@ -660,7 +669,7 @@ function misDatos(msg){
     const mailNuevo = $("#m-mail").value.trim().toLowerCase(); const cambiaMail = !!mailNuevo && mailNuevo !== String(p.email || "").toLowerCase();
     if (cambiaMail) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailNuevo)) { toast("Ese email no es válido"); return; }
-      e.target.disabled = true; const { error } = await sb.auth.updateUser({ email: mailNuevo }); e.target.disabled = false;
+      e.target.disabled = true; const { error } = await sb.auth.updateUser({ email: mailNuevo }, { emailRedirectTo: location.origin + location.pathname }); e.target.disabled = false;
       if (error) { toast(errTxt(error)); return; }
     }
     const r = await guardar("guardarPerfil", [{ nombre, telefono: $("#m-tel").value.trim() }], cambiaMail ? "Datos guardados. Confirmá el cambio de email desde el correo que te llega a la dirección nueva" : "Tus datos quedaron guardados", e.target);
