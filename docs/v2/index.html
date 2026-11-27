@@ -140,6 +140,13 @@ nav.tabs button[aria-current]{opacity:1;background:rgba(255,255,255,.14)}
 .pcard{text-align:left;display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;color:var(--ink);cursor:pointer;min-width:0}
 .pcard:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(0,0,0,.08)}
 .pcard h3{font:700 18px/1.2 var(--f-display);margin:2px 0 0}
+.pfoto{margin:-14px -16px 4px;aspect-ratio:16/7;overflow:hidden;border-radius:9px 9px 0 0;background:var(--soft);border-bottom:1px solid var(--line);position:relative}
+.pfoto img{display:block;width:100%;height:100%;object-fit:cover}
+.pfoto svg{display:block;width:100%;height:100%}
+.pfoto .il-a{fill:var(--accent);opacity:.16}.pfoto .il-b{fill:var(--accent);opacity:.32}.pfoto .il-l{stroke:var(--accent);opacity:.55;fill:none;stroke-width:2}.pfoto .il-v{fill:var(--panel);opacity:.9}.pfoto .il-s{fill:var(--accent);opacity:.08}
+.arch-fav{position:absolute;top:6px;left:6px;background:#f5b400;color:#15171a;font:700 11px var(--f-ui,inherit);padding:2px 7px;border-radius:999px}
+.arch{position:relative}
+.wa-prev{margin:0 0 14px}.wa-prev img{display:block;width:100%;max-width:520px;border-radius:8px;border:1px solid var(--line);margin-bottom:4px}
 .pcard-cab{display:flex;gap:6px;flex-wrap:wrap}
 .pbar{height:8px;border-radius:999px;background:var(--disp-bg);display:flex;overflow:hidden;margin-top:6px}
 .pbar i{display:block;height:100%}.pbar i.v{background:var(--ven)}.pbar i.r{background:var(--res)}
@@ -445,7 +452,7 @@ function aplicar(d, deCopia){
   if (S.pid && !S.proyectos.find(p => p.id === S.pid)) S.pid = null;
   filtrarProyecto(); pintarYo();
   $("#conn").textContent = deCopia ? "Mostrando los últimos datos de este dispositivo · actualizando…" : "Datos al día · " + new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) + (S.perfil ? " · " + (S.perfil.nombre || S.perfil.email) : "");
-  renderTodo();
+  renderTodo(); if (!deCopia) cargarPortadas();
 }
 /* Deja en S.locales, S.presus, etc. solo lo del proyecto abierto */
 function filtrarProyecto(){
@@ -746,6 +753,34 @@ function statsProyecto(pid){
   const cli = (d.clientes || []).filter(c => c.proyecto_id === pid && !["compro", "perdido"].includes(c.estado)).length;
   return { n: us.length, g, tot, venc, cli, resAct: d.reservas.filter(r => r.pid === pid && r.estado === "activa").length };
 }
+/* Portada de cada proyecto: la foto general marcada como favorita; si no hay, la primera foto subida; si no hay fotos, un dibujo según el tipo */
+const esImagen = ruta => /\.(jpe?g|png|webp|gif)$/i.test(ruta || "");
+async function cargarPortadas(){
+  if (!S.uid || !S.proyectos || !S.proyectos.length) return;
+  const { data, error } = await sb.from("archivos").select("proyecto_id,ruta,tipo,favorita,creado").is("unidad_id", null).eq("tipo", "foto").order("creado");
+  if (error || !data) return;
+  const elegida = {}; data.filter(a => a.proyecto_id && esImagen(a.ruta)).forEach(a => { const e = elegida[a.proyecto_id]; if (!e || (a.favorita && !e.favorita)) elegida[a.proyecto_id] = a; });
+  const rutas = Object.values(elegida).map(a => a.ruta); const urls = {};
+  if (rutas.length) { const r = await sb.storage.from("archivos").createSignedUrls(rutas, 6 * 3600); (r.data || []).forEach(u => { if (u.signedUrl) urls[u.path] = u.signedUrl; }); }
+  const nuevas = {}; Object.entries(elegida).forEach(([pid, a]) => { if (urls[a.ruta]) nuevas[pid] = urls[a.ruta]; });
+  const antes = S.portadasRutas || {}; const rutasNuevas = Object.fromEntries(Object.entries(elegida).map(([k, a]) => [k, a.ruta]));
+  const cambio = JSON.stringify(antes) !== JSON.stringify(rutasNuevas) || !S.portadas || Date.now() - (S.portadasTs || 0) > 4 * 3600e3;
+  S.portadasRutas = rutasNuevas; if (cambio) { S.portadas = nuevas; S.portadasTs = Date.now(); renderProyectos(); }
+}
+function ilustracion(tipo, suelta){
+  const cielo = `<rect class="il-s" width="320" height="140"/><circle class="il-a" cx="272" cy="34" r="16"/><rect class="il-a" x="0" y="122" width="320" height="18"/>`;
+  const vent = (x0, y0, cols, filas, dx, dy, w, h) => { let o = ""; for (let f = 0; f < filas; f++) for (let c = 0; c < cols; c++) o += `<rect class="il-v" x="${x0 + c * dx}" y="${y0 + f * dy}" width="${w}" height="${h}" rx="1"/>`; return o; };
+  const casa = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><rect class="il-b" x="0" y="20" width="44" height="30"/><path class="il-b" d="M-4 22 L22 0 L48 22 Z"/><rect class="il-v" x="8" y="30" width="10" height="10"/><rect class="il-v" x="26" y="32" width="9" height="18"/></g>`;
+  const arbol = (x, y) => `<rect class="il-b" x="${x - 1.5}" y="${y}" width="3" height="14"/><circle class="il-a" cx="${x}" cy="${y - 4}" r="10"/>`;
+  let d;
+  if (tipo === "edificio") d = `<rect class="il-a" x="60" y="44" width="54" height="78"/>${vent(68, 52, 3, 5, 16, 14, 9, 8)}<rect class="il-b" x="126" y="14" width="70" height="108"/>${vent(135, 22, 4, 7, 15, 14, 9, 8)}<rect class="il-a" x="208" y="58" width="48" height="64"/>${vent(216, 66, 3, 4, 14, 14, 8, 8)}${arbol(40, 108)}${arbol(276, 108)}`;
+  else if (tipo === "barrio") d = `${casa(34, 70, 1)}${casa(104, 62, 1.15)}${casa(180, 70, 1)}${casa(246, 74, .9)}${arbol(92, 108)}${arbol(166, 108)}${arbol(236, 108)}<path class="il-l" d="M0 131 Q160 118 320 131"/>`;
+  else if (tipo === "condominio") d = `<rect class="il-b" x="70" y="50" width="180" height="72"/>${vent(82, 60, 8, 3, 21, 20, 12, 11)}<path class="il-a" d="M62 52 L160 26 L258 52 Z"/>${arbol(44, 108)}${arbol(280, 108)}`;
+  else if (tipo === "comercial") d = `<rect class="il-b" x="46" y="50" width="228" height="72"/><rect class="il-a" x="46" y="38" width="228" height="14"/><path class="il-v" d="M54 52 h44 l-4 10 h-36 Z M112 52 h44 l-4 10 h-36 Z M170 52 h44 l-4 10 h-36 Z M228 52 h40 l-4 10 h-32 Z"/>${vent(58, 72, 4, 1, 58, 0, 40, 34)}<rect class="il-a" x="148" y="96" width="24" height="26"/>`;
+  else d = `<rect class="il-b" x="110" y="52" width="100" height="70"/><path class="il-a" d="M100 56 L160 22 L220 56 Z"/>${vent(124, 66, 3, 2, 26, 26, 16, 14)}${arbol(70, 108)}${arbol(250, 108)}`;
+  if (suelta) return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 140" width="1200" height="525" preserveAspectRatio="xMidYMid slice"><style>.il-a{fill:#1d3f8f;opacity:.16}.il-b{fill:#1d3f8f;opacity:.32}.il-l{stroke:#1d3f8f;opacity:.55;fill:none;stroke-width:2}.il-v{fill:#fff;opacity:.9}.il-s{fill:#1d3f8f;opacity:.08}</style><rect width="320" height="140" fill="#fff"/>${cielo}${d}</svg>`;
+  return `<svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${cielo}${d}</svg>`;
+}
 function renderProyectos(){
   const caja = $("#proy-lista"); if (!caja) return;
   if (!S.uid || !(S.perfil && S.perfil.activo)) return;
@@ -755,6 +790,7 @@ function renderProyectos(){
   if (!lista.length) { caja.innerHTML = `<div class="vacio">Todavía no hay proyectos.${esAdmin() ? " Tocá “Nuevo proyecto” para cargar el primero." : ""}</div>`; return; }
   caja.innerHTML = lista.map(p => { const s = statsProyecto(p.id); const pct = s.n ? Math.round((s.g.vendido.length + s.g.reservado.length) / s.n * 100) : 0;
     return `<button class="pcard" data-pid="${esc(p.id)}">
+      <div class="pfoto">${S.portadas && S.portadas[p.id] ? `<img src="${esc(S.portadas[p.id])}" alt="" loading="lazy">` : ilustracion(p.tipo)}</div>
       <div class="pcard-cab"><span class="pill p-no_disponible">${esc(TIPOS_PROY[p.tipo] || p.tipo)}</span>${p.estado === "archivado" ? `<span class="pill p-vencido">Archivado</span>` : ""}</div>
       <h3>${esc(p.nombre)}</h3><div class="muted">${esc([p.localidad, p.desarrolladora].filter(Boolean).join(" · ") || "—")}</div>
       <div class="pbar" title="${pct}% vendido o reservado"><i class="v" style="width:${s.n ? s.g.vendido.length / s.n * 100 : 0}%"></i><i class="r" style="width:${s.n ? s.g.reservado.length / s.n * 100 : 0}%"></i></div>
@@ -933,21 +969,25 @@ function renderProyectoTab(){
 async function cargarArchivosProyecto(){
   const caja = $("#proy-arch"); if (!caja || !S.pid) return; const pid = S.pid;
   const { data, error } = await sb.from("archivos").select("*").eq("proyecto_id", pid).is("unidad_id", null).order("creado", { ascending: false });
+  const fotos = (data || []).filter(a => a.tipo === "foto" && esImagen(a.ruta)); const portada = fotos.find(a => a.favorita) || fotos[fotos.length - 1];
   if (S.pid !== pid) return;
   if (error) { caja.innerHTML = `<p class="aviso">${esc(errTxt(error))}</p>`; return; }
   let urls = {}; if (data.length) { const r = await sb.storage.from("archivos").createSignedUrls(data.map(a => a.ruta), 3600); (r.data || []).forEach(u => { if (u.signedUrl) urls[u.path] = u.signedUrl; }); }
   caja.innerHTML = `<div class="arch-subir" ${can("archivos_subir")?"":"hidden"}><select id="pa-tipo">${Object.entries(TIPOS_ARCH).map(([k, n]) => `<option value="${k}">${n}</option>`).join("")}</select><label class="btn" for="pa-file">Subir planos, brochure o fotos</label><input id="pa-file" type="file" multiple accept="image/*,application/pdf" hidden><span class="muted" id="pa-prog"></span></div>
     ${data.length ? `<div class="arch-grid">${data.map(a => { const u = urls[a.ruta]; const img = /\.(jpe?g|png|webp)$/i.test(a.ruta);
-      return `<figure class="arch"><a href="${u ? esc(u) : "#"}" target="_blank" rel="noopener">${img && u ? `<img src="${esc(u)}" alt="${esc(a.nombre)}" loading="lazy">` : `<div class="arch-doc">PDF</div>`}</a><figcaption><span class="arch-nom">${esc(a.nombre)}</span><span class="muted">${esc(TIPOS_ARCH[a.tipo] || "")} · ${pesoTxt(a.bytes)}</span>${esAdmin() || a.subido_por === S.uid ? `<button class="pa-borrar" data-id="${esc(a.id)}" data-ruta="${esc(a.ruta)}">Borrar</button>` : ""}</figcaption></figure>`; }).join("")}</div>` : `<div class="muted">Todavía no hay archivos generales del proyecto.</div>`}`;
+      const esFoto = a.tipo === "foto" && esImagen(a.ruta);
+      return `<figure class="arch">${portada && portada.id === a.id ? `<span class="arch-fav">★ Portada</span>` : ""}<a href="${u ? esc(u) : "#"}" target="_blank" rel="noopener">${img && u ? `<img src="${esc(u)}" alt="${esc(a.nombre)}" loading="lazy">` : `<div class="arch-doc">PDF</div>`}</a><figcaption><span class="arch-nom">${esc(a.nombre)}</span><span class="muted">${esc(TIPOS_ARCH[a.tipo] || "")} · ${pesoTxt(a.bytes)}</span>${esFoto && can("archivos_subir") ? `<button class="pa-fav" data-id="${esc(a.id)}">${a.favorita ? "★ Quitar de favorita" : "☆ Usar de portada"}</button>` : ""}${esAdmin() || a.subido_por === S.uid ? `<button class="pa-borrar" data-id="${esc(a.id)}" data-ruta="${esc(a.ruta)}">Borrar</button>` : ""}</figcaption></figure>`; }).join("")}</div>` : `<div class="muted">Todavía no hay archivos generales del proyecto.</div>`}`;
   $("#pa-file").onchange = async e => { const files = [...e.target.files]; e.target.value = ""; let ok = 0;
     for (const f of files) { $("#pa-prog").textContent = `Subiendo ${ok + 1} de ${files.length}…`;
       try { const { blob, ext, mime } = await prepararArchivo(f); const ruta = `proyectos/${pid}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
         const up = await sb.storage.from("archivos").upload(ruta, blob, { contentType: mime }); if (up.error) throw up.error;
         const ins = await sb.from("archivos").insert({ proyecto_id: pid, unidad_id: null, tipo: $("#pa-tipo").value, nombre: f.name, ruta, bytes: blob.size }); if (ins.error) { await sb.storage.from("archivos").remove([ruta]); throw ins.error; } ok++;
       } catch (err) { toast(`No se pudo subir ${f.name}: ${errTxt(err)}`); } }
-    $("#pa-prog").textContent = ""; if (ok) { toast("Archivos subidos"); cargarArchivosProyecto(); } };
+    $("#pa-prog").textContent = ""; if (ok) { toast("Archivos subidos"); cargarArchivosProyecto(); cargarPortadas(); } };
+  caja.querySelectorAll(".pa-fav").forEach(b => b.onclick = async () => { b.disabled = true; const { data: fav, error } = await sb.rpc("marcar_portada", { p_archivo: b.dataset.id });
+    if (error) { toast(errTxt(error)); b.disabled = false; return; } toast(fav ? "Foto elegida como portada" : "Se quitó la favorita"); cargarArchivosProyecto(); cargarPortadas(); });
   caja.querySelectorAll(".pa-borrar").forEach(b => b.onclick = async () => { if (b.dataset.conf !== "1") { b.dataset.conf = "1"; b.textContent = "¿Borrar?"; return; }
-    await sb.storage.from("archivos").remove([b.dataset.ruta]); const { error } = await sb.from("archivos").delete().eq("id", b.dataset.id); if (error) toast(errTxt(error)); else cargarArchivosProyecto(); });
+    await sb.storage.from("archivos").remove([b.dataset.ruta]); const { error } = await sb.from("archivos").delete().eq("id", b.dataset.id); if (error) toast(errTxt(error)); else { cargarArchivosProyecto(); cargarPortadas(); } });
 }
 
 /* Importar unidades desde Excel o CSV */
@@ -1220,12 +1260,54 @@ $("#presu-lista").addEventListener("click",async e=>{ const b=e.target.closest("
 });
 function verPresu(p){
   abrirDrawer(`<div class="cab"><h3>${esc(p.numero)}</h3><button id="d-x">Cerrar</button></div>
-   <div class="pie" style="margin:0 0 12px"><button class="prim" id="d-imp">Imprimir / PDF</button><button id="d-copiar">Copiar texto para WhatsApp</button></div>
+   <div class="pie" style="margin:0 0 12px"><button class="prim" id="d-wa" disabled>Enviar por WhatsApp con foto</button><button id="d-copiar">Copiar texto para WhatsApp</button><button id="d-imp">Imprimir / PDF</button></div>
    <div id="d-link"></div>
+   <div id="d-prev" class="wa-prev"><div class="muted">Preparando la vista previa…</div></div>
    <div class="hoja-wrap"><div class="hoja" style="min-width:0;padding:20px;font-size:12px">${hojaHTML(p)}</div></div>`,"min(860px,100%)");
   $("#d-x").onclick=cerrarDrawer;
   $("#d-imp").onclick=()=>{ const w=window.open("","_blank"); if(!w){toast("El navegador bloqueó la ventana. Permití ventanas emergentes.");return;} w.document.write(documentoPresu(p)); w.document.close(); setTimeout(()=>{ try{w.print();}catch(e){} },700); };
   $("#d-copiar").onclick=()=>copiarTexto(textoWhatsApp(p));
+  prepararEnvioWA(p);
+}
+/* Imagen de vista previa del proyecto para mandar junto con el texto del presupuesto */
+async function prepararEnvioWA(p){
+  let file = null;
+  try { const blob = await imagenPresu(p); file = new File([blob], `${p.numero || "presupuesto"}.png`, { type: "image/png" });
+    const caja = $("#d-prev"); if (!caja) return; const url = URL.createObjectURL(blob);
+    caja.innerHTML = `<img src="${url}" alt="Vista previa del proyecto"><div class="muted">Esta imagen va junto con el texto del presupuesto.</div>`;
+  } catch (e) { const caja = $("#d-prev"); if (caja) caja.innerHTML = `<div class="muted">No se pudo armar la imagen: ${esc(errTxt(e))}</div>`; }
+  const b = $("#d-wa"); if (!b) return; b.disabled = !file;
+  b.onclick = () => { const txt = textoWhatsApp(p);
+    try { navigator.clipboard.writeText(txt).catch(() => {}); } catch (e) {}
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], text: txt }).then(() => toast("Listo. El texto también quedó copiado por si WhatsApp no lo pega.")).catch(err => { if (err && err.name !== "AbortError") toast(errTxt(err)); });
+    } else {
+      const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+      toast("Se descargó la imagen y se copió el texto: en WhatsApp adjuntá la imagen y pegá el texto como comentario.");
+    } };
+}
+async function imagenPresu(p){
+  const pr = P() || {}; const W = 1200, H = 630, FH = 400;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H; const g = cv.getContext("2d");
+  try { await Promise.all([document.fonts.load('700 46px "Archivo"'), document.fonts.load('500 26px "Inter"'), document.fonts.load('600 26px "Inter"')]); } catch (e) {}
+  const cargarImg = src => new Promise((ok, mal) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => mal(new Error("No se pudo leer la imagen")); im.src = src; });
+  const cubrir = (im, x, y, w, h) => { const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height; const k = Math.max(w / iw, h / ih); const sw = w / k, sh = h / k; g.drawImage(im, (iw - sw) / 2, (ih - sh) / 2, sw, sh, x, y, w, h); };
+  g.fillStyle = "#ffffff"; g.fillRect(0, 0, W, H);
+  let foto = null; const ruta = S.portadasRutas && S.portadasRutas[pr.id];
+  if (ruta) { try { const r = await sb.storage.from("archivos").download(ruta); if (r.data) { const u = URL.createObjectURL(r.data); foto = await cargarImg(u); } } catch (e) { foto = null; } }
+  if (!foto) foto = await cargarImg("data:image/svg+xml;charset=utf-8," + encodeURIComponent(ilustracion(pr.tipo, true)));
+  cubrir(foto, 0, 0, W, FH);
+  g.fillStyle = "#15171a"; g.fillRect(0, FH, W, H - FH); g.fillStyle = "#f5b400"; g.fillRect(0, FH, W, 5);
+  try { const lg = await cargarImg(LOGO); g.drawImage(lg, 44, FH + 44, 104, 104); } catch (e) {}
+  const corta = (t, max) => { t = String(t || ""); if (g.measureText(t).width <= max) return t; while (t.length > 1 && g.measureText(t + "…").width > max) t = t.slice(0, -1); return t + "…"; };
+  const x = 178, maxW = W - x - 44; g.textBaseline = "alphabetic";
+  g.fillStyle = "#ffffff"; g.font = '700 46px "Archivo", Arial, sans-serif'; g.fillText(corta(pr.nombre || "Proyecto", maxW), x, FH + 82);
+  g.fillStyle = "#b9bfca"; g.font = '500 26px "Inter", Arial, sans-serif'; g.fillText(corta([pr.localidad, pr.desarrolladora].filter(Boolean).join(" · ") || (TIPOS_PROY[pr.tipo] || ""), maxW), x, FH + 124);
+  const it = p.items || []; const tot = it.reduce((a, i) => a + (+i.precio || 0), 0); const ul = unidadLbl();
+  const linea = it.length === 1 ? `${ul} ${it[0].codigo}${it[0].m2 ? " · " + num(it[0].m2, 2) + " m²" : ""} · USD ${ent(tot)}` : `${it.length} ${plural(ul).toLowerCase()} (${it.map(i => i.codigo).join(", ")}) · USD ${ent(tot)}`;
+  g.fillStyle = "#f5b400"; g.font = '600 28px "Inter", Arial, sans-serif'; g.fillText(corta(linea, maxW), x, FH + 176);
+  g.fillStyle = "#8a909b"; g.font = '500 20px "Inter", Arial, sans-serif'; g.textAlign = "right"; g.fillText(`Presupuesto ${p.numero || ""} · Coldwell Banker`, W - 44, FH + 212); g.textAlign = "left";
+  return await new Promise((ok, mal) => cv.toBlob(b => b ? ok(b) : mal(new Error("No se pudo generar la imagen")), "image/png"));
 }
 function textoWhatsApp(p){ const it=calcItems(p.items,p.cond);
   return `*Coldwell Banker · ${(P()||{}).nombre||""}*\nPresupuesto ${p.numero}${p.cliente?" · "+p.cliente:""}\n\n`+it.map(i=>`• ${unidadLbl()} ${i.codigo} (${i.ubic}) ${num(i.m2,2)} m² — USD ${ent(i.precio)}\n   Anticipo ${p.cond.anticipoPct}%: USD ${ent(i.anticipo)} + ${p.cond.cuotas} cuotas de USD ${ent(i.cuota)}`).join("\n")+
