@@ -146,7 +146,7 @@ nav.tabs button[aria-current]{opacity:1;background:rgba(255,255,255,.14)}
 .pfoto .il-a{fill:var(--accent);opacity:.16}.pfoto .il-b{fill:var(--accent);opacity:.32}.pfoto .il-l{stroke:var(--accent);opacity:.55;fill:none;stroke-width:2}.pfoto .il-v{fill:var(--panel);opacity:.9}.pfoto .il-s{fill:var(--accent);opacity:.08}
 .arch-fav{position:absolute;top:6px;left:6px;background:#f5b400;color:#15171a;font:700 11px var(--f-ui,inherit);padding:2px 7px;border-radius:999px}
 .arch{position:relative}
-.wa-prev{margin:0 0 14px}.wa-aviso{background:#fff7e0;border:1px solid #f5d27a;color:#4a3a00;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:13px;max-width:520px}.wa-prev img{display:block;width:100%;max-width:520px;border-radius:8px;border:1px solid var(--line);margin-bottom:4px}
+.wa-prev{margin:0 0 14px}.wa-aviso{background:#fff7e0;border:1px solid #f5d27a;color:#4a3a00;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:13px;max-width:520px}.wa-aviso ol{margin:6px 0 0;padding-left:20px}.wa-aviso li{margin:4px 0}.wa-aviso button{padding:3px 10px;font-size:12.5px}.wa-aviso a{color:inherit;text-decoration:underline}.wa-prev img{display:block;width:100%;max-width:520px;border-radius:8px;border:1px solid var(--line);margin-bottom:4px}
 .pcard-cab{display:flex;gap:6px;flex-wrap:wrap}
 .pbar{height:8px;border-radius:999px;background:var(--disp-bg);display:flex;overflow:hidden;margin-top:6px}
 .pbar i{display:block;height:100%}.pbar i.v{background:var(--ven)}.pbar i.r{background:var(--res)}
@@ -1282,13 +1282,15 @@ async function prepararEnvioWA(p){
   const puedeCompartir = !!(file && navigator.canShare && navigator.canShare({ files: [file] }));
   b.onclick = async () => { const txt = textoWhatsApp(p);
     if (movil && puedeCompartir) { try { navigator.clipboard.writeText(txt).catch(() => {}); } catch (e) {} compartir(); return; }
-    /* Computadora: copia la imagen y abre el chat de WhatsApp con el texto escrito; ahí se pega la imagen con Cmd/Ctrl+V */
-    let copia; try { copia = navigator.clipboard.write([new ClipboardItem({ "image/png": file })]).then(() => true, () => false); } catch (e) { copia = Promise.resolve(false); }
-    const tel = telWA(p); window.open(`https://wa.me/${tel}?text=${encodeURIComponent(txt)}`, "_blank", "noopener");
-    const copiada = await copia;
-    if (copiada) avisoWA(`Se abrió WhatsApp${tel ? "" : " (elegí el contacto)"} con el texto escrito y la imagen quedó copiada. En el chat apretá <b>${/Mac/.test(navigator.platform) ? "Cmd" : "Ctrl"} + V</b> para pegarla: el texto va como comentario de la foto.`);
-    else { const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
-      avisoWA(`Se abrió WhatsApp con el texto escrito y se descargó la imagen. Adjuntala en el chat (clip → Fotos) antes de enviar.`); } };
+    /* Computadora: copia la imagen (con la página en foco) y guía los pasos: pegar la imagen en el chat y después el texto como comentario */
+    let copiada = false; try { await navigator.clipboard.write([new ClipboardItem({ "image/png": file })]); copiada = true; } catch (e) {}
+    if (!copiada) { const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = file.name; document.body.appendChild(a); a.click(); a.remove(); }
+    const tel = telWA(p); const tecla = /Mac/.test(navigator.platform) ? "Cmd" : "Ctrl";
+    avisoWA(`<b>${copiada ? "✓ Imagen copiada." : "Se descargó la imagen."}</b><ol>
+      <li>Abrí el chat en WhatsApp${tel ? ` (<a href="https://wa.me/${tel}" target="_blank" rel="noopener">abrir chat del cliente</a>)` : ""} y ${copiada ? `pegá la imagen con <b>${tecla} + V</b>` : "adjuntá la imagen descargada (clip → Fotos)"}.</li>
+      <li>Volvé acá, tocá <button type="button" class="prim wa-txt">Copiar texto</button> y pegalo con <b>${tecla} + V</b> en el comentario de la foto.</li>
+      <li>Enviá.</li></ol>`);
+    const bt = $("#d-prev .wa-txt"); if (bt) bt.onclick = async () => { try { await navigator.clipboard.writeText(txt); bt.textContent = "✓ Texto copiado"; } catch (e) { copiarTexto(txt); } }; };
   const m = $("#d-mas"); if (m) { m.hidden = !puedeCompartir || movil; m.onclick = compartir; }
 }
 function avisoWA(html){ const c = $("#d-prev"); if (!c) return; let d = c.querySelector(".wa-aviso"); if (!d) { d = document.createElement("div"); d.className = "wa-aviso"; c.prepend(d); } d.innerHTML = html; }
