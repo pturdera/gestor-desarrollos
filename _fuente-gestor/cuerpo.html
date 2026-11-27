@@ -1059,7 +1059,7 @@ const estadoCuota = (c, hoy) => c.pagado >= c.monto - 0.005 ? "pagada" : c.venci
 const EST_CUO = { pagada: ["Pagada", "aceptado"], parcial: ["Pago parcial", "reservado"], vencida: ["Vencida", "vendido"], pendiente: ["Pendiente", "no_disponible"] };
 function planPagos(r){
   const plan = S.cuotas.filter(c => c.reserva_id === r.id).sort((a, b) => a.numero - b.numero);
-  const doc = r.documento || {}; const precio = doc.precio || r.precio || 0; const ant = doc.anticipo ?? Math.round(precio * (S.cond.anticipoPct || 30) / 100); const n = doc.cuotas ?? S.cond.cuotas ?? 36;
+  const doc = r.documento || {}; const precio = doc.precio || r.precio || 0; const ant = doc.anticipo ?? Math.round(precio * (S.cond.anticipoPct ?? 30) / 100); const n = doc.cuotas ?? S.cond.cuotas ?? 36;
   const hayPagos = plan.some(c => c.pagado > 0);
   abrirDrawer(`<div class="cab"><div><h3>Plan de pagos · ${esc(r.codigo)}</h3><div class="muted">${esc(r.cliente)} · precio ${usd(precio)}</div></div><button id="d-x">Cerrar</button></div>
     ${plan.length ? `<div class="calc">${plan.length} pagos · total ${usd(plan.reduce((s, c) => s + c.monto, 0))} · cobrado ${usd(plan.reduce((s, c) => s + c.pagado, 0))}</div>
@@ -1107,17 +1107,20 @@ $("#cob-lista").addEventListener("click", e => { const b = e.target.closest("[da
 
 /* ---------- presupuestos ---------- */
 function estadoPresu(p){ if(p.estado==="abierto" && p.vigencia && p.vigencia < hoyISO()) return "vencido"; return p.estado||"abierto"; }
+/* Forma de pago: no menciona anticipo, cuotas ni certificación cuando están en 0 */
+function formaPago(c){ const a=+c.anticipoPct||0, n=+c.cuotas||0;
+  return a&&n?`${num(a)}% anticipo + ${n} cuotas`:a?`${num(a)}% anticipo + saldo a convenir`:n?`${n} cuotas`:"Contado"; }
 function calcItems(items,c){ return items.map(i=>{ const anticipo=i.precio*c.anticipoPct/100; const cuota=c.cuotas?(i.precio-anticipo)/c.cuotas:0; return {...i,anticipo,cuota}; }); }
 function hojaHTML(p){
-  const c=p.cond, it=calcItems(p.items,c); const sum=k=>it.reduce((s,i)=>s+(i[k]||0),0);
+  const c=p.cond, it=calcItems(p.items,c); const sum=k=>it.reduce((s,i)=>s+(i[k]||0),0); const vA=+c.anticipoPct>0, vC=+c.cuotas>0;
+  const conds=[["Forma de pago",formaPago(c)],["Moneda","Dólares estadounidenses"]]; if(+c.honorariosPct>0) conds.push(["A la firma: honorarios inmobiliarios",num(c.honorariosPct)+"%"]); if(+c.certificacionArs>0) conds.push(["Certificación de firmas (aprox.)",`${ars(c.certificacionArs)} por ${unidadLbl().toLowerCase()}`]);
   return `<table class="h-cab"><tr><td style="width:78px"><img src="${LOGO}" alt="Coldwell Banker"></td><td><div class="h-t">Presupuesto</div><div class="h-s">${esc([(P()||{}).nombre,(P()||{}).localidad].filter(Boolean).join(" · "))}</div></td><td class="h-n"><b>${esc(p.numero||"Borrador")}</b>${fmtF(p.fecha)}</td></tr></table>
   <table class="h-cli"><tr><td><b>Cliente:</b> ${esc(p.cliente||"—")}${p.contacto?` · ${esc(p.contacto)}`:""}</td><td style="text-align:right"><b>Vigente hasta:</b> ${fmtF(p.vigencia)}</td></tr>
   ${p.asesor&&p.asesor.nombre?`<tr class="h-ase"><td colspan="2"><b>Asesor:</b> ${esc(p.asesor.nombre)}${contactoTxt(p.asesor)?` · ${esc(contactoTxt(p.asesor))}`:""}</td></tr>`:""}</table>
-  <table class="h-tab"><thead><tr><th>${esc(unidadLbl())}</th><th>Ubicación</th><th class="r">Sup. m²</th><th class="r">USD/m²</th><th class="r">Precio USD</th><th class="r">Anticipo ${c.anticipoPct}%</th><th class="r">${c.cuotas} cuotas de</th><th>${it.some(i=>i.rubro)?"Destino":""}</th></tr></thead><tbody>
-  ${it.map(i=>`<tr><td><b>${esc(i.codigo)}</b></td><td>${esc(i.ubic)}</td><td class="r">${num(i.m2,2)}</td><td class="r">${ent(i.usdM2)}</td><td class="r">${ent(i.precio)}</td><td class="r">${ent(i.anticipo)}</td><td class="r">${ent(i.cuota)}</td><td>${esc(i.rubro||"")}</td></tr>`).join("")}
-  ${it.length>1?`<tr class="tot"><td colspan="2">Total ${it.length} ${esc(plural(unidadLbl()).toLowerCase())}</td><td class="r">${num(sum("m2"),2)}</td><td></td><td class="r">${ent(sum("precio"))}</td><td class="r">${ent(sum("anticipo"))}</td><td class="r">${ent(sum("cuota"))}</td><td></td></tr>`:""}</tbody></table>
-  <table class="h-cond"><tr><td>Forma de pago</td><td class="v">${c.anticipoPct}% anticipo + ${c.cuotas} cuotas</td><td class="sep"></td><td>Moneda</td><td class="v">Dólares estadounidenses</td></tr>
-  <tr><td>A la firma: honorarios inmobiliarios</td><td class="v">${num(c.honorariosPct)}%</td><td class="sep"></td><td>Certificación de firmas (aprox.)</td><td class="v">${ars(c.certificacionArs)} por local</td></tr></table>
+  <table class="h-tab"><thead><tr><th>${esc(unidadLbl())}</th><th>Ubicación</th><th class="r">Sup. m²</th><th class="r">USD/m²</th><th class="r">Precio USD</th>${vA?`<th class="r">Anticipo ${num(c.anticipoPct)}%</th>`:""}${vC?`<th class="r">${c.cuotas} cuotas de</th>`:""}<th>${it.some(i=>i.rubro)?"Destino":""}</th></tr></thead><tbody>
+  ${it.map(i=>`<tr><td><b>${esc(i.codigo)}</b></td><td>${esc(i.ubic)}</td><td class="r">${num(i.m2,2)}</td><td class="r">${ent(i.usdM2)}</td><td class="r">${ent(i.precio)}</td>${vA?`<td class="r">${ent(i.anticipo)}</td>`:""}${vC?`<td class="r">${ent(i.cuota)}</td>`:""}<td>${esc(i.rubro||"")}</td></tr>`).join("")}
+  ${it.length>1?`<tr class="tot"><td colspan="2">Total ${it.length} ${esc(plural(unidadLbl()).toLowerCase())}</td><td class="r">${num(sum("m2"),2)}</td><td></td><td class="r">${ent(sum("precio"))}</td>${vA?`<td class="r">${ent(sum("anticipo"))}</td>`:""}${vC?`<td class="r">${ent(sum("cuota"))}</td>`:""}<td></td></tr>`:""}</tbody></table>
+  <table class="h-cond">${conds.reduce((f,x,k)=>k%2?f:[...f,[x,conds[k+1]]],[]).map(([x,y])=>`<tr><td>${esc(x[0])}</td><td class="v">${esc(x[1])}</td><td class="sep"></td>${y?`<td>${esc(y[0])}</td><td class="v">${esc(y[1])}</td>`:`<td></td><td></td>`}</tr>`).join("")}</table>
   ${p.notas?`<div class="h-nota">${esc(p.notas)}</div>`:""}
   <div class="h-pie">Coldwell Banker · Precios sujetos a disponibilidad al momento de la reserva. Presupuesto vigente hasta ${fmtF(p.vigencia)}.</div>`;
 }
@@ -1130,7 +1133,7 @@ function renderPresus(){
   $("#presu-lista").innerHTML=`<table><thead><tr><th>N°</th><th>Fecha</th><th>Cliente</th><th>Locales</th><th class="num">Total USD</th><th>Condiciones</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody>${ps.map(p=>{
     const est=estadoPresu(p); const ocupados=(p.items||[]).filter(i=>S.locales[i.id]&&S.locales[i.id].estado!=="disponible"&&S.locales[i.id].cliente!==p.cliente);
     return `<tr><td><b>${esc(p.numero)}</b></td><td>${fmtF(p.fecha)}</td><td>${esc(p.cliente||"—")}${p.asesor&&p.asesor.nombre?`<div class="muted">Asesor: ${esc(p.asesor.nombre)}</div>`:""}</td><td>${(p.items||[]).map(i=>esc(i.codigo)).join(", ")}${ocupados.length&&est==="abierto"?`<div class="aviso">Ya no disponibles: ${ocupados.map(i=>esc(i.codigo)).join(", ")}</div>`:""}</td>
-    <td class="num">${usd((p.items||[]).reduce((s,i)=>s+i.precio,0))}</td><td>${p.cond.anticipoPct}% + ${p.cond.cuotas} cuotas</td><td>${fmtF(p.vigencia)}</td><td><span class="pill p-${est}">${EST_PRESU[est]||esc(est)}</span></td>
+    <td class="num">${usd((p.items||[]).reduce((s,i)=>s+i.precio,0))}</td><td>${esc(formaPago(p.cond))}</td><td>${fmtF(p.vigencia)}</td><td><span class="pill p-${est}">${EST_PRESU[est]||esc(est)}</span></td>
     <td><div class="acc"><button data-a="ver" data-id="${esc(p.id)}">Ver</button><button data-a="copiar" data-id="${esc(p.id)}">Duplicar</button>${est==="abierto"?`<button data-a="aceptar" data-id="${esc(p.id)}">Reservar</button><button data-a="rechazar" data-id="${esc(p.id)}">Rechazado</button>`:""}</div></td></tr>`;}).join("")}</tbody></table>`;
 }
 $("#presu-lista").addEventListener("click",async e=>{ const b=e.target.closest("button[data-a]"); if(!b) return; const p=S.presus.find(x=>x.id===b.dataset.id); if(!p) return;
@@ -1200,8 +1203,8 @@ async function imagenPresu(p, formato){
 }
 const linkProyecto = pid => `https://pturdera.github.io/gestor-desarrollos/p/${pid}/`;
 function textoWhatsApp(p){ const it=calcItems(p.items,p.cond);
-  return `*Coldwell Banker · ${(P()||{}).nombre||""}*\n${linkProyecto(S.pid)}\n\nPresupuesto ${p.numero}${p.cliente?" · "+p.cliente:""}\n\n`+it.map(i=>`• ${unidadLbl()} ${i.codigo} (${i.ubic}) ${num(i.m2,2)} m² — USD ${ent(i.precio)}\n   Anticipo ${p.cond.anticipoPct}%: USD ${ent(i.anticipo)} + ${p.cond.cuotas} cuotas de USD ${ent(i.cuota)}`).join("\n")+
-  `\n\nA la firma: ${num(p.cond.honorariosPct)}% honorarios inmobiliarios + certificación de firmas ${ars(p.cond.certificacionArs)} por ${unidadLbl().toLowerCase()} (aprox.)\nVigente hasta ${fmtF(p.vigencia)}`+
+  return `*Coldwell Banker · ${(P()||{}).nombre||""}*\n${linkProyecto(S.pid)}\n\nPresupuesto ${p.numero}${p.cliente?" · "+p.cliente:""}\n\n`+it.map(i=>`• ${unidadLbl()} ${i.codigo} (${i.ubic}) ${num(i.m2,2)} m² — USD ${ent(i.precio)}`+((+p.cond.anticipoPct>0||+p.cond.cuotas>0)?`\n   `+[+p.cond.anticipoPct>0?`Anticipo ${num(p.cond.anticipoPct)}%: USD ${ent(i.anticipo)}`:"",+p.cond.cuotas>0?`${p.cond.cuotas} cuotas de USD ${ent(i.cuota)}`:""].filter(Boolean).join(" + "):"")).join("\n")+
+  (()=>{ const f=[+p.cond.honorariosPct>0?`${num(p.cond.honorariosPct)}% honorarios inmobiliarios`:"",+p.cond.certificacionArs>0?`certificación de firmas ${ars(p.cond.certificacionArs)} por ${unidadLbl().toLowerCase()} (aprox.)`:""].filter(Boolean); return f.length?`\n\nA la firma: ${f.join(" + ")}`:"\n"; })()+`\nVigente hasta ${fmtF(p.vigencia)}`+
   (p.asesor&&p.asesor.nombre?`\n\nTe atiende: ${p.asesor.nombre}${contactoTxt(p.asesor)?" · "+contactoTxt(p.asesor):""}`:""); }
 async function copiarTexto(t){ try{ await navigator.clipboard.writeText(t); toast("Copiado"); }catch(e){ abrirDrawer(`<div class="cab"><h3>Copiá el texto</h3><button id="d-x">Cerrar</button></div><textarea id="d-txt" rows="16">${esc(t)}</textarea>`); $("#d-x").onclick=cerrarDrawer; $("#d-txt").select(); } }
 function editorPresu(base){
@@ -1322,7 +1325,11 @@ function docReservaHTML(R){
     : `adquirir la unidad privativa que se designa provisoriamente con el <b>${lista}</b> (en adelante la “Unidad Privativa”), ubicada en ${ubic} del Emprendimiento`;
   const sujeto = ls.length===2 ? "ambas Unidades Funcionales" : plural ? `las ${enLetras(ls.length).toLowerCase()} (${ls.length}) Unidades Funcionales` : "la Unidad Funcional";
   const saldo=Math.max(0,(R.precio||0)-(R.anticipo||0));
-  const pago = saldo>0 && R.cuotas>0
+  const pago = !(R.anticipo>0) && saldo>0 && R.cuotas>0
+    ? `pago de DÓLARES ESTADOUNIDENSES ${enLetras(saldo)} (${uss(saldo)}) en ${enLetras(R.cuotas)} (${R.cuotas}) cuotas mensuales fijas en dólares.`
+    : !(R.anticipo>0) && saldo>0
+      ? `pago de DÓLARES ESTADOUNIDENSES ${enLetras(saldo)} (${uss(saldo)}) según se acuerde en el boleto.`
+    : saldo>0 && R.cuotas>0
     ? `anticipo de DÓLARES ESTADOUNIDENSES ${enLetras(R.anticipo)} (${uss(R.anticipo)}) a la firma del boleto y saldo de DÓLARES ESTADOUNIDENSES ${enLetras(saldo)} (${uss(saldo)}) en ${enLetras(R.cuotas)} (${R.cuotas}) cuotas mensuales fijas en dólares.`
     : saldo>0
       ? `anticipo de DÓLARES ESTADOUNIDENSES ${enLetras(R.anticipo)} (${uss(R.anticipo)}) a la firma del boleto y saldo de DÓLARES ESTADOUNIDENSES ${enLetras(saldo)} (${uss(saldo)}) según se acuerde en el boleto.`
@@ -1424,7 +1431,7 @@ function generadorReserva(base){
       <label for="g-monto">Monto de la reserva</label><input id="g-monto" type="number" step="500" value="${esc(r.sena||(((P()||{}).doc||{}).montoReserva)||10000)}">
       <label for="g-precio">Precio total ofrecido</label><input id="g-precio" type="number" step="1000">
       <div class="muted" id="g-lista" style="font-size:12px;margin-top:3px"></div>
-      <div class="dos"><div><label for="g-ant">Anticipo a la firma del boleto</label><input id="g-ant" type="number" step="1000"></div><div><label for="g-cuo">Cuotas mensuales</label><input id="g-cuo" type="number" value="${esc(cond.cuotas||36)}"></div></div>
+      <div class="dos"><div><label for="g-ant">Anticipo a la firma del boleto</label><input id="g-ant" type="number" step="1000"></div><div><label for="g-cuo">Cuotas mensuales</label><input id="g-cuo" type="number" value="${esc(cond.cuotas??36)}"></div></div>
       <div class="calc" id="g-saldo"></div>
     </fieldset>
     <fieldset><legend>Plazos y honorarios</legend>
@@ -1467,7 +1474,7 @@ function generadorReserva(base){
     const lista=locales.reduce((s,l)=>s+(precioDe(l)||0),0);
     if(!precioTocado) $("#g-precio").value=lista?Math.round(presu?(presu.items||[]).filter(i=>ids.includes(i.id)).reduce((s,i)=>s+i.precio,0)||lista:lista):"";
     const precio=+$("#g-precio").value||0;
-    if(!antTocado) $("#g-ant").value=precio?Math.round(precio*(cond.anticipoPct||30)/100):"";
+    if(!antTocado) $("#g-ant").value=precio?Math.round(precio*(cond.anticipoPct??30)/100):"";
     const anticipo=+$("#g-ant").value||0, cuotas=+$("#g-cuo").value||0, saldo=Math.max(0,precio-anticipo);
     $("#g-lista").textContent=lista?`Precio de lista: ${usd(lista)}${precio&&precio!==lista?` · diferencia ${usd(precio-lista)}`:""}`:"";
     $("#g-saldo").textContent=precio?`Saldo ${usd(saldo)}${cuotas&&saldo?` en ${cuotas} cuotas de ${usd(saldo/cuotas)}`:""}`:"Elegí al menos un local.";
@@ -1493,7 +1500,7 @@ function generadorReserva(base){
   const reg=$("#g-reg"); if(reg) reg.onclick=async e=>{
     const R=leer(); const m=falta(R); if(m){toast(m);return;}
     const ocup=R.locales.filter(l=>l.estado!=="disponible"); if(ocup.length){ toast(`Ya no está disponible: ${ocup.map(l=>l.codigo).join(", ")}`); return; }
-    const notas=[...R.compradores.map(c=>[c.nombre, c.doc&&`${c.tipoDoc} ${c.doc}`, c.estadoCivil, c.domicilio&&("domicilio "+c.domicilio), c.email, c.tel].filter(Boolean).join(", ")), `precio ofrecido ${usd(R.precio)}`, `anticipo ${usd(R.anticipo)}`, R.cuotas?`${R.cuotas} cuotas`:"", `boleto en ${R.dias} días`, `honorarios ${R.honorarios}% + IVA`].filter(x=>x&&x!=="D.N.I.").join(" · ");
+    const notas=[...R.compradores.map(c=>[c.nombre, c.doc&&`${c.tipoDoc} ${c.doc}`, c.estadoCivil, c.domicilio&&("domicilio "+c.domicilio), c.email, c.tel].filter(Boolean).join(", ")), `precio ofrecido ${usd(R.precio)}`, R.anticipo>0?`anticipo ${usd(R.anticipo)}`:"", R.cuotas?`${R.cuotas} cuotas`:"", `boleto en ${R.dias} días`, `honorarios ${R.honorarios}% + IVA`].filter(x=>x&&x!=="D.N.I.").join(" · ");
     const c1=R.compradores[0]||{};
     const documento={compradores:R.compradores,precio:R.precio,anticipo:R.anticipo,cuotas:R.cuotas,monto:R.monto,dias:R.dias,honorarios:R.honorarios,comparte:R.comparte,fecha:R.fecha,ids:R.ids,corredor:R.corredor};
     const d={cliente_id:base.clienteId||(base.reserva&&base.reserva.clienteId)||null,cliente:R.nombre,contacto:[c1.tel,c1.email].filter(Boolean).join(" · "),fecha:R.fecha,sena:R.monto,vence:masDias(R.fecha||hoyISO(),R.dias||10),notas,documento};
